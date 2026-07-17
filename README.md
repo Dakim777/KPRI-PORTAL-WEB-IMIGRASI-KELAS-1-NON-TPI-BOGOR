@@ -10,7 +10,7 @@
 | **Status Akhir** | ✅ **PRODUCTION — Live & Fully Operational (100% Siap Digunakan)** |
 | **URL Live Web** | **`https://kpriimigrasibogor.my.id`** |
 | **IP Server VPS** | `103.247.11.194` |
-| **Port SSH VPS** | `22832` |
+| **Port SSH VPS** | `22` (Default) |
 | **OS / Panel** | Ubuntu 22.04 LTS | aaPanel (Baota) v8.0.4 |
 | **Tech Stack** | Laravel 13 | PHP 8.4 (aaPanel) | Nginx 1.30.3 | MySQL 8.0 |
 | **Sertifikat SSL** | Let's Encrypt HTTPS (Auto-Renew aktif sampai Oktober 2026) |
