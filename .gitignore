@@ -25,3 +25,10 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# File tidak perlu di-commit
+*.zip
+*.xlsx
+*.xls
+read_excel.php
+contexting_vps.md
