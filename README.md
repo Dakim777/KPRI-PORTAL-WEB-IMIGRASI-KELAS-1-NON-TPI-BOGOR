@@ -318,3 +318,116 @@ composer install --optimize-autoloader --no-dev \
 
 ---
 *Dokumentasi ini disusun oleh Tim Pengembang & AI Assistant Antigravity (Google DeepMind).*
+
+---
+
+## V. STRUKTUR FOLDER PROJECT (PANDUAN BIMBINGAN)
+
+> Penjelasan singkat, padat, dan jelas setiap folder & file penting dalam project Laravel ini.
+
+```
+portal-koperasi/              ← Root folder project (lokal & VPS)
+├── app/                      ← INTI LOGIKA APLIKASI (PHP)
+│   ├── Http/
+│   │   ├── Controllers/      ← "Otak" logika per fitur aplikasi
+│   │   │   ├── AuthController.php           → Login & Logout
+│   │   │   ├── DashboardController.php      → Halaman ringkasan data
+│   │   │   ├── KantinController.php         → POS Kasir & transaksi penjualan
+│   │   │   ├── KategoriKantinController.php → CRUD kategori produk kantin
+│   │   │   ├── ProdukKantinController.php   → CRUD produk, barcode, harga jual
+│   │   │   ├── PembelianController.php      → Stok masuk / restock barang
+│   │   │   ├── PasporController.php         → Transaksi pengiriman paspor
+│   │   │   ├── UserController.php           → Manajemen akun pengguna & role
+│   │   │   ├── ActivityLogController.php    → Audit trail / log aktivitas
+│   │   │   └── TrashController.php          → Tempat sampah & restore data
+│   │   └── Middleware/       → Filter keamanan (cek login, cek role pengguna)
+│   ├── Models/               ← Representasi tabel database ke dalam kode PHP
+│   │   ├── User.php                 → Tabel pengguna & role (super_admin, kasir)
+│   │   ├── TransaksiPaspor.php      → Transaksi paspor (+ enkripsi data PII sensitif)
+│   │   ├── TransaksiKantin.php      → Transaksi penjualan kantin
+│   │   ├── ProdukKantin.php         → Produk (nama, harga, barcode, stok)
+│   │   ├── KategoriKantin.php       → Kategori produk kantin
+│   │   ├── PembelianKantin.php      → Pembelian / restock stok masuk
+│   │   ├── DetailKantin.php         → Detail item per transaksi penjualan
+│   │   └── DetailPembelian.php      → Detail item per pembelian/restock
+│   └── Exports/              ← Class untuk export data ke file Excel (.xlsx)
+│       ├── LaporanPenjualanExport.php       → Laporan penjualan kantin (multi-sheet)
+│       ├── LaporanPenjualanGlobalSheet.php  → Sheet ringkasan total penjualan
+│       ├── LaporanPenjualanDetailSheet.php  → Sheet detail per transaksi
+│       ├── LaporanPembelianExport.php       → Laporan pembelian / restock
+│       ├── LaporanPasporExport.php          → Laporan pengiriman paspor (dasar)
+│       └── LaporanPasporKompleksExport.php  → Laporan paspor lengkap (kompleks)
+│
+├── config/                   ← FILE KONFIGURASI FRAMEWORK
+│   └── *.php                 → Setiap file mengatur 1 aspek (session, db, cache, dll.)
+│
+├── database/                 ← SEMUA YANG BERKAITAN DENGAN DATABASE
+│   ├── migrations/           → 20 file blueprint skema tabel (dijalankan urut)
+│   │   ├── ..._create_users_table.php                  → Tabel pengguna & role
+│   │   ├── ..._create_paspor_table.php                 → Tabel transaksi paspor
+│   │   ├── ..._create_produk_kantins_table.php         → Tabel produk kantin
+│   │   ├── ..._create_kantin_transactions_table.php    → Tabel penjualan kantin
+│   │   ├── ..._encrypt_pii_columns_...php              → Enkripsi kolom HP & alamat
+│   │   ├── ..._create_kategori_kantins_table.php       → Tabel kategori produk
+│   │   ├── ..._create_activity_log_table.php           → Tabel audit log aktivitas
+│   │   ├── ..._add_deleted_at_to_models.php            → Aktifkan fitur Trash
+│   │   ├── ..._create_pembelian_kantins_...php         → Tabel restock & barcode
+│   │   ├── ..._restructure_transaksi_paspors_table.php → Restruktur tabel paspor
+│   │   ├── ..._add_fifo_columns_to_kantin_tables.php   → Sistem stok FIFO kantin
+│   │   └── ..._add_metode_bayar_...php                 → Kolom metode pembayaran
+│   └── seeders/
+│       └── DatabaseSeeder.php → Data awal: akun admin default & data contoh
+│
+├── public/                   ← FOLDER YANG DIBUKA KE INTERNET (Document Root Nginx)
+│   └── index.php             → Pintu masuk utama semua request web dari browser
+│
+├── resources/                ← TAMPILAN & ASET FRONT-END
+│   ├── views/                → Semua halaman tampilan (Blade Template HTML)
+│   │   ├── layouts/          → Template induk (header, sidebar, footer bersama)
+│   │   ├── components/       → Komponen reusable (barcode scanner, modal, dll.)
+│   │   ├── auth/             → Halaman login
+│   │   ├── dashboard/        → Halaman ringkasan data kantin & paspor
+│   │   ├── kantin/           → Halaman POS, produk, kategori, laporan kantin
+│   │   ├── paspor/           → Halaman transaksi, edit status, cetak resi paspor
+│   │   └── admin/            → Manajemen user, log aktivitas, trash
+│   ├── css/                  → File CSS custom (styling tambahan)
+│   └── js/                   → File JavaScript custom (logika front-end)
+│
+├── routes/                   ← PETA SEMUA URL / ALAMAT HALAMAN WEB
+│   └── web.php               → Mendefinisikan semua URL, controller yang
+│                               menanganinya, & middleware keamanan (role-based)
+│
+├── storage/                  ← PENYIMPANAN FILE YANG DIGENERATE SISTEM
+│   └── logs/laravel.log      → Log error Laravel (selalu cek ini saat debug!)
+│
+├── .env                      ← FILE RAHASIA KONFIGURASI ENVIRONMENT
+│                               (DB credentials, APP_KEY — TIDAK di-commit ke Git!)
+├── composer.json             ← Daftar library PHP yang digunakan
+└── README.md                 ← Dokumentasi project ini (file yang sedang Anda baca)
+```
+
+### Alur Kerja Request (Dari Klik Browser Hingga Data Tampil):
+```
+Browser User (klik tombol / buka URL)
+        │
+        ▼
+Nginx Web Server ──► Meneruskan ke public/index.php
+        │
+        ▼
+routes/web.php ──► Mencocokkan URL → arahkan ke Controller yang tepat
+        │
+        ▼
+Middleware ──► Cek: Sudah login? Role-nya punya izin akses halaman ini?
+        │
+        ▼
+Controller ──► Menjalankan logika bisnis (hitung, validasi, proses)
+        │
+        ▼
+Model ──► Membaca / Menyimpan data ke database MySQL
+        │
+        ▼
+View (Blade) ──► Merender tampilan HTML final dengan data dari database
+        │
+        ▼
+Respons HTML dikirim balik ke Browser User ✅
+```
