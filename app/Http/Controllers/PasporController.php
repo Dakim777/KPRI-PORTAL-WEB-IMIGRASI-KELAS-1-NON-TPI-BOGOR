@@ -34,7 +34,7 @@ class PasporController extends Controller
     {
         $filteredQuery = $this->buildQuery($request);
 
-        $summary = (clone $filteredQuery)->selectRaw('
+        $summary = (clone $filteredQuery)->reorder()->selectRaw('
             COUNT(*)                    AS total_pengiriman,
             SUM(total_pembayaran_pemohon) AS grand_total
         ')->first();
