@@ -512,7 +512,16 @@ flowchart TD
 
         G --> G2["Daftar Riwayat Pengiriman\n(Pagination ✅ Fixed)"]
         G2 --> G2_A["Pencarian by Nama/Paspor/Resi"]
-        G2 --> G21["Update Status Warna\n🟢 Selesai / 🟡 Diproses / 🔴 Batal"]
+        G2 --> G21["Kelola Status Pengiriman"]
+        G21 --> G21_1["🔵 Transaksi
+(Status Awal - Baru Masuk)"]
+        G21_1 --> |"Kasir Update"| G21_2["🟡 Diproses
+(Sedang Dikurir/Dikirim)"]
+        G21_2 --> |"Sudah Terkirim"| G21_3["🟢 Selesai
+(Paspor Diterima)"]
+        G21_2 --> |"Dibatalkan"| G21_4["🔴 Batal
+(Transaksi Dibatalkan)"]
+        G21_1 --> |"Dibatalkan"| G21_4
         G2 --> G22["Edit Transaksi / Input Resi"]
         G22 --> |"Webcam Scanner 1D & QR"| G2_C["Input No Resi Otomatis\n(+ Suara Beep)"]
         G2 --> G2_B["Cetak Kwitansi / Struk Resi"]
