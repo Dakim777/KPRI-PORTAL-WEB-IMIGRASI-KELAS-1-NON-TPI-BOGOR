@@ -434,7 +434,7 @@ Respons HTML dikirim balik ke Browser User ✅
 
 ---
 
-## VI. DIAGRAM ALUR SISTEM (FLOWCHART TERBARU — 18 Juli 2026)
+## VI. DIAGRAM ALUR SISTEM (FLOWCHART TERBARU — FOKUS PELACAKAN PASPOR)
 
 ```mermaid
 flowchart TD
@@ -449,7 +449,7 @@ flowchart TD
     classDef production fill:#f0fdf4,color:#166534,stroke:#16a34a,stroke-width:2px;
 
     %% ── PRODUCTION ENTRY ─────────────────────────────────
-    PROD(["🌐 https://kpriimigrasibogor.my.id\n✅ PRODUCTION — SSL HTTPS Aktif"])
+    PROD(["🌐 https://kpriimigrasibogor.my.id\n✅ PRODUCTION — SSL HTTPS Aktif\n(Portal Pelacakan Paspor)"])
     PROD --> A
 
     %% ── ALUR UTAMA & AUTENTIKASI ─────────────────────────
@@ -462,69 +462,39 @@ flowchart TD
 
     %% ── MODUL SUPER ADMIN ────────────────────────────────
     subgraph Modul_Admin ["MODUL SUPER ADMIN"]
-        D -- super_admin --> E["Dashboard Admin"]
+        D -- super_admin --> E["Dashboard Admin Paspor"]
         E --> E1["Kelola Akun Pengguna\n(Tambah / Edit / Hapus)"]
         E --> E2["Audit Trail\n(Log Aktivitas Lengkap)"]
         E --> E3["Soft Deletes (Trash)\nData Tidak Hilang Permanen"]
-        E --> G3_A["Akses Eksklusif Laporan Excel\nLaba 70% Koperasi & 30% Bu Ajat"]
+        E --> E4["Monitoring Omset & Statistik\nPengiriman Paspor"]
 
         class E role;
-        class E1 aksi;
+        class E1,E4 aksi;
         class E2,E3 security;
-        class G3_A newfeature;
     end
 
-    %% ── SUPER ADMIN AKSES KE MODUL LAIN ─────────────────
-    E -.-> |"Akses Penuh (Full Role)"| F
+    %% ── SUPER ADMIN AKSES KE MODUL PASPOR ────────────────
     E -.-> |"Akses Penuh (Full Role)"| G
 
-    %% ── MODUL KANTIN ─────────────────────────────────────
-    subgraph Modul_Kantin ["MODUL KANTIN & KASIR POS"]
-        D -- kasir_kantin --> F["Dashboard Kantin"]
-
-        F --> F1["Kategori & Master Produk"]
-        F1 --> |"Simpan Harga Jual"| DB_Kantin[/"Tersimpan ke DB"/]
-
-        F --> F2_A["Input Barang Masuk\n(Pembelian / Restock)"]
-        F2_A --> |"Scan Barcode / Manual"| F2_A1["Tambah Stok & Update HPP (FIFO)"]
-
-        F --> F3["Buka Kasir POS"]
-        F3 --> F3_Scan["Scanner Fisik & Webcam\n+ Suara Beep Supermarket"]
-        F3_Scan --> |"Auto-Fill & Auto-Close"| F31["Proses Transaksi Penjualan\nPilih: Cash / QRIS"]
-        F31 --> |"Stok Berkurang Otomatis (FIFO)"| F32["Cetak Struk Thermal 80mm"]
-
-        F --> F4["Laporan & Export Excel"]
-        F4 --> F41["Export Multi-Sheet\n(Detail + Global Summary)\n+ Filter Periode Tanggal"]
-        F41 --> |"Rumus Live Excel Terinjeksi"| Laporan_Kantin["Laporan Laba:\nKoperasi 70% & Bu Ajat 30%"]
-
-        class F role;
-        class F1,F3,F4,F31,F32 aksi;
-        class F2_A,F2_A1,F3_Scan,F41,Laporan_Kantin newfeature;
-    end
-
     %% ── MODUL PASPOR ─────────────────────────────────────
-    subgraph Modul_Paspor ["MODUL PENGIRIMAN PASPOR"]
+    subgraph Modul_Paspor ["MODUL PENGIRIMAN & PELACAKAN PASPOR"]
         D -- kasir_paspor --> G["Dashboard Paspor"]
 
         G --> G1["Pendaftaran Permohonan\nPengiriman Paspor"]
         G1 --> G1_A["Input Dinamis:\nHandling Fee + Materai + SK"]
         G1_A --> G11["Enkripsi Data PII\n(AES-256 via Laravel)"]
 
-        G --> G2["Daftar Riwayat Pengiriman\n(Pagination ✅ Fixed)"]
+        G --> G2["Daftar Riwayat Pengiriman\n(Pagination & Filter)"]
         G2 --> G2_A["Pencarian by Nama/Paspor/Resi"]
         G2 --> G21["Kelola Status Pengiriman"]
-        G21 --> G21_1["🔵 Transaksi
-(Status Awal - Baru Masuk)"]
-        G21_1 --> |"Kasir Update"| G21_2["🟡 Diproses
-(Sedang Dikurir/Dikirim)"]
-        G21_2 --> |"Sudah Terkirim"| G21_3["🟢 Selesai
-(Paspor Diterima)"]
-        G21_2 --> |"Dibatalkan"| G21_4["🔴 Batal
-(Transaksi Dibatalkan)"]
+        G21 --> G21_1["🔵 Transaksi\n(Status Awal - Baru Masuk)"]
+        G21_1 --> |"Kasir Update"| G21_2["🟡 Diproses\n(Sedang Dikurir/Dikirim)"]
+        G21_2 --> |"Sudah Terkirim"| G21_3["🟢 Selesai\n(Paspor Diterima)"]
+        G21_2 --> |"Dibatalkan"| G21_4["🔴 Batal\n(Transaksi Dibatalkan)"]
         G21_1 --> |"Dibatalkan"| G21_4
         G2 --> G22["Edit Transaksi / Input Resi"]
         G22 --> |"Webcam Scanner 1D & QR"| G2_C["Input No Resi Otomatis\n(+ Suara Beep)"]
-        G2 --> G2_B["Cetak Kwitansi / Struk Resi"]
+        G2 --> G2_B["Cetak Kwitansi / Struk Resi\n(Dilengkapi Barcode Unik)"]
 
         G --> G_EXP["Export Laporan Paspor"]
         G_EXP --> G_EXP1["Laporan Dasar (Excel)"]
@@ -538,28 +508,21 @@ flowchart TD
 
     %% ── DATABASE & CORE SYSTEM ───────────────────────────
     subgraph Core_Database ["DATABASE MYSQL & SISTEM INTI"]
-        DB[("☁️ Database MySQL\nsql_kpriimigrasibogor_my_id\n20 Tabel Aktif")]
+        DB[("☁️ Database MySQL\nsql_kpriimigrasibogor_my_id\n(Tabel Transaksi & Audit)")]
 
         E1 --> DB
         E3 --> DB
-        DB_Kantin -.-> DB
-        F2_A1 --> DB
-        F31 --> DB
         G11 --> DB
         G21 --> DB
 
         DB --> |"Audit Trail"| E2
-        DB --> |"Stok ≤ 5 unit?"| N{"Cek Stok Otomatis"}
         DB --> |"Cron Job Tiap Menit"| Cron{"Cek Estimasi Selesai\nPaspor"}
 
-        N -- Ya --> NF["⚠️ Notifikasi Stok Menipis\ndi Dashboard Kantin"]
-        N -- Tidak --> NX(["✅ Aman"])
-
         Cron -- "Estimasi Selesai Hari Ini" --> NP["🔔 Notifikasi Lonceng\nPaspor Siap Kirim"]
-        Cron -- Aman --> NX
+        Cron -- "Belum Jatuh Tempo / Selesai" --> NX(["✅ Aman"])
 
         class DB db;
-        class NF,NP warning;
+        class NP warning;
         class NX start;
         class Cron newfeature;
     end
@@ -571,7 +534,7 @@ flowchart TD
         GITHUB --> |"git pull origin main"| VPS["🖥️ VPS Server Ubuntu\n103.247.11.194\n/www/wwwroot/kpriimigrasibogor.my.id"]
         VPS --> |"php artisan config/route/view:cache"| PROD
 
-        TABLEPLUS["🔍 TablePlus (Mac)\nOver SSH Tunnel\nMonitoring 20 Tabel DB"]
+        TABLEPLUS["🔍 TablePlus (Mac)\nOver SSH Tunnel\nMonitoring Tabel DB"]
         TABLEPLUS -.-> |"SSH :22 → MySQL :3306"| DB
 
         class DEV_LOCAL,GITHUB,VPS newfeature;
