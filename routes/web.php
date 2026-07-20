@@ -3,10 +3,7 @@
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\KantinController;
-use App\Http\Controllers\KategoriKantinController;
 use App\Http\Controllers\PasporController;
-use App\Http\Controllers\ProdukKantinController;
 use App\Http\Controllers\TrashController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -46,43 +43,8 @@ Route::middleware('auth')->group(function () {
 
         // Soft Deletes / Trash
         Route::get('trash', [TrashController::class, 'index'])->name('trash.index');
-        Route::post('trash/restore-produk/{id}', [TrashController::class, 'restoreProduk'])->name('trash.restore-produk');
-        Route::delete('trash/force-produk/{id}', [TrashController::class, 'forceDeleteProduk'])->name('trash.force-produk');
         Route::post('trash/restore-paspor/{id}', [TrashController::class, 'restorePaspor'])->name('trash.restore-paspor');
         Route::delete('trash/force-paspor/{id}', [TrashController::class, 'forceDeletePaspor'])->name('trash.force-paspor');
-        Route::post('trash/restore-transaksi-kantin/{id}', [TrashController::class, 'restoreTransaksiKantin'])->name('trash.restore-transaksi-kantin');
-        Route::delete('trash/force-transaksi-kantin/{id}', [TrashController::class, 'forceDeleteTransaksiKantin'])->name('trash.force-transaksi-kantin');
-    });
-
-    // ── Modul Kantin (kasir_kantin + super_admin) ───────────────────────────
-    Route::middleware('role:kasir_kantin,super_admin')->prefix('kantin')->name('kantin.')->group(function () {
-
-        // Dashboard Kantin
-        Route::get('/dashboard', [DashboardController::class, 'kantin'])->name('dashboard');
-
-        // Pembelian / Barang Masuk
-        Route::get('/pembelian/search-barcode', [\App\Http\Controllers\PembelianController::class, 'searchBarcode'])->name('pembelian.search-barcode');
-        Route::resource('pembelian', \App\Http\Controllers\PembelianController::class)->only(['index', 'create', 'store']);
-
-        // Master Produk (CRUD + Import Excel)
-        Route::post('/produk/import', [ProdukKantinController::class, 'importExcel'])->name('produk.import');
-        Route::get('/produk/template', [ProdukKantinController::class, 'downloadTemplate'])->name('produk.template');
-        Route::resource('produk', ProdukKantinController::class);
-
-        // Kategori Produk (CRUD)
-        Route::resource('kategori', KategoriKantinController::class)->except(['show']);
-
-        // POS Transaksi
-        Route::get('/pos', [KantinController::class, 'pos'])->name('pos');
-        Route::post('/pos', [KantinController::class, 'simpanTransaksi'])->name('pos.simpan');
-        Route::get('/transaksi', [KantinController::class, 'riwayat'])->name('transaksi');
-        Route::get('/transaksi/{transaksi}/print', [KantinController::class, 'printReceipt'])->name('transaksi.print');
-        Route::get('/transaksi/{transaksi}', [KantinController::class, 'showTransaksi'])->name('transaksi.show');
-        Route::delete('/transaksi/{transaksi}', [KantinController::class, 'destroyTransaksi'])->name('transaksi.destroy');
-
-        // Laporan penjualan & pembelian — export Excel
-        Route::get('/laporan/export', [KantinController::class, 'exportExcel'])->name('laporan.export');
-        Route::get('/laporan/pembelian/export', [KantinController::class, 'exportPembelianExcel'])->name('laporan.pembelian.export');
     });
 
     // ── Modul Paspor (kasir_paspor + super_admin) ───────────────────────────

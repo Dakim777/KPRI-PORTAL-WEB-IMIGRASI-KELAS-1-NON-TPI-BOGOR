@@ -14,7 +14,6 @@
             @php
                 $roleClass = match($user->role) {
                     'super_admin'  => 'bg-blue-100 text-blue-800',
-                    'kasir_kantin' => 'bg-green-100 text-green-800',
                     'kasir_paspor' => 'bg-purple-100 text-purple-800',
                     default        => 'bg-gray-100 text-gray-700',
                 };
@@ -55,7 +54,6 @@
                 </label>
                 <select id="role" name="role" required
                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 @error('role') border-red-400 @enderror">
-                    <option value="kasir_kantin" {{ old('role', $user->role) === 'kasir_kantin' ? 'selected' : '' }}>Kasir Kantin</option>
                     <option value="kasir_paspor" {{ old('role', $user->role) === 'kasir_paspor' ? 'selected' : '' }}>Kasir Paspor</option>
                     <option value="super_admin"  {{ old('role', $user->role) === 'super_admin'  ? 'selected' : '' }}>Super Admin</option>
                 </select>

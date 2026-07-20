@@ -17,10 +17,6 @@
             <p class="text-3xl font-bold text-blue-700 mt-1">{{ $stats['super_admin'] }}</p>
         </div>
         <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <p class="text-xs text-gray-500 uppercase tracking-wide">Kasir Kantin</p>
-            <p class="text-3xl font-bold text-green-700 mt-1">{{ $stats['kasir_kantin'] }}</p>
-        </div>
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
             <p class="text-xs text-gray-500 uppercase tracking-wide">Kasir Paspor</p>
             <p class="text-3xl font-bold text-purple-700 mt-1">{{ $stats['kasir_paspor'] }}</p>
         </div>
@@ -42,7 +38,6 @@
             <select name="role" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">-- Semua Role --</option>
                 <option value="super_admin"  {{ request('role') === 'super_admin'  ? 'selected' : '' }}>Super Admin</option>
-                <option value="kasir_kantin" {{ request('role') === 'kasir_kantin' ? 'selected' : '' }}>Kasir Kantin</option>
                 <option value="kasir_paspor" {{ request('role') === 'kasir_paspor' ? 'selected' : '' }}>Kasir Paspor</option>
             </select>
             <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
@@ -84,7 +79,7 @@
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs text-white flex-shrink-0
-                                    {{ $user->role === 'super_admin' ? 'bg-blue-600' : ($user->role === 'kasir_kantin' ? 'bg-green-600' : 'bg-purple-600') }}">
+                                    {{ $user->role === 'super_admin' ? 'bg-blue-600' : 'bg-purple-600' }}">
                                     {{ strtoupper(substr($user->name, 0, 2)) }}
                                 </div>
                                 <div>
@@ -100,7 +95,6 @@
                             @php
                                 $roleLabel = match($user->role) {
                                     'super_admin'  => ['label' => 'Super Admin',  'class' => 'bg-blue-100 text-blue-800'],
-                                    'kasir_kantin' => ['label' => 'Kasir Kantin', 'class' => 'bg-green-100 text-green-800'],
                                     'kasir_paspor' => ['label' => 'Kasir Paspor', 'class' => 'bg-purple-100 text-purple-800'],
                                     default        => ['label' => $user->role,         'class' => 'bg-gray-100 text-gray-700'],
                                 };

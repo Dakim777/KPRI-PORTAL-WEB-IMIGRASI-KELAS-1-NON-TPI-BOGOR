@@ -34,7 +34,6 @@ class UserController extends Controller
         $stats = [
             'total'         => User::count(),
             'super_admin'   => User::where('role', 'super_admin')->count(),
-            'kasir_kantin'  => User::where('role', 'kasir_kantin')->count(),
             'kasir_paspor'  => User::where('role', 'kasir_paspor')->count(),
         ];
 
@@ -58,7 +57,7 @@ class UserController extends Controller
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role'     => ['required', 'in:super_admin,kasir_kantin,kasir_paspor'],
+            'role'     => ['required', 'in:super_admin,kasir_paspor'],
         ], [
             'name.required'      => 'Nama wajib diisi.',
             'email.unique'       => 'Email sudah terdaftar, gunakan email lain.',
@@ -80,12 +79,10 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        $user->load('transaksiKantins', 'transaksiPaspors');
+        $user->load('transaksiPaspors');
 
         $stats = [
-            'total_kantin' => $user->transaksiKantins()->count(),
             'total_paspor' => $user->transaksiPaspors()->count(),
-            'omset_kantin' => $user->transaksiKantins()->sum('total_harga'),
             'omset_paspor' => $user->transaksiPaspors()->sum('total_pembayaran_pemohon'),
         ];
 
@@ -108,7 +105,7 @@ class UserController extends Controller
         $data = $request->validate([
             'name'  => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'role'  => ['required', 'in:super_admin,kasir_kantin,kasir_paspor'],
+            'role'  => ['required', 'in:super_admin,kasir_paspor'],
         ], [
             'email.unique' => 'Email sudah dipakai oleh akun lain.',
         ]);

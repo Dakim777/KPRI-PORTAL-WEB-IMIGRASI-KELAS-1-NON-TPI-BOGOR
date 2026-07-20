@@ -11,7 +11,7 @@
         <div class="px-6 py-5 flex items-start gap-5">
             {{-- Avatar --}}
             <div class="w-16 h-16 rounded-full flex items-center justify-center font-bold text-2xl text-white flex-shrink-0
-                {{ $user->role === 'super_admin' ? 'bg-blue-600' : ($user->role === 'kasir_kantin' ? 'bg-green-600' : 'bg-purple-600') }}">
+                {{ $user->role === 'super_admin' ? 'bg-blue-600' : 'bg-purple-600' }}">
                 {{ strtoupper(substr($user->name, 0, 2)) }}
             </div>
 
@@ -27,9 +27,8 @@
                 @php
                     $roleLabel = match($user->role) {
                         'super_admin'  => ['label' => 'Super Admin',  'class' => 'bg-blue-100 text-blue-800'],
-                        'kasir_kantin' => ['label' => 'Kasir Kantin', 'class' => 'bg-green-100 text-green-800'],
                         'kasir_paspor' => ['label' => 'Kasir Paspor', 'class' => 'bg-purple-100 text-purple-800'],
-                        default        => ['label' => $user->role,         'class' => 'bg-gray-100 text-gray-700'],
+                        default        => ['label' => $user->role,    'class' => 'bg-gray-100 text-gray-700'],
                     };
                 @endphp
                 <span class="mt-2 inline-block px-3 py-1 rounded-full text-xs font-semibold {{ $roleLabel['class'] }}">
@@ -68,24 +67,15 @@
     </div>
 
     {{-- ── Statistik Aktivitas ───────────────────────────────────────────── --}}
-    @if(in_array($user->role, ['kasir_kantin', 'kasir_paspor', 'super_admin']))
+    @if(in_array($user->role, ['kasir_paspor', 'super_admin']))
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <h4 class="font-semibold text-gray-700 mb-4 text-sm">Statistik Aktivitas</h4>
-        <div class="grid grid-cols-2 gap-4">
-            @if(in_array($user->role, ['kasir_kantin', 'super_admin']))
-            <div class="bg-green-50 rounded-xl p-4 border border-green-100">
-                <p class="text-xs text-green-600 font-medium">Total Transaksi Kantin</p>
-                <p class="text-3xl font-bold text-green-700 mt-1">{{ number_format($stats['total_kantin']) }}</p>
-                <p class="text-xs text-green-500 mt-1">Omset: Rp {{ number_format($stats['omset_kantin'], 0, ',', '.') }}</p>
-            </div>
-            @endif
-            @if(in_array($user->role, ['kasir_paspor', 'super_admin']))
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="bg-purple-50 rounded-xl p-4 border border-purple-100">
                 <p class="text-xs text-purple-600 font-medium">Total Pengiriman Paspor</p>
                 <p class="text-3xl font-bold text-purple-700 mt-1">{{ number_format($stats['total_paspor']) }}</p>
                 <p class="text-xs text-purple-500 mt-1">Omset: Rp {{ number_format($stats['omset_paspor'], 0, ',', '.') }}</p>
             </div>
-            @endif
         </div>
     </div>
     @endif
@@ -100,14 +90,8 @@
                     {{ $user->role === 'super_admin' ? 'Diizinkan' : 'Tidak' }}
                 </span>
             </div>
-            <div class="flex items-center justify-between py-2 border-b border-gray-50">
-                <span class="text-gray-600">Modul Kantin (POS + Produk)</span>
-                <span class="{{ in_array($user->role, ['kasir_kantin','super_admin']) ? 'text-green-600 font-bold' : 'text-red-400' }}">
-                    {{ in_array($user->role, ['kasir_kantin','super_admin']) ? 'Diizinkan' : 'Tidak' }}
-                </span>
-            </div>
             <div class="flex items-center justify-between py-2">
-                <span class="text-gray-600">Modul Paspor (Pengiriman)</span>
+                <span class="text-gray-600">Modul Paspor (Pengiriman & Pelacakan)</span>
                 <span class="{{ in_array($user->role, ['kasir_paspor','super_admin']) ? 'text-green-600 font-bold' : 'text-red-400' }}">
                     {{ in_array($user->role, ['kasir_paspor','super_admin']) ? 'Diizinkan' : 'Tidak' }}
                 </span>

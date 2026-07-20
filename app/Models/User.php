@@ -36,19 +36,9 @@ class User extends Authenticatable
         return $this->role === 'super_admin';
     }
 
-    public function isKasirKantin(): bool
-    {
-        return $this->role === 'kasir_kantin';
-    }
-
     public function isKasirPaspor(): bool
     {
         return $this->role === 'kasir_paspor';
-    }
-
-    public function transaksiKantins()
-    {
-        return $this->hasMany(TransaksiKantin::class, 'kasir_id');
     }
 
     public function transaksiPaspors()

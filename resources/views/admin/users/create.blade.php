@@ -44,7 +44,6 @@
                 <select id="role" name="role" required
                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 @error('role') border-red-400 @enderror">
                     <option value="">-- Pilih Role --</option>
-                    <option value="kasir_kantin" {{ old('role') === 'kasir_kantin' ? 'selected' : '' }}>Kasir Kantin</option>
                     <option value="kasir_paspor" {{ old('role') === 'kasir_paspor' ? 'selected' : '' }}>Kasir Paspor</option>
                     <option value="super_admin"  {{ old('role') === 'super_admin'  ? 'selected' : '' }}>Super Admin</option>
                 </select>
