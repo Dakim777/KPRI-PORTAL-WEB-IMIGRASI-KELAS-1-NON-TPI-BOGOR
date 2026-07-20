@@ -1,21 +1,22 @@
-# 🤖 GEMINI AI CONTEXTING DOCUMENT — PORTAL KPRI IMIGRASI BOGOR
+# 🤖 GEMINI AI CONTEXTING DOCUMENT — PORTAL KPRI IMIGRASI BOGOR (FOKUS PELACAKAN PASPOR)
 **Dokumen Konteks & Riwayat Lengkap untuk AI Assistant (Gemini / Claude / Copilot)**  
-**Status Sistem Terkini:** ✅ **PRODUCTION — LIVE & FULLY OPERATIONAL (100% SIAP PAKAI)**  
-**Tanggal Update Terakhir:** 18 Juli 2026
+**Status Sistem Terkini:** ✅ **PRODUCTION — LIVE & FULLY OPERATIONAL (100% SIAP PAKAI - FOKUS PELACAKAN PASPOR)**  
+**Tanggal Update Terakhir:** 20 Juli 2026
 
 ---
 
 ## 📌 PANDUAN UTAMA UNTUK AI ASSISTANT (BACA SEBELUM BERTINDAK!)
 Jika Anda (Gemini / AI Assistant) baru membaca dokumen ini atau melanjutkan sesi baru dengan developer, **PERHATIKAN ATURAN EMAS BERIKUT**:
-1. **Sistem sudah berada di lingkungan PRODUCTION.** Website hidup di `https://kpriimigrasibogor.my.id` dan sedang digunakan oleh kasir serta admin di kantor Imigrasi. **JANGAN PERNAH** menyarankan atau menjalankan perintah destruktif seperti `php artisan migrate:fresh` di VPS server!
-2. **Ketahui Perbedaan Path Lokal dan Server:**
+1. **Fokus Project (Judul Skripsi & Arsitektur):** Website utama di `https://kpriimigrasibogor.my.id` (**portal-koperasi**) sekarang **SEPENUHNYA BERFOKUS PADA SISTEM PELACAKAN PENGIRIMAN PASPOR & RESI**. Modul Kantin telah dipisahkan ke web/project mandiri (`kantin_kpri`) sesuai arahan dosen pembimbing skripsi agar arsitektur sistem terfokus dan modular. **JANGAN PERNAH** mencari atau mereferensikan rute/model Kantin di repository ini karena sudah dihapus total.
+2. **Sistem sudah berada di lingkungan PRODUCTION.** Website hidup di `https://kpriimigrasibogor.my.id` dan sedang digunakan oleh kasir paspor serta admin di kantor Imigrasi. **JANGAN PERNAH** menyarankan atau menjalankan perintah destruktif seperti `php artisan migrate:fresh` di VPS server!
+3. **Ketahui Perbedaan Path Lokal dan Server:**
    - **Lokal Dev (Mac Laptop):** `/Users/dakim/Herd/portal-koperasi`
    - **Production Server (Ubuntu VPS):** `/www/wwwroot/kpriimigrasibogor.my.id`
-3. **Pahami Quirks Server (aaPanel + PHP 8.4 + Nginx):**
+4. **Pahami Quirks Server (aaPanel + PHP 8.4 + Nginx):**
    - Nginx di server ini **TIDAK BOLEH** direstart dengan `systemctl restart nginx` (karena bug init script aaPanel). Selalu gunakan `nginx -s reload` atau `nginx -t`.
    - Port SSH server adalah **`22` (Default)**.
    - PHP CLI di sistem adalah PHP 8.4, sedangkan PHP-FPM yang dikelola aaPanel menggunakan socket `/tmp/php-cgi-84.sock`.
-4. **Alur Update Kode (Git Workflow):**
+5. **Alur Update Kode (Git Workflow):**
    - Perubahan dilakukan dan diuji di lokal -> `git add .` -> `git commit -m "..."` -> `git push origin main`.
    - Di VPS server: `git pull origin main` -> `php artisan config:cache` -> `php artisan route:cache` -> `php artisan view:cache` -> (jika ada migrasi baru: `php artisan migrate --force`).
 
@@ -25,7 +26,7 @@ Jika Anda (Gemini / AI Assistant) baru membaca dokumen ini atau melanjutkan sesi
 
 | Parameter | Detail / Nilai |
 | :--- | :--- |
-| **Nama Project** | Portal KPRI Kantor Imigrasi Kelas I Non-TPI Bogor |
+| **Nama Project / Judul** | **Sistem Pelacakan Pengiriman Paspor & Resi — Portal KPRI Kantor Imigrasi Kelas I Non-TPI Bogor** |
 | **URL Live Web (HTTPS)** | **`https://kpriimigrasibogor.my.id`** (Let's Encrypt SSL, auto-renew aktif sampai Oktober 2026) |
 | **IP Server VPS** | `103.247.11.194` |
 | **Port SSH VPS** | `22` (Default) |
@@ -51,26 +52,25 @@ Jika Anda (Gemini / AI Assistant) baru membaca dokumen ini atau melanjutkan sesi
 
 ---
 
-## II. ARSITEKTUR & MODUL UTAMA APLIKASI
+## II. ARSITEKTUR & MODUL UTAMA APLIKASI (FOKUS PELACAKAN PASPOR)
 
-Aplikasi dibangun menggunakan **Laravel 13** dengan arsitektur modular yang terdiri dari 3 pilar utama:
+Aplikasi dibangun menggunakan **Laravel 13** dengan arsitektur modular yang difokuskan pada 2 pilar utama setelah pemisahan modul Kantin:
 
-### 1. Modul Kantin (Point of Sales & Inventaris)
-- **POS Kasir Cepat:** Dilengkapi integrasi pemindai barcode (`components/barcode-scanner`), penghitungan total otomatis, dan pencetakan struk resi kasir.
-- **Manajemen Inventaris:** Kategori produk, katalog produk kantin, dan pencatatan transaksi pembelian kantin (restock barang masuk dengan sistem manajemen stok FIFO).
-- **Laporan Keuangan Kantin:** Export data penjualan dan pendapatan dalam format Excel (Laporan Penjualan Global & Detail Sheet).
-
-### 2. Modul Paspor (Layanan Pengiriman Paspor & Resi)
+### 1. Modul Paspor (Layanan Pengiriman Paspor & Pelacakan Resi — FOKUS UTAMA)
 - **Pencatatan Permohonan:** Memproses data pemohon paspor, daftar nama pemegang paspor, alamat lengkap tujuan pengiriman, jenis kurir, serta kalkulasi otomatis biaya (kurir + materai + surat kuasa + handling fee koperasi).
 - **Pelacakan & Status Pengiriman:** Alur status transaksi dari `transaksi` -> `diproses` -> `selesai` -> `batal`.
 - **Keamanan Data Pribadi (PII Encryption):** Kolom sensitif seperti nomor HP pemohon dan alamat pengiriman dienkripsi di tingkat database (`encrypted:array` / `encrypted` cast di model `TransaksiPaspor.php`).
+- **Pencetakan Resi & Barcode:** Kasir dapat mencetak bukti resi pengiriman yang dilengkapi nomor resi unik dan barcode.
 - **Export & Laporan Paspor:** Export data transaksi paspor ke Excel (Laporan Paspor Dasar & Laporan Paspor Kompleks).
 
-### 3. Modul Manajemen Pengguna, Audit Log & Trash
-- **Role-Based Access Control:** Role pengguna terbagi menjadi `super_admin`, `kasir_paspor`, dan role kantin untuk memisahkan wewenang.
-- **Audit Trail (`spatie/laravel-activitylog`):** Mencatat setiap aktivitas operasional (siapa yang mengubah harga produk, siapa yang membatalkan pengiriman paspor, kapan dan apa nilai sebelum/sesudah diubah).
-- **Soft Deletes (Trash):** Semua transaksi penting tidak langsung terhapus permanen melainkan masuk ke tempat sampah sementara (`TrashController`) dengan opsi restore atau force delete bagi `super_admin`.
-- **Multi-Device Session Support:** Menggunakan konfigurasi cookie `same_site=lax` dan penyimpanan sesi terenkripsi sehingga kasir A dan kasir B dapat login bersamaan di perangkat/komputer berbeda tanpa saling menabrak atau ter-logout.
+### 2. Modul Manajemen Pengguna, Audit Log & Trash
+- **Role-Based Access Control (RBAC):** Role pengguna saat ini terfokus menjadi `super_admin` dan `kasir_paspor` (role `kasir_kantin` telah dihapus seiring pemisahan modul).
+- **Audit Trail (`spatie/laravel-activitylog`):** Mencatat setiap aktivitas operasional (siapa yang mengubah status paspor, siapa yang membatalkan pengiriman, kapan dan apa nilai sebelum/sesudah diubah).
+- **Soft Deletes (Trash):** Semua transaksi paspor yang dihapus tidak langsung terhapus permanen melainkan masuk ke tempat sampah sementara (`TrashController`) dengan opsi restore atau force delete bagi `super_admin`.
+- **Multi-Device Session Support:** Menggunakan konfigurasi cookie `same_site=lax` dan penyimpanan sesi terenkripsi sehingga kasir paspor dan admin dapat login bersamaan di perangkat/komputer berbeda tanpa saling menabrak atau ter-logout.
+
+> **Catatan Pemisahan Modul Kantin:**  
+> Modul Kantin (POS, inventaris barang, restock, laporan kantin) **telah dipisahkan sepenuhnya ke dalam web mandiri (`kantin_kpri`)**. Repository ini murni merupakan **Sistem Pelacakan Paspor**.
 
 ---
 
@@ -152,6 +152,13 @@ Untuk memudahkan pemantauan dan pengelolaan 20 tabel database secara manual oleh
 - Disetup koneksi **TablePlus Over SSH (SSH Tunneling)** dari Mac lokal langsung ke server.
 - **Konfigurasi SSH Tunnel:** Host `103.247.11.194`, Port `22` (Default), User `root`.
 - **Konfigurasi MySQL:** Host `127.0.0.1`, Port `3306`, User `sql_kpriimigrasibogor_my_id`, Password (dari aaPanel), Database `sql_kpriimigrasibogor_my_id`.
+
+### Fase 9 — Pemisahan Modul Kantin & Pemfokusan Sistem Pelacakan Paspor (Arsitektur Skripsi)
+Sesuai arahan dosen pembimbing skripsi agar sistem memiliki fokus yang tajam dan modularitas yang tinggi:
+- **Modul Kantin Dipisahkan:** Sistem POS, inventaris barang, restock, serta pelaporan kantin telah dipisahkan dari `portal-koperasi` menjadi aplikasi web mandiri (`kantin_kpri`).
+- **Pembersihan Total Repository Utama:** Seluruh file model, controller, eksport excel, blade views, dan rute yang berkaitan dengan Kantin (`KantinController`, `ProdukKantin`, `TransaksiKantin`, direktori `resources/views/kantin/`, serta rute `/kantin/*`) telah **dihapus seutuhnya** dari codebase ini.
+- **Pembersihan Role & Dashboard:** Role `kasir_kantin` dihapus dari RBAC. Dashboard Super Admin dan sistem Trash kini dimodifikasi khusus untuk menampilkan statistik dan riwayat pelacakan paspor secara eksklusif.
+- **Hasil Akhir:** Website live `https://kpriimigrasibogor.my.id` kini 100% berfokus sebagai **Portal Pelacakan Pengiriman Paspor & Resi**.
 
 ---
 
