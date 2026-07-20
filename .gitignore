@@ -31,4 +31,5 @@ Thumbs.db
 *.xlsx
 *.xls
 read_excel.php
-contexting_vps.md
+*.md
+!README.md
