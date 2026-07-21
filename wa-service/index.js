@@ -1,10 +1,18 @@
 const express = require('express');
 const cors = require('cors');
 const qrcode = require('qrcode');
+const qrcodeTerminal = require('qrcode-terminal');
 const pino = require('pino');
 const fs = require('fs');
 const path = require('path');
-const { makeWASocket, useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys');
+const { 
+    makeWASocket, 
+    useMultiFileAuthState, 
+    DisconnectReason, 
+    fetchLatestBaileysVersion, 
+    makeCacheableSignalKeyStore,
+    Browsers
+} = require('@whiskeysockets/baileys');
 
 const app = express();
 const PORT = process.env.WA_PORT || 3001;
@@ -28,13 +36,23 @@ async function connectToWhatsApp() {
             fs.mkdirSync(AUTH_DIR, { recursive: true });
         }
 
+        const { version, isLatest } = await fetchLatestBaileysVersion();
+        console.log(`[WA-Service] Menggunakan WhatsApp protocol version v${version.join('.')} (Latest: ${isLatest})`);
+
         const { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
 
         sock = makeWASocket({
-            auth: state,
-            printQRInTerminal: true,
+            version,
+            auth: {
+                creds: state.creds,
+                keys: makeCacheableSignalKeyStore(state.keys, logger),
+            },
+            printQRInTerminal: false, // Menghilangkan warning deprecated
             logger: logger,
-            browser: ['KPRI Portal Paspor', 'Chrome', '1.0.0']
+            browser: Browsers.macOS('Desktop'),
+            connectTimeoutMs: 60000,
+            defaultQueryTimeoutMs: 60000,
+            keepAliveIntervalMs: 15000,
         });
 
         sock.ev.on('creds.update', saveCreds);
@@ -44,6 +62,10 @@ async function connectToWhatsApp() {
 
             if (qr) {
                 currentQR = qr;
+                console.log('\n======================================================');
+                console.log('[WA-Service] QR Code siap! Scan menggunakan HP Anda:');
+                console.log('======================================================\n');
+                qrcodeTerminal.generate(qr, { small: true });
                 try {
                     currentQRDataURL = await qrcode.toDataURL(qr, {
                         errorCorrectionLevel: 'M',
@@ -57,7 +79,7 @@ async function connectToWhatsApp() {
                 } catch (err) {
                     console.error('Gagal generate QR DataURL:', err);
                 }
-                console.log('[WA-Service] QR Code baru siap di-scan (tersedia juga via API /status).');
+                console.log('\n[WA-Service] QR juga bisa discan via Web Dasbor Laravel (/admin/whatsapp).');
             }
 
             if (connection === 'close') {
@@ -66,29 +88,29 @@ async function connectToWhatsApp() {
                 
                 isConnected = false;
                 connectedPhone = null;
-                console.log(`[WA-Service] Koneksi terputus (status: ${statusCode}). Reconnect? ${shouldReconnect}`);
+                console.log(`[WA-Service] Koneksi terputus (status: ${statusCode}). Reconnect: ${shouldReconnect}`);
 
                 if (statusCode === DisconnectReason.loggedOut) {
-                    console.log('[WA-Service] Sesi ter-logout oleh user. Menghapus data sesi...');
+                    console.log('[WA-Service] Sesi diakhiri (Logout). Membersihkan folder otentikasi...');
                     cleanAuthDir();
-                    // Generate QR baru setelah logout
                     setTimeout(connectToWhatsApp, 2000);
                 } else if (shouldReconnect) {
-                    setTimeout(connectToWhatsApp, 3000);
+                    // Jika terjadi error 405 / 503 yang persisten saat handshake pertama kali, berikan jeda sedikit
+                    const delay = (statusCode === 405 || statusCode === 503) ? 5000 : 3000;
+                    setTimeout(connectToWhatsApp, delay);
                 }
             } else if (connection === 'open') {
                 isConnected = true;
                 currentQR = null;
                 currentQRDataURL = null;
 
-                // Ambil nomor HP yang terhubung dari user JID
                 const rawId = sock.user?.id || '';
                 connectedPhone = rawId.split(':')[0].split('@')[0];
-                console.log(`[WA-Service] WhatsApp BERHASIL terhubung! Nomor: ${connectedPhone}`);
+                console.log(`\n✅ [WA-Service] BERHASIL Terhubung ke WhatsApp! Nomor: +${connectedPhone}`);
             }
         });
     } catch (error) {
-        console.error('[WA-Service] Error saat connectToWhatsApp:', error);
+        console.error('[WA-Service] Error connectToWhatsApp:', error);
         setTimeout(connectToWhatsApp, 5000);
     }
 }
@@ -107,7 +129,6 @@ function cleanAuthDir() {
 // API Endpoints untuk Laravel Backend
 // ==========================================
 
-// Cek status & QR code live
 app.get('/status', (req, res) => {
     res.json({
         status: isConnected ? 'connected' : 'disconnected',
@@ -117,14 +138,13 @@ app.get('/status', (req, res) => {
     });
 });
 
-// Kirim pesan WhatsApp
 app.post('/send', async (req, res) => {
     const { phone, message } = req.body;
 
     if (!isConnected || !sock) {
         return res.status(400).json({
             status: 'error',
-            message: 'WhatsApp belum terhubung (Silakan scan QR Code terlebih dahulu di panel Admin).'
+            message: 'WhatsApp belum terhubung (Silakan scan QR Code terlebih dahulu).'
         });
     }
 
@@ -136,7 +156,6 @@ app.post('/send', async (req, res) => {
     }
 
     try {
-        // Bersihkan dan format nomor HP ke standar internasional JID (628xxx@s.whatsapp.net)
         let cleanPhone = phone.replace(/\D/g, '');
         if (cleanPhone.startsWith('0')) {
             cleanPhone = '62' + cleanPhone.substring(1);
@@ -145,8 +164,6 @@ app.post('/send', async (req, res) => {
         }
 
         const jid = `${cleanPhone}@s.whatsapp.net`;
-
-        // Kirim pesan via Baileys socket
         await sock.sendMessage(jid, { text: message });
 
         console.log(`[WA-Service] Pesan berhasil dikirim ke ${cleanPhone}`);
@@ -158,15 +175,14 @@ app.post('/send', async (req, res) => {
         console.error(`[WA-Service] Gagal mengirim pesan ke ${phone}:`, error);
         return res.status(500).json({
             status: 'error',
-            message: 'Gagal mengirim pesan dari bot: ' + (error.message || error)
+            message: 'Gagal mengirim pesan: ' + (error.message || error)
         });
     }
 });
 
-// Logout / Reset session (Ganti nomor)
 app.post('/logout', async (req, res) => {
     try {
-        console.log('[WA-Service] Menerima perintah Logout dari Laravel Admin.');
+        console.log('[WA-Service] Menerima perintah Logout.');
         if (sock && isConnected) {
             try {
                 await sock.logout();
@@ -181,12 +197,11 @@ app.post('/logout', async (req, res) => {
         currentQRDataURL = null;
         cleanAuthDir();
 
-        // Mulai ulang socket agar QR code baru langsung dibentuk
         setTimeout(connectToWhatsApp, 1500);
 
         return res.json({
             status: 'success',
-            message: 'Sesi berhasil dihapus. QR Code baru sedang dipersiapkan.'
+            message: 'Sesi berhasil dihapus. QR Code baru sedang disiapkan.'
         });
     } catch (error) {
         console.error('[WA-Service] Error logout:', error);
@@ -197,7 +212,6 @@ app.post('/logout', async (req, res) => {
     }
 });
 
-// Start Express & WhatsApp Socket
 app.listen(PORT, '127.0.0.1', () => {
     console.log(`[WA-Service] Server berjalan di http://127.0.0.1:${PORT}`);
     connectToWhatsApp();
