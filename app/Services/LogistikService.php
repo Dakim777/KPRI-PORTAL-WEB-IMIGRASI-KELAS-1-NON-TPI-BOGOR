@@ -38,10 +38,9 @@ class LogistikService
         }
 
         try {
-            // Gunakan timeout singkat 4 detik agar kasir tidak lama menunggu jika server RajaOngkir lambat/sibuk
             $response = Http::withHeaders([
                 'key' => $apiKey
-            ])->timeout(4)->post("{$baseUrl}/cost", [
+            ])->timeout(15)->post("{$baseUrl}/cost", [
                 'origin'      => $origin,
                 'destination' => $destination,
                 'weight'      => $weight,
@@ -65,49 +64,25 @@ class LogistikService
                         ]
                     ];
                 }
+
+                return [
+                    'status'  => 'error',
+                    'message' => 'Layanan kurir ' . strtoupper($courier) . ' tidak tersedia untuk rute kota ini dari RajaOngkir.'
+                ];
             }
+
+            $errorDesc = $response->json()['rajaongkir']['status']['description'] ?? $response->body();
+            return [
+                'status'  => 'error',
+                'message' => 'Gagal mengambil data ongkir live dari RajaOngkir: ' . $errorDesc
+            ];
         } catch (\Exception $e) {
-            Log::warning('RajaOngkir cekOngkir timeout/error, menggunakan smart fallback: ' . $e->getMessage());
+            Log::error('Error RajaOngkir cekOngkir live: ' . $e->getMessage());
+            return [
+                'status'  => 'error',
+                'message' => 'Terjadi kesalahan koneksi live ke server RajaOngkir: ' . $e->getMessage()
+            ];
         }
-
-        // Smart Fallback Tarif berdasarkan zona tujuan jika API RajaOngkir timeout / sibuk / diblokir firewall
-        $destId = (string) $destination;
-        $biayaFallback = 15000;
-        $etdFallback = '1-2 Hari';
-
-        // Bogor & Sekitarnya
-        if (in_array($destId, ['149', '80', '114'])) {
-            $biayaFallback = 12000;
-            $etdFallback = '1 Hari';
-        } 
-        // Jabodetabek (Jakarta, Bekasi, Tangerang)
-        elseif (in_array($destId, ['150', '151', '152', '153', '154', '39', '40', '455', '456', '457'])) {
-            $biayaFallback = 15000;
-            $etdFallback = '1-2 Hari';
-        }
-        // Jawa Barat & Jawa Utama (Bandung, Sukabumi, Surabaya, Semarang, Yogya, dll.)
-        elseif (in_array($destId, ['22', '23', '24', '106', '178', '364', '411', '410', '142', '438', '108', '421', '420', '97', '399', '444', '501', '419', '256'])) {
-            $biayaFallback = 20000;
-            $etdFallback = '2-3 Hari';
-        }
-        // Luar Jawa
-        else {
-            $biayaFallback = 35000;
-            $etdFallback = '3-4 Hari';
-        }
-
-        return [
-            'status'      => 'success',
-            'is_mock'     => false,
-            'is_fallback' => true,
-            'message'     => 'Koneksi ke server RajaOngkir timeout/sibuk. Menggunakan Tarif Estimasi Resmi KPRI untuk kota tujuan ini.',
-            'data'        => [
-                'courier'      => strtoupper($courier),
-                'service'      => 'Kilat Khusus / Reguler (Estimasi Resmi)',
-                'biaya_ongkir' => $biayaFallback,
-                'etd'          => $etdFallback,
-            ]
-        ];
     }
 
     /**
