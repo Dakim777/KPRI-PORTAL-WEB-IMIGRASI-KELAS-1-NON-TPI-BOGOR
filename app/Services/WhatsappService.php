@@ -109,21 +109,21 @@ class WhatsappService
      */
     public function sendNotificationResi($transaksi): array
     {
-        $phone = $transaksi->nomor_hp_pemohon;
+        $phone = $transaksi->no_hp;
         if (empty($phone)) {
             return [
                 'status'  => 'error',
-                'message' => 'Nomor HP pemohon kosong.'
+                'message' => 'Nomor HP pemohon belum diisi pada transaksi ini.'
             ];
         }
 
-        $nama = $transaksi->nama_pemohon ?? 'Pemohon';
-        $noResi = $transaksi->nomor_resi ?? '-';
+        $nama = $transaksi->nama_penerima ?? 'Pemohon';
+        $noResi = !empty($transaksi->no_resi) ? $transaksi->no_resi : '-';
         $kurir = strtoupper($transaksi->jenis_kurir ?? 'POS');
         $layanan = $transaksi->layanan_kurir ?? 'Reguler';
-        $status = strtoupper($transaksi->status ?? 'DIPROSES');
+        $status = strtoupper($transaksi->status_pengiriman ?? 'DIPROSES');
 
-        $urlLacak = url('/paspor/track/' . ($noResi !== '-' ? $noResi : $transaksi->kode_transaksi));
+        $urlLacak = url('/?q=' . ($noResi !== '-' ? urlencode($noResi) : urlencode($transaksi->id_transaksi ?? $transaksi->no_struk ?? '')));
 
         $pesan  = "*KPRI KANTOR IMIGRASI KELAS I NON-TPI BOGOR*\n";
         $pesan .= "---------------------------------------------\n";

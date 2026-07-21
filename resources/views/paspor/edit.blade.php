@@ -62,8 +62,8 @@
                     </div>
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">No. HP (Opsional)</label>
-                            <input type="text" name="no_hp" value="{{ old('no_hp', $paspor->no_hp) }}" placeholder="08..."
+                            <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1.5">No. HP WhatsApp <span class="text-indigo-600 lowercase font-normal">(Untuk notifikasi resi)</span></label>
+                            <input type="text" name="no_hp" value="{{ old('no_hp', $paspor->no_hp) }}" placeholder="08xxxxxxxxxx"
                                    class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>

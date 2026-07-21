@@ -67,8 +67,8 @@
             {{-- ─ Data Tambahan (Opsional) ────────────────────────────────────────────────────────── --}}
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label for="no_hp" class="block text-sm font-medium text-gray-700 mb-1.5">No. HP (Opsional)</label>
-                    <input type="text" id="no_hp" name="no_hp" value="{{ old('no_hp') }}" placeholder="08..."
+                    <label for="no_hp" class="block text-sm font-medium text-gray-700 mb-1.5">No. HP WhatsApp <span class="text-xs text-indigo-600 font-normal">(Penting untuk Notifikasi Resi)</span></label>
+                    <input type="text" id="no_hp" name="no_hp" value="{{ old('no_hp') }}" placeholder="08xxxxxxxxxx"
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 @error('no_hp') border-red-400 @enderror" />
                 </div>
                 <div>

@@ -155,6 +155,15 @@ class PasporController extends Controller
 
         $paspor->update($updates);
 
+        // Jika status pengiriman diubah ke 'diproses' atau 'selesai' dan ada nomor resi serta nomor HP, otomatis kirim notifikasi WhatsApp
+        if (in_array($newStatus, ['diproses', 'selesai']) && !empty($paspor->no_resi) && !empty($paspor->no_hp)) {
+            try {
+                app(\App\Services\WhatsappService::class)->sendNotificationResi($paspor);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Gagal kirim notifikasi WA otomatis saat updateStatus: ' . $e->getMessage());
+            }
+        }
+
         return back()->with('success', "Status dan data biaya untuk \"{$paspor->nama_penerima}\" berhasil diperbarui.");
     }
 
