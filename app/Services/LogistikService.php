@@ -221,30 +221,30 @@ class LogistikService
                 Log::warning("Gangguan/Timeout API BinderByte lacakResi ({$nomorResi}): " . $e->getMessage());
             }
 
-            // Fallback elegan: jika resi tidak/belum ditemukan di server ekspedisi atau API sedang timeout/sibuk
+            // Fallback transparan: jika resi tidak/belum ditemukan di server ekspedisi (karena baru dicetak / belum di-scan) atau API sedang timeout/sibuk
             return [
                 'status'  => 200,
-                'message' => 'Resi terdaftar di sistem Koperasi Kantor Imigrasi Bogor (Sinkronisasi live ekspedisi dalam proses)',
+                'message' => 'Resi terdaftar di sistem Koperasi (Belum terindeks/ditemukan pada pemindaian live POS Indonesia)',
                 'is_fallback' => true,
                 'is_mock' => false,
                 'data'    => [
                     'summary' => [
                         'awb'     => $nomorResi,
                         'courier' => strtoupper($courier),
-                        'status'  => 'MANIFESTED / ON PROCESS',
+                        'status'  => 'BELUM TERINDEKS DI POS',
                         'date'    => now()->format('Y-m-d H:i:s'),
-                        'desc'    => "Nomor resi {$nomorResi} telah resmi diterbitkan pada sistem Koperasi Kantor Imigrasi Bogor. Sinkronisasi pemindaian dari server ekspedisi (" . strtoupper($courier) . ") sedang dalam proses."
+                        'desc'    => "Nomor resi {$nomorResi} telah dicatat pada sistem Koperasi Kantor Imigrasi Bogor, namun saat ini belum ditemukan pada pangkalan data pemindaian POS Indonesia (Data Not Found). Jika resi baru dicetak, harap menunggu proses pemindaian fisik oleh pihak ekspedisi atau pastikan penulisan nomor resi sudah benar."
                     ],
                     'history' => [
                         [
                             'date' => now()->format('Y-m-d H:i:s'),
-                            'desc' => "Nomor resi {$nomorResi} (" . strtoupper($courier) . ") telah tercatat dalam sistem pelayanan pengiriman Koperasi Kantor Imigrasi Bogor.",
-                            'location' => 'Bogor'
+                            'desc' => "Nomor resi {$nomorResi} (" . strtoupper($courier) . ") belum muncul di pemindaian live POS Indonesia. Status saat ini: Menunggu sinkronisasi atau pemindaian fisik dari kurir ekspedisi.",
+                            'location' => 'POS Indonesia / Dalam Proses'
                         ],
                         [
-                            'date' => now()->subMinutes(30)->format('Y-m-d H:i:s'),
-                            'desc' => 'Berkas paspor telah selesai dipersiapkan untuk penyerahan kepada pihak kurir ekspedisi.',
-                            'location' => 'Kantor Imigrasi Kelas I Non-TPI Bogor'
+                            'date' => now()->subMinutes(10)->format('Y-m-d H:i:s'),
+                            'desc' => "Data transaksi pengiriman paspor dicatat pada sistem Koperasi Kantor Imigrasi Kelas I Non-TPI Bogor.",
+                            'location' => 'Kantor Imigrasi Bogor'
                         ]
                     ]
                 ]

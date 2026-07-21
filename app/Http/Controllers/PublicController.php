@@ -97,14 +97,14 @@ class PublicController extends Controller
                     'summary' => [
                         'awb'     => $paspor->no_resi,
                         'courier' => strtoupper($paspor->jenis_kurir ?? 'POS'),
-                        'status'  => 'MANIFESTED / ON PROCESS',
+                        'status'  => 'BELUM TERINDEKS DI POS',
                         'date'    => $paspor->updated_at ? $paspor->updated_at->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
-                        'desc'    => 'Nomor resi telah diterbitkan dan paket dalam proses penyerahan/pengantaran oleh POS Indonesia.'
+                        'desc'    => 'Nomor resi tercatat pada sistem Koperasi Kantor Imigrasi Bogor, namun saat ini belum ditemukan pada pemindaian live POS Indonesia.'
                     ],
                     'history' => [
                         [
                             'date'     => $paspor->updated_at ? $paspor->updated_at->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
-                            'desc'     => 'Resi pengiriman resmi dicatat di sistem Koperasi Kantor Imigrasi Bogor (Sinkronisasi pemindaian dari kurir POS Indonesia dalam proses)',
+                            'desc'     => 'Data transaksi pengiriman paspor dicatat di Koperasi (Menunggu sinkronisasi atau pemindaian fisik oleh kurir POS Indonesia)',
                             'location' => 'Bogor'
                         ]
                     ]
