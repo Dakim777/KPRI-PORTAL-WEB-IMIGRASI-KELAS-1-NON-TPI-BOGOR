@@ -92,19 +92,19 @@ class PublicController extends Controller
                 ];
                 $isMock = $track['is_mock'] ?? false;
             } else {
-                // Jika resi sudah ada tapi belum terindeks/tersinkron di server POS Indonesia (atau resi baru/tes)
+                // Jika resi sudah ada tapi belum terindeks/tersinkron di server POS Indonesia
                 $manifestEkspedisi = [
                     'summary' => [
                         'awb'     => $paspor->no_resi,
                         'courier' => strtoupper($paspor->jenis_kurir ?? 'POS'),
                         'status'  => 'MANIFESTED / ON PROCESS',
                         'date'    => $paspor->updated_at ? $paspor->updated_at->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
-                        'desc'    => $track['message'] ?? 'Resi sudah diterbitkan di loket dan paket sedang dalam proses penyerahan/pengantaran oleh POS Indonesia.'
+                        'desc'    => 'Nomor resi telah diterbitkan dan paket dalam proses penyerahan/pengantaran oleh POS Indonesia.'
                     ],
                     'history' => [
                         [
                             'date'     => $paspor->updated_at ? $paspor->updated_at->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
-                            'desc'     => 'Resi pengiriman resmi dicatat di sistem Koperasi Kantor Imigrasi Bogor (' . ($track['message'] ?? 'Menunggu update pemindaian dari kurir POS Indonesia') . ')',
+                            'desc'     => 'Resi pengiriman resmi dicatat di sistem Koperasi Kantor Imigrasi Bogor (Sinkronisasi pemindaian dari kurir POS Indonesia dalam proses)',
                             'location' => 'Bogor'
                         ]
                     ]
