@@ -130,13 +130,17 @@ class WhatsappService
 
         $pesan  = "*KPRI KANTOR IMIGRASI KELAS I NON-TPI BOGOR*\n";
         $pesan .= "---------------------------------------------\n";
-        $pesan .= "Halo *{$nama}*,\n\n";
-        $pesan .= "Informasi terbaru mengenai pengiriman paspor Anda melalui layanan Koperasi:\n\n";
-        $pesan .= "📋 *Status:* {$status}\n";
-        $pesan .= "🚚 *Kurir:* {$kurir} - {$layanan}\n";
-        $pesan .= "📦 *No. Resi:* *{$noResi}*\n\n";
-        $pesan .= "🔗 *Lacak Pengiriman Secara Real-Time:* \n{$urlLacak}\n\n";
-        $pesan .= "_Terima kasih telah menggunakan layanan pengiriman Koperasi Kantor Imigrasi Bogor. Pesan ini dikirim secara otomatis oleh sistem._";
+        $pesan .= "Yth. *{$nama}*,\n\n";
+        $pesan .= "Berikut adalah informasi pengiriman paspor Anda melalui layanan Koperasi:\n\n";
+        $pesan .= "Status Pengiriman : *{$status}*\n";
+        $pesan .= "Ekspedisi         : {$kurir} ({$layanan})\n";
+        $pesan .= "Nomor Resi        : *{$noResi}*\n\n";
+        $pesan .= "Pelacakan Real-Time:\n{$urlLacak}\n\n";
+        $pesan .= "Hormat kami,\n";
+        $pesan .= "*Koperasi Pegawai Republik Indonesia (KPRI)*\n";
+        $pesan .= "Kantor Imigrasi Kelas I Non-TPI Bogor\n";
+        $pesan .= "---------------------------------------------\n";
+        $pesan .= "Pesan ini dikirim otomatis oleh sistem. Mohon tidak membalas pesan ini.";
 
         return $this->send($phone, $pesan);
     }
