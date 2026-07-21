@@ -242,13 +242,17 @@
                     }
 
                     // Manifest ekspedisi
-                    if (k.no_resi && data.data.ekspedisi) {
+                    if (k.no_resi && k.no_resi !== '-') {
                         document.getElementById('ekspedisiCard').classList.remove('hidden');
                         document.getElementById('noResiWarning').classList.add('hidden');
-                        renderManifest(data.data.ekspedisi);
-                    } else if (k.no_resi && !data.data.ekspedisi) {
-                        document.getElementById('ekspedisiCard').classList.add('hidden');
-                        document.getElementById('noResiWarning').classList.remove('hidden');
+                        if (data.data.ekspedisi) {
+                            renderManifest(data.data.ekspedisi);
+                        } else {
+                            renderManifest({
+                                summary: { awb: k.no_resi, courier: 'POS', status: 'ON PROCESS' },
+                                history: [{ date: k.tanggal_transaksi || '-', desc: 'Resi pengiriman tercatat di loket Koperasi dan dalam proses pengiriman POS Indonesia.', location: 'Bogor' }]
+                            });
+                        }
                     } else {
                         document.getElementById('ekspedisiCard').classList.add('hidden');
                         document.getElementById('noResiWarning').classList.remove('hidden');

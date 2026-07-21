@@ -123,7 +123,10 @@ class WhatsappService
         $layanan = $transaksi->layanan_kurir ?? 'Reguler';
         $status = strtoupper($transaksi->status_pengiriman ?? 'DIPROSES');
 
-        $urlLacak = url('/?q=' . ($noResi !== '-' ? urlencode($noResi) : urlencode($transaksi->id_transaksi ?? $transaksi->no_struk ?? '')));
+        // Gunakan domain live resmi untuk link di pesan WhatsApp agar selalu bisa dibuka oleh pemohon di manapun
+        $liveDomain = 'https://kpriimigrasibogor.my.id';
+        $queryParam = $noResi !== '-' ? $noResi : ($transaksi->id_transaksi ?? $transaksi->no_struk ?? '');
+        $urlLacak = $liveDomain . '/?q=' . urlencode($queryParam);
 
         $pesan  = "*KPRI KANTOR IMIGRASI KELAS I NON-TPI BOGOR*\n";
         $pesan .= "---------------------------------------------\n";
@@ -132,9 +135,7 @@ class WhatsappService
         $pesan .= "📋 *Status:* {$status}\n";
         $pesan .= "🚚 *Kurir:* {$kurir} - {$layanan}\n";
         $pesan .= "📦 *No. Resi:* *{$noResi}*\n\n";
-        if ($noResi !== '-') {
-            $pesan .= "🔗 *Lacak Pengiriman Secara Real-Time:* \n{$urlLacak}\n\n";
-        }
+        $pesan .= "🔗 *Lacak Pengiriman Secara Real-Time:* \n{$urlLacak}\n\n";
         $pesan .= "_Terima kasih telah menggunakan layanan pengiriman Koperasi Kantor Imigrasi Bogor. Pesan ini dikirim secara otomatis oleh sistem._";
 
         return $this->send($phone, $pesan);
