@@ -17,7 +17,7 @@ class LogistikService
      * @param int|string $origin ID Kota/Kabupaten asal (default 149 = Kota Bogor)
      * @return array
      */
-    public function cekOngkir($destination, int $weight = 200, string $courier = 'pos', $origin = 'bogor'): array
+    public function cekOngkir($destination, int $weight = 200, string $courier = 'pos', $origin = 'dist_32.71.01'): array
     {
         $apiKey = config('services.binderbyte.key');
         $baseUrl = config('services.binderbyte.base_url', 'https://api.binderbyte.com/v1');
@@ -35,6 +35,62 @@ class LogistikService
                     'etd'          => '1-2 Hari',
                 ]
             ];
+        }
+
+        // Peta konversi otomatis dari ID lama/teks ke ID dist_ resmi BinderByte
+        $destMap = [
+            'bogor'        => 'dist_32.71.01',
+            '149'          => 'dist_32.71.01',
+            '80'           => 'dist_32.01.01',
+            'depok'        => 'dist_32.76.01',
+            '114'          => 'dist_32.76.01',
+            'jakarta'      => 'dist_31.71.01',
+            '153'          => 'dist_31.71.01',
+            '152'          => 'dist_31.73.01',
+            '150'          => 'dist_31.72.01',
+            '151'          => 'dist_31.74.01',
+            '154'          => 'dist_31.75.01',
+            'bekasi'       => 'dist_32.75.01',
+            '40'           => 'dist_32.75.01',
+            '39'           => 'dist_32.75.01',
+            'tangerang'    => 'dist_36.71.01',
+            '455'          => 'dist_36.71.01',
+            '456'          => 'dist_36.74.01',
+            'sukabumi'     => 'dist_32.72.01',
+            '421'          => 'dist_32.72.01',
+            '420'          => 'dist_32.02.01',
+            'bandung'      => 'dist_32.73.01',
+            '23'           => 'dist_32.73.01',
+            'semarang'     => 'dist_33.74.01',
+            '399'          => 'dist_33.74.01',
+            'yogyakarta'   => 'dist_34.71.01',
+            '501'          => 'dist_34.71.01',
+            'solo'         => 'dist_33.72.01',
+            '419'          => 'dist_33.72.01',
+            'surabaya'     => 'dist_35.78.01',
+            '444'          => 'dist_35.78.01',
+            'malang'       => 'dist_35.73.01',
+            '256'          => 'dist_35.73.01',
+            'denpasar'     => 'dist_51.71.01',
+            'medan'        => 'dist_12.71.01',
+            'palembang'    => 'dist_16.71.01',
+            'pekanbaru'    => 'dist_14.71.01',
+            'batam'        => 'dist_21.71.01',
+            'padang'       => 'dist_13.71.01',
+            'lampung'      => 'dist_18.71.01',
+            'makassar'     => 'dist_73.71.01',
+            'manado'       => 'dist_71.71.01',
+            'balikpapan'   => 'dist_64.71.01',
+            'samarinda'    => 'dist_64.72.01',
+            'pontianak'    => 'dist_61.71.01',
+            'banjarmasin'  => 'dist_63.71.01',
+        ];
+
+        if (strpos((string) $destination, 'dist_') !== 0) {
+            $destination = $destMap[(string) $destination] ?? 'dist_32.71.01';
+        }
+        if (strpos((string) $origin, 'dist_') !== 0) {
+            $origin = $destMap[(string) $origin] ?? 'dist_32.71.01';
         }
 
         try {
@@ -183,48 +239,40 @@ class LogistikService
      */
     public function getDaftarKota(): array
     {
-        return Cache::remember('binderbyte_daftar_kota_v2', 30 * 24 * 60 * 60, function () {
-            // Daftar kota-kota utama Jabodetabek & seluruh Indonesia dengan ID kota resmi BinderByte
+        return Cache::remember('binderbyte_daftar_kota_v3', 30 * 24 * 60 * 60, function () {
+            // Daftar kota-kota utama Indonesia dengan ID kecamatan (dist_) resmi BinderByte
             return [
-                ['city_id' => 'bogor',       'city_name' => 'Kota & Kabupaten Bogor (Jawa Barat)'],
-                ['city_id' => 'depok',       'city_name' => 'Kota Depok (Jawa Barat)'],
-                ['city_id' => 'jakarta',     'city_name' => 'DKI Jakarta (Seluruh Wilayah)'],
-                ['city_id' => 'bekasi',      'city_name' => 'Kota & Kabupaten Bekasi (Jawa Barat)'],
-                ['city_id' => 'tangerang',   'city_name' => 'Kota & Kabupaten Tangerang (Banten)'],
-                ['city_id' => 'sukabumi',    'city_name' => 'Kota & Kabupaten Sukabumi (Jawa Barat)'],
-                ['city_id' => 'cianjur',     'city_name' => 'Kabupaten Cianjur (Jawa Barat)'],
-                ['city_id' => 'bandung',     'city_name' => 'Kota & Kabupaten Bandung (Jawa Barat)'],
-                ['city_id' => 'cimahi',      'city_name' => 'Kota Cimahi (Jawa Barat)'],
-                ['city_id' => 'karawang',    'city_name' => 'Kabupaten Karawang (Jawa Barat)'],
-                ['city_id' => 'purwakarta',  'city_name' => 'Kabupaten Purwakarta (Jawa Barat)'],
-                ['city_id' => 'subang',      'city_name' => 'Kabupaten Subang (Jawa Barat)'],
-                ['city_id' => 'sumedang',    'city_name' => 'Kabupaten Sumedang (Jawa Barat)'],
-                ['city_id' => 'garut',       'city_name' => 'Kabupaten Garut (Jawa Barat)'],
-                ['city_id' => 'tasikmalaya', 'city_name' => 'Kota & Kabupaten Tasikmalaya (Jawa Barat)'],
-                ['city_id' => 'cirebon',     'city_name' => 'Kota & Kabupaten Cirebon (Jawa Barat)'],
-                ['city_id' => 'semarang',    'city_name' => 'Kota Semarang (Jawa Tengah)'],
-                ['city_id' => 'surabaya',    'city_name' => 'Kota Surabaya (Jawa Timur)'],
-                ['city_id' => 'yogyakarta',  'city_name' => 'Kota Yogyakarta (DI Yogyakarta)'],
-                ['city_id' => 'solo',        'city_name' => 'Kota Surakarta / Solo (Jawa Tengah)'],
-                ['city_id' => 'malang',      'city_name' => 'Kota Malang (Jawa Timur)'],
-                ['city_id' => 'denpasar',    'city_name' => 'Kota Denpasar (Bali)'],
-                ['city_id' => 'medan',       'city_name' => 'Kota Medan (Sumatera Utara)'],
-                ['city_id' => 'palembang',   'city_name' => 'Kota Palembang (Sumatera Selatan)'],
-                ['city_id' => 'pekanbaru',   'city_name' => 'Kota Pekanbaru (Riau)'],
-                ['city_id' => 'batam',       'city_name' => 'Kota Batam (Kepulauan Riau)'],
-                ['city_id' => 'padang',      'city_name' => 'Kota Padang (Sumatera Barat)'],
-                ['city_id' => 'lampung',     'city_name' => 'Kota Bandar Lampung (Lampung)'],
-                ['city_id' => 'makassar',    'city_name' => 'Kota Makassar (Sulawesi Selatan)'],
-                ['city_id' => 'manado',      'city_name' => 'Kota Manado (Sulawesi Utara)'],
-                ['city_id' => 'palu',        'city_name' => 'Kota Palu (Sulawesi Tengah)'],
-                ['city_id' => 'balikpapan',  'city_name' => 'Kota Balikpapan (Kalimantan Timur)'],
-                ['city_id' => 'samarinda',   'city_name' => 'Kota Samarinda (Kalimantan Timur)'],
-                ['city_id' => 'palangkaraya','city_name' => 'Kota Palangkaraya (Kalimantan Tengah)'],
-                ['city_id' => 'pontianak',   'city_name' => 'Kota Pontianak (Kalimantan Barat)'],
-                ['city_id' => 'banjarmasin', 'city_name' => 'Kota Banjarmasin (Kalimantan Selatan)'],
-                ['city_id' => 'kendari',     'city_name' => 'Kota Kendari (Sulawesi Tenggara)'],
-                ['city_id' => 'ambon',       'city_name' => 'Kota Ambon (Maluku)'],
-                ['city_id' => 'jayapura',    'city_name' => 'Kota Jayapura (Papua)'],
+                ['city_id' => 'dist_32.71.01', 'city_name' => 'Kota Bogor (Bogor Tengah / Kota)'],
+                ['city_id' => 'dist_32.01.01', 'city_name' => 'Kabupaten Bogor (Cibinong / Sekitar)'],
+                ['city_id' => 'dist_32.76.01', 'city_name' => 'Kota Depok (Pancoran Mas / Sekitar)'],
+                ['city_id' => 'dist_31.71.01', 'city_name' => 'Jakarta Selatan (Kebayoran Baru)'],
+                ['city_id' => 'dist_31.73.01', 'city_name' => 'Jakarta Pusat (Menteng / Gambir)'],
+                ['city_id' => 'dist_31.72.01', 'city_name' => 'Jakarta Timur (Jatinegara)'],
+                ['city_id' => 'dist_31.74.01', 'city_name' => 'Jakarta Barat (Grogol Petamburan)'],
+                ['city_id' => 'dist_31.75.01', 'city_name' => 'Jakarta Utara (Kelapa Gading)'],
+                ['city_id' => 'dist_32.75.01', 'city_name' => 'Kota Bekasi (Bekasi Barat)'],
+                ['city_id' => 'dist_36.71.01', 'city_name' => 'Kota Tangerang (Tangerang)'],
+                ['city_id' => 'dist_36.74.01', 'city_name' => 'Kota Tangerang Selatan (Serpong)'],
+                ['city_id' => 'dist_32.73.01', 'city_name' => 'Kota Bandung (Sumur Bandung)'],
+                ['city_id' => 'dist_32.72.01', 'city_name' => 'Kota Sukabumi (Cikole)'],
+                ['city_id' => 'dist_33.74.01', 'city_name' => 'Kota Semarang (Semarang Tengah)'],
+                ['city_id' => 'dist_34.71.01', 'city_name' => 'Kota Yogyakarta (Danurejan)'],
+                ['city_id' => 'dist_33.72.01', 'city_name' => 'Kota Surakarta / Solo (Banjarsari)'],
+                ['city_id' => 'dist_35.78.01', 'city_name' => 'Kota Surabaya (Tegalsari)'],
+                ['city_id' => 'dist_35.73.01', 'city_name' => 'Kota Malang (Klojen)'],
+                ['city_id' => 'dist_51.71.01', 'city_name' => 'Kota Denpasar (Denpasar Selatan)'],
+                ['city_id' => 'dist_12.71.01', 'city_name' => 'Kota Medan (Medan Baru)'],
+                ['city_id' => 'dist_16.71.01', 'city_name' => 'Kota Palembang (Ilir Barat I)'],
+                ['city_id' => 'dist_14.71.01', 'city_name' => 'Kota Pekanbaru (Pekanbaru Kota)'],
+                ['city_id' => 'dist_21.71.01', 'city_name' => 'Kota Batam (Batam Kota)'],
+                ['city_id' => 'dist_13.71.01', 'city_name' => 'Kota Padang (Padang Barat)'],
+                ['city_id' => 'dist_18.71.01', 'city_name' => 'Kota Bandar Lampung (Tanjung Karang Pusat)'],
+                ['city_id' => 'dist_73.71.01', 'city_name' => 'Kota Makassar (Ujung Pandang)'],
+                ['city_id' => 'dist_71.71.01', 'city_name' => 'Kota Manado (Wenang)'],
+                ['city_id' => 'dist_64.71.01', 'city_name' => 'Kota Balikpapan (Balikpapan Kota)'],
+                ['city_id' => 'dist_64.72.01', 'city_name' => 'Kota Samarinda (Samarinda Kota)'],
+                ['city_id' => 'dist_61.71.01', 'city_name' => 'Kota Pontianak (Pontianak Selatan)'],
+                ['city_id' => 'dist_63.71.01', 'city_name' => 'Kota Banjarmasin (Banjarmasin Tengah)'],
             ];
         });
     }
