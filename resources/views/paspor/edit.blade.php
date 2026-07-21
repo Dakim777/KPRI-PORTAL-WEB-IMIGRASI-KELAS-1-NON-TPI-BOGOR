@@ -310,13 +310,13 @@ function autoCekOngkir(e) {
                 const courierField = document.getElementById('biaya_kurir');
                 courierField.value = cost;
                 courierField.dispatchEvent(new Event('input'));
-                let msg = `Tarif Live ${data.data.courier} (${data.data.service}): Rp ${cost.toLocaleString('id-ID')} (ETD: ${data.data.etd || '-'})`;
+                let msg = `Tarif Live BinderByte (${data.data.courier} - ${data.data.service}): Rp ${cost.toLocaleString('id-ID')} (ETD: ${data.data.etd || '-'})`;
                 if (data.is_mock) {
-                    msg += `\n\n(Mode Simulasi - API Key RajaOngkir belum dipasang di .env)`;
+                    msg += `\n\n(Mode Simulasi - API Key BinderByte belum dipasang di .env)`;
                 }
                 alert(msg);
             } else {
-                alert('Gagal mengambil tarif live RajaOngkir:\n' + (data.message || 'Periksa koneksi atau API Key.'));
+                alert('Gagal mengambil tarif live BinderByte:\n' + (data.message || 'Periksa koneksi atau API Key BinderByte Anda.'));
             }
         })
         .catch(err => {
