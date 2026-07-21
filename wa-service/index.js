@@ -47,9 +47,12 @@ async function connectToWhatsApp() {
                 creds: state.creds,
                 keys: makeCacheableSignalKeyStore(state.keys, logger),
             },
-            printQRInTerminal: false, // Menghilangkan warning deprecated
+            printQRInTerminal: false,
             logger: logger,
             browser: Browsers.macOS('Desktop'),
+            syncFullHistory: false,
+            markOnlineOnConnect: false,
+            generateHighQualityLinkPreview: false,
             connectTimeoutMs: 60000,
             defaultQueryTimeoutMs: 60000,
             keepAliveIntervalMs: 15000,
@@ -177,6 +180,26 @@ app.post('/send', async (req, res) => {
             message: `Pesan berhasil dikirim ke nomor ${cleanPhone}`
         });
     } catch (error) {
+        // Jika terjadi error 408 (USync Timed Out) saat sinkronisasi kontak baru, lakukan 1x retry otomatis
+        if (error?.output?.statusCode === 408 || (error?.message && error.message.includes('Timed Out'))) {
+            try {
+                console.log(`[WA-Service] Terjadi timeout USync (408) untuk ${phone}, mencoba kirim ulang otomatis...`);
+                await new Promise(r => setTimeout(r, 2500));
+                let cleanPhone = phone.replace(/\D/g, '');
+                if (cleanPhone.startsWith('0')) cleanPhone = '62' + cleanPhone.substring(1);
+                else if (cleanPhone.startsWith('+62')) cleanPhone = '62' + cleanPhone.substring(3);
+                const jid = `${cleanPhone}@s.whatsapp.net`;
+                await sock.sendMessage(jid, { text: message });
+                console.log(`[WA-Service] Pesan BERHASIL dikirim ke ${cleanPhone} pada percobaan kedua!`);
+                return res.json({
+                    status: 'success',
+                    message: `Pesan berhasil dikirim ke nomor ${cleanPhone}`
+                });
+            } catch (retryErr) {
+                console.error(`[WA-Service] Gagal pada percobaan kedua ke ${phone}:`, retryErr);
+            }
+        }
+
         console.error(`[WA-Service] Gagal mengirim pesan ke ${phone}:`, error);
         return res.status(500).json({
             status: 'error',
