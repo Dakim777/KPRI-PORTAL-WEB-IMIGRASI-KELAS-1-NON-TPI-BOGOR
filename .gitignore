@@ -31,5 +31,9 @@ Thumbs.db
 *.xlsx
 *.xls
 read_excel.php
-*.md
+# WA Service session & build files
+wa-service/auth_info_baileys
+wa-service/node_modules
+wa-service/*.log
+
 !README.md

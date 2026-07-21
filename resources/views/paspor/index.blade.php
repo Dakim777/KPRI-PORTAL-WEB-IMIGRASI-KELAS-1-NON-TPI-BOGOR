@@ -178,7 +178,6 @@
                                    class="text-green-600 hover:text-green-800 font-medium text-xs whitespace-nowrap">
                                     Struk
                                 </a>
-                                @if($t->no_resi)
                                 <span class="text-gray-300">|</span>
                                 <button type="button" onclick="openTrackingModal({{ $t->id }}, '{{ $t->no_resi }}', '{{ $t->nama_penerima }}')"
                                         class="text-indigo-600 hover:text-indigo-800 font-medium text-xs whitespace-nowrap inline-flex items-center gap-1">
@@ -186,6 +185,12 @@
                                     <span>Lacak</span>
                                 </button>
                                 @endif
+                                <span class="text-gray-300">|</span>
+                                <button type="button" onclick="sendWaResi({{ $t->id }}, '{{ $t->nama_penerima }}')"
+                                        class="text-emerald-600 hover:text-emerald-800 font-medium text-xs whitespace-nowrap inline-flex items-center gap-1"
+                                        title="Kirim notifikasi resi & status ke WhatsApp pemohon">
+                                    <span>💬 WA</span>
+                                </button>
                                 @if(auth()->user()->role === 'super_admin')
                                 <form method="POST" action="{{ route('paspor.destroy', $t->id) }}" onsubmit="return confirm('Hapus data pengiriman ini? Data tidak dapat dikembalikan.')">
                                     @csrf
@@ -364,6 +369,33 @@
 
     function closeTrackingModal() {
         document.getElementById('trackingModal').classList.add('hidden');
+    }
+
+    function sendWaResi(id, nama) {
+        if (!confirm(`Kirim notifikasi status & resi paspor ke WhatsApp pemohon (${nama}) sekarang?`)) {
+            return;
+        }
+
+        fetch(`/paspor/${id}/send-wa`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json().then(data => ({ status: response.status, body: data })))
+        .then(({ status, body }) => {
+            if (status === 200 && body.status === 'success') {
+                alert('✅ ' + body.message);
+            } else {
+                alert('❌ Gagal: ' + (body.message || 'Terjadi kesalahan saat mengirim WhatsApp. Pastikan bot sudah aktif di panel Admin.'));
+            }
+        })
+        .catch(err => {
+            alert('❌ Terjadi kesalahan koneksi ke server bot.');
+            console.error(err);
+        });
     }
     </script>
 

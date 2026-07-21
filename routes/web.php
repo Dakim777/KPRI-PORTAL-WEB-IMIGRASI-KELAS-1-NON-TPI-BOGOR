@@ -7,6 +7,7 @@ use App\Http\Controllers\PasporController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\TrashController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WhatsappController;
 use Illuminate\Support\Facades\Route;
 
 // ─── Portal Publik (Tanpa Login untuk Lacak Resi Pemohon Paspor) ───────────
@@ -47,6 +48,12 @@ Route::middleware('auth')->group(function () {
         Route::get('trash', [TrashController::class, 'index'])->name('trash.index');
         Route::post('trash/restore-paspor/{id}', [TrashController::class, 'restorePaspor'])->name('trash.restore-paspor');
         Route::delete('trash/force-paspor/{id}', [TrashController::class, 'forceDeletePaspor'])->name('trash.force-paspor');
+
+        // WhatsApp Gateway Management
+        Route::get('whatsapp', [WhatsappController::class, 'index'])->name('whatsapp.index');
+        Route::get('whatsapp/status-ajax', [WhatsappController::class, 'statusAjax'])->name('whatsapp.status-ajax');
+        Route::post('whatsapp/send-test', [WhatsappController::class, 'sendTest'])->name('whatsapp.send-test');
+        Route::post('whatsapp/logout', [WhatsappController::class, 'logout'])->name('whatsapp.logout');
     });
 
     // ── Modul Paspor (kasir_paspor + super_admin) ───────────────────────────
@@ -65,6 +72,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/{paspor}/print', [PasporController::class, 'printReceipt'])->name('print');
         Route::get('/{paspor}/track', [PasporController::class, 'trackResi'])->name('track');
         Route::patch('/{paspor}/status', [PasporController::class, 'updateStatus'])->name('update-status');
+        Route::post('/{paspor}/send-wa', [WhatsappController::class, 'sendResiPaspor'])->name('send-wa');
         Route::get('/{paspor}', [PasporController::class, 'show'])->name('show');
         Route::delete('/{paspor}', [PasporController::class, 'destroy'])->name('destroy');
     });
