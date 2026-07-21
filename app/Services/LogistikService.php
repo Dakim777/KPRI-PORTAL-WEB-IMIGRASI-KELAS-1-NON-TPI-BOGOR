@@ -162,4 +162,92 @@ class LogistikService
             }
         });
     }
+
+    /**
+     * Ambil daftar kota tujuan pengiriman dari RajaOngkir (atau cache / daftar kota utama Indonesia).
+     *
+     * @return array
+     */
+    public function getDaftarKota(): array
+    {
+        return Cache::remember('rajaongkir_daftar_kota_v1', 30 * 24 * 60 * 60, function () {
+            $apiKey = config('services.rajaongkir.key');
+            $baseUrl = config('services.rajaongkir.base_url', 'https://api.rajaongkir.com/starter');
+
+            if (!empty($apiKey)) {
+                try {
+                    $response = Http::withHeaders(['key' => $apiKey])->timeout(10)->get("{$baseUrl}/city");
+                    if ($response->successful()) {
+                        $results = $response->json()['rajaongkir']['results'] ?? [];
+                        if (!empty($results)) {
+                            $formatted = [];
+                            foreach ($results as $item) {
+                                $formatted[] = [
+                                    'city_id'   => $item['city_id'],
+                                    'city_name' => ($item['type'] ?? 'Kota') . ' ' . $item['city_name'] . ' (' . ($item['province'] ?? '') . ')',
+                                ];
+                            }
+                            return $formatted;
+                        }
+                    }
+                } catch (\Exception $e) {
+                    Log::warning('Gagal mengambil daftar kota RajaOngkir API: ' . $e->getMessage());
+                }
+            }
+
+            // Fallback: Daftar kota-kota utama Jabodetabek & seluruh Indonesia beserta City ID resmi RajaOngkir
+            return [
+                ['city_id' => '149', 'city_name' => 'Kota Bogor (Jawa Barat)'],
+                ['city_id' => '80',  'city_name' => 'Kabupaten Bogor (Jawa Barat)'],
+                ['city_id' => '114', 'city_name' => 'Kota Depok (Jawa Barat)'],
+                ['city_id' => '152', 'city_name' => 'Kota Jakarta Pusat (DKI Jakarta)'],
+                ['city_id' => '153', 'city_name' => 'Kota Jakarta Selatan (DKI Jakarta)'],
+                ['city_id' => '150', 'city_name' => 'Kota Jakarta Timur (DKI Jakarta)'],
+                ['city_id' => '151', 'city_name' => 'Kota Jakarta Barat (DKI Jakarta)'],
+                ['city_id' => '154', 'city_name' => 'Kota Jakarta Utara (DKI Jakarta)'],
+                ['city_id' => '40',  'city_name' => 'Kota Bekasi (Jawa Barat)'],
+                ['city_id' => '39',  'city_name' => 'Kabupaten Bekasi (Jawa Barat)'],
+                ['city_id' => '455', 'city_name' => 'Kota Tangerang (Banten)'],
+                ['city_id' => '456', 'city_name' => 'Kota Tangerang Selatan (Banten)'],
+                ['city_id' => '457', 'city_name' => 'Kabupaten Tangerang (Banten)'],
+                ['city_id' => '421', 'city_name' => 'Kota Sukabumi (Jawa Barat)'],
+                ['city_id' => '420', 'city_name' => 'Kabupaten Sukabumi (Jawa Barat)'],
+                ['city_id' => '97',  'city_name' => 'Kabupaten Cianjur (Jawa Barat)'],
+                ['city_id' => '23',  'city_name' => 'Kota Bandung (Jawa Barat)'],
+                ['city_id' => '22',  'city_name' => 'Kabupaten Bandung (Jawa Barat)'],
+                ['city_id' => '24',  'city_name' => 'Kabupaten Bandung Barat (Jawa Barat)'],
+                ['city_id' => '106', 'city_name' => 'Kota Cimahi (Jawa Barat)'],
+                ['city_id' => '178', 'city_name' => 'Kabupaten Karawang (Jawa Barat)'],
+                ['city_id' => '364', 'city_name' => 'Kabupaten Purwakarta (Jawa Barat)'],
+                ['city_id' => '411', 'city_name' => 'Kabupaten Subang (Jawa Barat)'],
+                ['city_id' => '410', 'city_name' => 'Kabupaten Sumedang (Jawa Barat)'],
+                ['city_id' => '142', 'city_name' => 'Kabupaten Garut (Jawa Barat)'],
+                ['city_id' => '438', 'city_name' => 'Kota Tasikmalaya (Jawa Barat)'],
+                ['city_id' => '108', 'city_name' => 'Kota Cirebon (Jawa Barat)'],
+                ['city_id' => '399', 'city_name' => 'Kota Semarang (Jawa Tengah)'],
+                ['city_id' => '444', 'city_name' => 'Kota Surabaya (Jawa Timur)'],
+                ['city_id' => '501', 'city_name' => 'Kota Yogyakarta (DI Yogyakarta)'],
+                ['city_id' => '419', 'city_name' => 'Kota Surakarta (Solo) (Jawa Tengah)'],
+                ['city_id' => '256', 'city_name' => 'Kota Malang (Jawa Timur)'],
+                ['city_id' => '114', 'city_name' => 'Kota Denpasar (Bali)'],
+                ['city_id' => '278', 'city_name' => 'Kota Medan (Sumatera Utara)'],
+                ['city_id' => '327', 'city_name' => 'Kota Palembang (Sumatera Selatan)'],
+                ['city_id' => '342', 'city_name' => 'Kota Pekanbaru (Riau)'],
+                ['city_id' => '36',  'city_name' => 'Kota Batam (Kepulauan Riau)'],
+                ['city_id' => '284', 'city_name' => 'Kota Padang (Sumatera Barat)'],
+                ['city_id' => '398', 'city_name' => 'Kota Bandar Lampung (Lampung)'],
+                ['city_id' => '252', 'city_name' => 'Kota Makassar (Sulawesi Selatan)'],
+                ['city_id' => '261', 'city_name' => 'Kota Manado (Sulawesi Utara)'],
+                ['city_id' => '331', 'city_name' => 'Kota Palu (Sulawesi Tengah)'],
+                ['city_id' => '17',  'city_name' => 'Kota Balikpapan (Kalimantan Timur)'],
+                ['city_id' => '387', 'city_name' => 'Kota Samarinda (Kalimantan Timur)'],
+                ['city_id' => '332', 'city_name' => 'Kota Palangkaraya (Kalimantan Tengah)'],
+                ['city_id' => '365', 'city_name' => 'Kota Pontianak (Kalimantan Barat)'],
+                ['city_id' => '48',  'city_name' => 'Kota Banjarmasin (Kalimantan Selatan)'],
+                ['city_id' => '181', 'city_name' => 'Kota Kendari (Sulawesi Tenggara)'],
+                ['city_id' => '11',  'city_name' => 'Kota Ambon (Maluku)'],
+                ['city_id' => '162', 'city_name' => 'Kota Jayapura (Papua)'],
+            ];
+        });
+    }
 }

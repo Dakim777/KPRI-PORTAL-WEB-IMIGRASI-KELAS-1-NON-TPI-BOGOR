@@ -117,7 +117,24 @@
                                 <option value="pos">POS Indonesia</option>
                                 <option value="jne">JNE Express</option>
                             </select>
-                            <input type="number" id="rajaongkir_destination" placeholder="ID Kota Tujuan (Ex: 149 = Bogor)" value="149" class="border border-blue-300 rounded-lg px-2.5 py-1.5 text-xs w-44 bg-white font-mono focus:ring-2 focus:ring-blue-500">
+                            <select id="rajaongkir_destination" class="border border-blue-300 rounded-lg px-2.5 py-1.5 text-xs max-w-[240px] bg-white font-semibold focus:ring-2 focus:ring-blue-500 truncate">
+                                @if(isset($daftarKota) && is_array($daftarKota))
+                                    @foreach($daftarKota as $kota)
+                                        <option value="{{ $kota['city_id'] }}" {{ $kota['city_id'] == '149' ? 'selected' : '' }}>
+                                            {{ $kota['city_name'] }}
+                                        </option>
+                                    @endforeach
+                                @else
+                                    <option value="149" selected>Kota Bogor (Jawa Barat)</option>
+                                    <option value="80">Kabupaten Bogor (Jawa Barat)</option>
+                                    <option value="114">Kota Depok (Jawa Barat)</option>
+                                    <option value="152">Kota Jakarta Pusat (DKI Jakarta)</option>
+                                    <option value="153">Kota Jakarta Selatan (DKI Jakarta)</option>
+                                    <option value="40">Kota Bekasi (Jawa Barat)</option>
+                                    <option value="455">Kota Tangerang (Banten)</option>
+                                    <option value="23">Kota Bandung (Jawa Barat)</option>
+                                @endif
+                            </select>
                             <button type="button" onclick="autoCekOngkir(event)" class="bg-blue-700 hover:bg-blue-800 text-white font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-sm">
                                 Cek Tarif
                             </button>

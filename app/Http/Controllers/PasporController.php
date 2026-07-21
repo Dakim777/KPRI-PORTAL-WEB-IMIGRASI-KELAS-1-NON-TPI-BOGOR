@@ -60,9 +60,10 @@ class PasporController extends Controller
         ));
     }
 
-    public function create()
+    public function create(LogistikService $logistikService)
     {
-        return view('paspor.create');
+        $daftarKota = $logistikService->getDaftarKota();
+        return view('paspor.create', compact('daftarKota'));
     }
 
     public function store(Request $request)
@@ -157,9 +158,10 @@ class PasporController extends Controller
         return back()->with('success', "Status dan data biaya untuk \"{$paspor->nama_penerima}\" berhasil diperbarui.");
     }
 
-    public function edit(TransaksiPaspor $paspor)
+    public function edit(TransaksiPaspor $paspor, LogistikService $logistikService)
     {
-        return view('paspor.edit', compact('paspor'));
+        $daftarKota = $logistikService->getDaftarKota();
+        return view('paspor.edit', compact('paspor', 'daftarKota'));
     }
 
     public function update(Request $request, TransaksiPaspor $paspor)
