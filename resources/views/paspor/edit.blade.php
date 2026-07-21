@@ -310,9 +310,15 @@ function autoCekOngkir(e) {
                 const courierField = document.getElementById('biaya_kurir');
                 courierField.value = cost;
                 courierField.dispatchEvent(new Event('input'));
-                alert(`Tarif ${data.data.courier} (${data.data.service}): Rp ${cost.toLocaleString('id-ID')} (ETD: ${data.data.etd || '-'})`);
+                let msg = `Tarif ${data.data.courier} (${data.data.service}): Rp ${cost.toLocaleString('id-ID')} (ETD: ${data.data.etd || '-'})`;
+                if (data.is_fallback) {
+                    msg += `\n\nCatatan: Menggunakan Tarif Estimasi Resmi KPRI karena server RajaOngkir sedang sibuk/timeout.`;
+                } else if (data.is_mock) {
+                    msg += `\n\n(Mode Simulasi)`;
+                }
+                alert(msg);
             } else {
-                alert('Gagal mengambil tarif: ' + (data.message || 'Periksa ID kota tujuan atau koneksi API.'));
+                alert('Gagal mengambil tarif: ' + (data.message || 'Periksa kota tujuan atau koneksi API.'));
             }
         })
         .catch(err => {
