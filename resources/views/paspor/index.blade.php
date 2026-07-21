@@ -189,7 +189,7 @@
                                 <button type="button" onclick="sendWaResi({{ $t->id }}, '{{ $t->nama_penerima }}')"
                                         class="text-emerald-600 hover:text-emerald-800 font-medium text-xs whitespace-nowrap inline-flex items-center gap-1"
                                         title="Kirim notifikasi resi & status ke WhatsApp pemohon">
-                                    <span>💬 WA</span>
+                                    <span>Kirim WA</span>
                                 </button>
                                 @endif
                                 @if(auth()->user()->role === 'super_admin')
@@ -388,13 +388,13 @@
         .then(response => response.json().then(data => ({ status: response.status, body: data })))
         .then(({ status, body }) => {
             if (status === 200 && body.status === 'success') {
-                alert('✅ ' + body.message);
+                alert(body.message);
             } else {
-                alert('❌ Gagal: ' + (body.message || 'Terjadi kesalahan saat mengirim WhatsApp. Pastikan bot sudah aktif di panel Admin.'));
+                alert('Gagal: ' + (body.message || 'Terjadi kesalahan saat mengirim WhatsApp. Pastikan bot sudah aktif di panel Admin.'));
             }
         })
         .catch(err => {
-            alert('❌ Terjadi kesalahan koneksi ke server bot.');
+            alert('Terjadi kesalahan koneksi ke server bot.');
             console.error(err);
         });
     }

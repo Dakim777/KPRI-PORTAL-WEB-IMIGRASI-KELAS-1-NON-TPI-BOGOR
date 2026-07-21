@@ -200,11 +200,11 @@
                         <select name="status_pengiriman" class="w-full px-4 py-3 border-2 border-indigo-400 rounded-lg text-base font-bold text-indigo-950 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-600 shadow-sm">
                             @foreach(['transaksi', 'diproses', 'selesai', 'batal'] as $s)
                                 <option value="{{ $s }}" {{ old('status_pengiriman', $paspor->status_pengiriman) == $s ? 'selected' : '' }}>
-                                    {{ $s == 'transaksi' ? '📋 TRANSAKSI (Menunggu Proses)' : ($s == 'diproses' ? '🚚 DIPROSES (Dikirim ke Ekspedisi / Dalam Perjalanan)' : ($s == 'selesai' ? '✅ SELESAI (Paspor Telah Diterima)' : '❌ BATAL')) }}
+                                    {{ $s == 'transaksi' ? 'TRANSAKSI (Menunggu Proses)' : ($s == 'diproses' ? 'DIPROSES (Dikirim ke Ekspedisi / Dalam Perjalanan)' : ($s == 'selesai' ? 'SELESAI (Paspor Telah Diterima)' : 'BATAL')) }}
                                 </option>
                             @endforeach
                         </select>
-                        <p class="text-xs text-indigo-800 mt-1.5 font-medium">💡 Mengubah status ke <strong>DIPROSES</strong> atau <strong>SELESAI</strong> saat nomor resi dan No. HP terisi akan otomatis mengirimkan notifikasi WhatsApp kepada pemohon.</p>
+                        <p class="text-xs text-indigo-800 mt-1.5 font-medium">Catatan: Mengubah status ke <strong>DIPROSES</strong> atau <strong>SELESAI</strong> saat nomor resi dan No. HP terisi akan otomatis mengirimkan notifikasi WhatsApp kepada pemohon.</p>
                     </div>
                 </div>
 
