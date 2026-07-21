@@ -24,6 +24,7 @@ app.use(express.json());
 // Global State
 let sock = null;
 let isConnected = false;
+let isConnecting = false;
 let connectedPhone = null;
 let currentQR = null;
 let currentQRDataURL = null;
@@ -31,15 +32,32 @@ let currentQRDataURL = null;
 const logger = pino({ level: 'silent' }); // Silent logger agar terminal bersih
 
 async function connectToWhatsApp() {
+    if (isConnecting) {
+        return;
+    }
+    isConnecting = true;
+
     try {
         if (!fs.existsSync(AUTH_DIR)) {
             fs.mkdirSync(AUTH_DIR, { recursive: true });
         }
 
-        const { version, isLatest } = await fetchLatestBaileysVersion();
-        console.log(`[WA-Service] Menggunakan WhatsApp protocol version v${version.join('.')} (Latest: ${isLatest})`);
+        // Bersihkan socket lama sebelum membuat yang baru agar tidak bentrok (440 connectionReplaced)
+        if (sock) {
+            try {
+                sock.ev.removeAllListeners();
+                if (sock.ws) sock.ws.close();
+            } catch (e) { }
+            sock = null;
+        }
 
+        const { version, isLatest } = await fetchLatestBaileysVersion();
         const { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
+
+        // Kunci nomor jika sudah ada kredensial tersimpan (Session Lock)
+        if (state.creds?.me?.id) {
+            connectedPhone = state.creds.me.id.split(':')[0].split('@')[0];
+        }
 
         sock = makeWASocket({
             version,
@@ -55,7 +73,7 @@ async function connectToWhatsApp() {
             generateHighQualityLinkPreview: false,
             connectTimeoutMs: 60000,
             defaultQueryTimeoutMs: 60000,
-            keepAliveIntervalMs: 15000,
+            keepAliveIntervalMs: 25000,
         });
 
         sock.ev.on('creds.update', saveCreds);
@@ -63,7 +81,8 @@ async function connectToWhatsApp() {
         sock.ev.on('connection.update', async (update) => {
             const { connection, lastDisconnect, qr } = update;
 
-            if (qr) {
+            // Hanya proses QR jika nomor BELUM terkunci / sesi belum terdaftar (kecuali logout)
+            if (qr && !connectedPhone && !state.creds?.registered) {
                 currentQR = qr;
                 console.log('\n======================================================');
                 console.log('[WA-Service] QR Code siap! Scan menggunakan HP Anda:');
@@ -90,17 +109,18 @@ async function connectToWhatsApp() {
                 const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
                 
                 isConnected = false;
-                connectedPhone = null;
                 console.log(`[WA-Service] Koneksi terputus (status: ${statusCode}). Reconnect: ${shouldReconnect}`);
 
                 if (statusCode === DisconnectReason.loggedOut) {
                     console.log('[WA-Service] Sesi diakhiri (Logout). Membersihkan folder otentikasi...');
+                    connectedPhone = null;
+                    currentQR = null;
+                    currentQRDataURL = null;
                     cleanAuthDir();
                     setTimeout(connectToWhatsApp, 2000);
                 } else if (shouldReconnect) {
-                    // Jika terjadi error 405 / 503 yang persisten saat handshake pertama kali, berikan jeda sedikit
-                    const delay = (statusCode === 405 || statusCode === 503) ? 5000 : 3000;
-                    setTimeout(connectToWhatsApp, delay);
+                    // Berikan jeda 5 detik untuk mencegah reconnect loop / 440 conflict
+                    setTimeout(connectToWhatsApp, 5000);
                 }
             } else if (connection === 'open') {
                 isConnected = true;
@@ -115,6 +135,8 @@ async function connectToWhatsApp() {
     } catch (error) {
         console.error('[WA-Service] Error connectToWhatsApp:', error);
         setTimeout(connectToWhatsApp, 5000);
+    } finally {
+        isConnecting = false;
     }
 }
 
@@ -133,11 +155,18 @@ function cleanAuthDir() {
 // ==========================================
 
 app.get('/status', (req, res) => {
+    let statusStr = 'disconnected';
+    if (isConnected) {
+        statusStr = 'connected';
+    } else if (connectedPhone) {
+        statusStr = 'reconnecting';
+    }
+
     res.json({
-        status: isConnected ? 'connected' : 'disconnected',
+        status: statusStr,
         phone: connectedPhone,
-        qr: currentQR,
-        qr_data_url: currentQRDataURL
+        qr: isConnected || connectedPhone ? null : currentQR,
+        qr_data_url: isConnected || connectedPhone ? null : currentQRDataURL
     });
 });
 
