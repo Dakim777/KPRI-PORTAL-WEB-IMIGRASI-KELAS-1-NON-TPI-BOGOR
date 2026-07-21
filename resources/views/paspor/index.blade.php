@@ -178,19 +178,20 @@
                                    class="text-green-600 hover:text-green-800 font-medium text-xs whitespace-nowrap">
                                     Struk
                                 </a>
+                                @if($t->no_resi)
                                 <span class="text-gray-300">|</span>
                                 <button type="button" onclick="openTrackingModal({{ $t->id }}, '{{ $t->no_resi }}', '{{ $t->nama_penerima }}')"
                                         class="text-indigo-600 hover:text-indigo-800 font-medium text-xs whitespace-nowrap inline-flex items-center gap-1">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                                     <span>Lacak</span>
                                 </button>
-                                @endif
                                 <span class="text-gray-300">|</span>
                                 <button type="button" onclick="sendWaResi({{ $t->id }}, '{{ $t->nama_penerima }}')"
                                         class="text-emerald-600 hover:text-emerald-800 font-medium text-xs whitespace-nowrap inline-flex items-center gap-1"
                                         title="Kirim notifikasi resi & status ke WhatsApp pemohon">
                                     <span>💬 WA</span>
                                 </button>
+                                @endif
                                 @if(auth()->user()->role === 'super_admin')
                                 <form method="POST" action="{{ route('paspor.destroy', $t->id) }}" onsubmit="return confirm('Hapus data pengiriman ini? Data tidak dapat dikembalikan.')">
                                     @csrf
