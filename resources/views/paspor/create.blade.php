@@ -94,11 +94,11 @@
             <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
                 <h4 class="text-sm font-semibold text-blue-800 mb-4 border-b border-blue-200 pb-2">Rincian Harga (Opsional di awal transaksi)</h4>
                 
-                {{-- ─ Widget Cek Tarif RajaOngkir Otomatis ────────────────── --}}
+                {{-- ─ Widget Cek Tarif Ongkir Otomatis ────────────────── --}}
                 <div class="mb-4 p-3 bg-blue-100/70 rounded-xl border border-blue-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
                     <div class="flex items-center gap-1.5 font-bold text-blue-900">
                         <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        <span>Cek Tarif RajaOngkir Otomatis:</span>
+                        <span>Cek Tarif Ongkir Otomatis:</span>
                     </div>
                     <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
                         <select id="rajaongkir_courier" class="border border-blue-300 rounded-lg px-2.5 py-1.5 text-xs bg-white font-semibold focus:ring-2 focus:ring-blue-500">

@@ -31,17 +31,7 @@
                                    class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
-                    
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">Status Pengiriman <span class="text-red-500">*</span></label>
-                            <select name="status_pengiriman" class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                @foreach(['transaksi', 'diproses', 'selesai', 'batal'] as $s)
-                                    <option value="{{ $s }}" {{ old('status_pengiriman', $paspor->status_pengiriman) == $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
+
 
                     {{-- Total Pembayaran - highlighted editable box --}}
                     <div class="bg-green-50 border-2 border-green-300 rounded-xl p-4 mb-4">
@@ -106,11 +96,11 @@
                 <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
                     <h4 class="text-sm font-semibold text-blue-800 mb-4 border-b border-blue-200 pb-2">Detail Pengiriman (Diisi saat Diproses/Selesai)</h4>
                     
-                    {{-- ─ Widget Cek Tarif RajaOngkir Otomatis ────────────────── --}}
+                    {{-- ─ Widget Cek Tarif Ongkir Otomatis ────────────────── --}}
                     <div class="mb-4 p-3 bg-blue-100/70 rounded-xl border border-blue-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
                         <div class="flex items-center gap-1.5 font-bold text-blue-900">
                             <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                            <span>Cek Tarif RajaOngkir Otomatis:</span>
+                            <span>Cek Tarif Ongkir Otomatis:</span>
                         </div>
                         <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
                             <select id="rajaongkir_courier" class="border border-blue-300 rounded-lg px-2.5 py-1.5 text-xs bg-white font-semibold focus:ring-2 focus:ring-blue-500">
@@ -202,6 +192,19 @@
                             <input type="date" name="tanggal_paspor_diterima" value="{{ old('tanggal_paspor_diterima', $paspor->tanggal_paspor_diterima ? $paspor->tanggal_paspor_diterima->format('Y-m-d') : '') }}"
                                    class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
+                    </div>
+
+                    {{-- Ubah Status Pengiriman - dipaling bawah agar kasir tidak capek scroll ke atas --}}
+                    <div class="mt-6 p-4 bg-indigo-100/80 rounded-xl border-2 border-indigo-300">
+                        <label class="block text-sm font-bold text-indigo-950 uppercase tracking-wide mb-2">Ubah Status Pengiriman <span class="text-red-500">*</span></label>
+                        <select name="status_pengiriman" class="w-full px-4 py-3 border-2 border-indigo-400 rounded-lg text-base font-bold text-indigo-950 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-600 shadow-sm">
+                            @foreach(['transaksi', 'diproses', 'selesai', 'batal'] as $s)
+                                <option value="{{ $s }}" {{ old('status_pengiriman', $paspor->status_pengiriman) == $s ? 'selected' : '' }}>
+                                    {{ $s == 'transaksi' ? '📋 TRANSAKSI (Menunggu Proses)' : ($s == 'diproses' ? '🚚 DIPROSES (Dikirim ke Ekspedisi / Dalam Perjalanan)' : ($s == 'selesai' ? '✅ SELESAI (Paspor Telah Diterima)' : '❌ BATAL')) }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <p class="text-xs text-indigo-800 mt-1.5 font-medium">💡 Mengubah status ke <strong>DIPROSES</strong> atau <strong>SELESAI</strong> saat nomor resi dan No. HP terisi akan otomatis mengirimkan notifikasi WhatsApp kepada pemohon.</p>
                     </div>
                 </div>
 
