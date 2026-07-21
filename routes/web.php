@@ -4,12 +4,14 @@ use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PasporController;
+use App\Http\Controllers\PublicController;
 use App\Http\Controllers\TrashController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-// ─── Redirect root to login ────────────────────────────────────────────────
-Route::get('/', fn () => redirect()->route('login'));
+// ─── Portal Publik (Tanpa Login untuk Lacak Resi Pemohon Paspor) ───────────
+Route::get('/', [PublicController::class, 'index'])->name('home');
+Route::get('/api/track', [PublicController::class, 'track'])->name('public.track');
 
 // ─── Authentication ────────────────────────────────────────────────────────
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
@@ -59,7 +61,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/{paspor}/edit', [PasporController::class, 'edit'])->name('edit');
         Route::put('/{paspor}', [PasporController::class, 'update'])->name('update');
         Route::get('/export/kompleks', [PasporController::class, 'exportKompleks'])->name('export.kompleks');
+        Route::get('/api/cek-ongkir', [PasporController::class, 'cekOngkir'])->name('api.cek-ongkir');
         Route::get('/{paspor}/print', [PasporController::class, 'printReceipt'])->name('print');
+        Route::get('/{paspor}/track', [PasporController::class, 'trackResi'])->name('track');
         Route::patch('/{paspor}/status', [PasporController::class, 'updateStatus'])->name('update-status');
         Route::get('/{paspor}', [PasporController::class, 'show'])->name('show');
         Route::delete('/{paspor}', [PasporController::class, 'destroy'])->name('destroy');

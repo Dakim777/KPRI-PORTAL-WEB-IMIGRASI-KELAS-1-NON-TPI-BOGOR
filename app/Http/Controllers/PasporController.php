@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\LaporanPasporDasarExport;
 use App\Exports\LaporanPasporKompleksExport;
 use App\Models\TransaksiPaspor;
+use App\Services\LogistikService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
@@ -229,5 +230,38 @@ class PasporController extends Controller
     public function printReceipt(TransaksiPaspor $paspor)
     {
         return view('paspor.receipt', compact('paspor'));
+    }
+
+    // --- API Logistik: Cek Ongkir (RajaOngkir Starter) ---
+    public function cekOngkir(Request $request, LogistikService $logistikService)
+    {
+        $request->validate([
+            'destination' => 'required',
+            'courier'     => 'nullable|string',
+            'weight'      => 'nullable|integer'
+        ]);
+
+        $result = $logistikService->cekOngkir(
+            $request->input('destination'),
+            (int) $request->input('weight', 200),
+            $request->input('courier', 'pos')
+        );
+
+        return response()->json($result);
+    }
+
+    // --- API Logistik: Lacak Resi (BinderByte) ---
+    public function trackResi(TransaksiPaspor $paspor, LogistikService $logistikService)
+    {
+        if (empty($paspor->no_resi)) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Nomor resi belum diinput pada transaksi ini.'
+            ], 400);
+        }
+
+        $result = $logistikService->lacakResi($paspor->no_resi, 'pos');
+
+        return response()->json($result);
     }
 }

@@ -94,6 +94,24 @@
             <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
                 <h4 class="text-sm font-semibold text-blue-800 mb-4 border-b border-blue-200 pb-2">Rincian Harga (Opsional di awal transaksi)</h4>
                 
+                {{-- ─ Widget Cek Tarif RajaOngkir Otomatis ────────────────── --}}
+                <div class="mb-4 p-3 bg-blue-100/70 rounded-xl border border-blue-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                    <div class="flex items-center gap-1.5 font-bold text-blue-900">
+                        <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        <span>Cek Tarif RajaOngkir Otomatis:</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+                        <select id="rajaongkir_courier" class="border border-blue-300 rounded-lg px-2.5 py-1.5 text-xs bg-white font-semibold focus:ring-2 focus:ring-blue-500">
+                            <option value="pos">POS Indonesia</option>
+                            <option value="jne">JNE Express</option>
+                        </select>
+                        <input type="number" id="rajaongkir_destination" placeholder="ID Kota Tujuan (Ex: 149 = Bogor)" value="149" class="border border-blue-300 rounded-lg px-2.5 py-1.5 text-xs w-44 bg-white font-mono focus:ring-2 focus:ring-blue-500">
+                        <button type="button" onclick="autoCekOngkir(event)" class="bg-blue-700 hover:bg-blue-800 text-white font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-sm">
+                            Cek Tarif
+                        </button>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div>
                         <label for="biaya_kurir" class="block text-xs font-semibold text-blue-800 uppercase mb-1.5">Layanan Kurir (Rp)</label>
@@ -236,5 +254,35 @@ document.addEventListener('DOMContentLoaded', function() {
         renderNamaInputs();
     }
 });
+
+function autoCekOngkir(e) {
+    const dest = document.getElementById('rajaongkir_destination').value || '149';
+    const courier = document.getElementById('rajaongkir_courier').value || 'pos';
+    const btn = e.currentTarget || e.target;
+    const oldText = btn.innerHTML;
+    btn.innerHTML = 'Memeriksa...';
+    btn.disabled = true;
+
+    fetch(`/paspor/api/cek-ongkir?destination=${dest}&courier=${courier}&weight=200`)
+        .then(res => res.json())
+        .then(data => {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+            if (data.status === 'success' && data.data) {
+                const cost = data.data.biaya_ongkir || 0;
+                const courierField = document.getElementById('biaya_kurir');
+                courierField.value = cost;
+                courierField.dispatchEvent(new Event('input'));
+                alert(`Tarif ${data.data.courier} (${data.data.service}): Rp ${cost.toLocaleString('id-ID')} (ETD: ${data.data.etd || '-'})`);
+            } else {
+                alert('Gagal mengambil tarif: ' + (data.message || 'Periksa ID kota tujuan atau koneksi API.'));
+            }
+        })
+        .catch(err => {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+            alert('Terjadi kesalahan koneksi saat mengecek ongkir.');
+        });
+}
 </script>
 @endpush

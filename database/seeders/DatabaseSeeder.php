@@ -18,13 +18,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::create([
-            'name'     => 'Kasir Kantin',
-            'email'    => 'kantin@koperasi.com',
-            'password' => Hash::make('password'),
-            'role'     => 'kasir_kantin',
-        ]);
-
-        User::create([
             'name'     => 'Kasir Paspor',
             'email'    => 'paspor@koperasi.com',
             'password' => Hash::make('password'),
