@@ -164,7 +164,12 @@ app.post('/send', async (req, res) => {
         }
 
         const jid = `${cleanPhone}@s.whatsapp.net`;
-        await sock.sendMessage(jid, { text: message });
+        try { await sock.presenceSubscribe(jid); } catch (e) { }
+
+        await Promise.race([
+            sock.sendMessage(jid, { text: message }),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Waktu pengiriman habis (30 detik). Silakan coba kirim ulang.')), 30000))
+        ]);
 
         console.log(`[WA-Service] Pesan berhasil dikirim ke ${cleanPhone}`);
         return res.json({

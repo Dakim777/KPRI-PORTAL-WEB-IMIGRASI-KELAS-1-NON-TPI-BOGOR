@@ -55,7 +55,7 @@ class WhatsappService
     public function send(string $phone, string $message): array
     {
         try {
-            $response = Http::timeout(12)->post("{$this->baseUrl}/send", [
+            $response = Http::timeout(35)->post("{$this->baseUrl}/send", [
                 'phone'   => $phone,
                 'message' => $message
             ]);
