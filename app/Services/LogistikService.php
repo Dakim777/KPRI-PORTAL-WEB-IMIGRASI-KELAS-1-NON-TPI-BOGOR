@@ -164,7 +164,7 @@ class LogistikService
      * @param string $courier Kode kurir (pos, jne, jnt, sicepat, dll.)
      * @return array
      */
-    public function lacakResi(string $nomorResi, string $courier = 'pos'): array
+    public function lacakResi(string $nomorResi, string $courier = 'pos', bool $forceRefresh = false): array
     {
         $nomorResi = trim($nomorResi);
         if (empty($nomorResi)) {
@@ -180,9 +180,11 @@ class LogistikService
         }
 
         $cacheKey = "tracking_resi_{$courier}_{$nomorResi}";
-        $cached = Cache::get($cacheKey);
-        if ($cached && !empty($cached['data']['summary']) && empty($cached['is_fallback']) && empty($cached['is_error'])) {
-            return $this->enrichTrackingResult($cached);
+        if (!$forceRefresh) {
+            $cached = Cache::get($cacheKey);
+            if ($cached && !empty($cached['data']['summary']) && empty($cached['is_fallback']) && empty($cached['is_error'])) {
+                return $this->enrichTrackingResult($cached);
+            }
         }
 
         $apiKey = config('services.binderbyte.key');
@@ -237,8 +239,10 @@ class LogistikService
                 $json['is_mock'] = false;
                 $json['is_fallback'] = false;
                 $json = $this->enrichTrackingResult($json);
-                // Cache hasil sukses selama 30 menit
-                Cache::put($cacheKey, $json, 30 * 60);
+                // Cache hasil sukses: jika sudah DELIVERED cache 2 jam, jika masih proses cache 2 menit agar real-time dan akurat
+                $statusUpper = strtoupper(trim((string) ($json['data']['summary']['status'] ?? '')));
+                $ttlMinutes = ($statusUpper === 'DELIVERED' || strpos($statusUpper, 'SELESAI') !== false) ? 120 : 2;
+                Cache::put($cacheKey, $json, $ttlMinutes * 60);
                 return $json;
             }
         } catch (\Exception $e) {
@@ -296,22 +300,26 @@ class LogistikService
             'FAILED'                  => 'GAGAL DIANTAR / FAILED',
         ];
         $summary['status_indonesia'] = $statusMap[$rawStatus] ?? $rawStatus;
-        // Pastikan deskripsi real terkini dari ekspedisi selalu terisi dan akurat
-        $summary['desc'] = $summary['desc'] ?? ($summary['description'] ?? ($summary['message'] ?? ($summary['note'] ?? $rawStatus)));
+        
+        // Pastikan deskripsi real terkini dari ekspedisi selalu terisi dan akurat serta diterjemahkan ke gaya rinci Shopee/Tokopedia
+        $rawSummaryDesc = $summary['desc'] ?? ($summary['description'] ?? ($summary['message'] ?? ($summary['note'] ?? $rawStatus)));
+        $summary['desc'] = $this->translateToShopeeStyleIndonesian((string) $rawSummaryDesc, (string) ($summary['location'] ?? ''), $rawStatus);
 
-        // Normalisasi seluruh riwayat (history) agar deskripsi real dari ekspedisi tidak hilang atau kosong
+        // Normalisasi seluruh riwayat (history) agar deskripsi real dari ekspedisi bergaya Shopee/Tokopedia
         if (is_array($history)) {
             foreach ($history as $idx => $h) {
                 $rawDesc = $h['desc'] ?? ($h['description'] ?? ($h['note'] ?? ($h['message'] ?? ($h['status'] ?? '-'))));
+                $loc = (string) ($h['location'] ?? ($h['city'] ?? ''));
                 
                 // Jika deskripsi hanya berisi satu kata status Inggris standar (seperti DELIVERED / ON PROCESS), berikan penjelasan terjemahannya
                 $upperDesc = strtoupper(trim((string) $rawDesc));
                 if (isset($statusMap[$upperDesc])) {
                     $rawDesc = $statusMap[$upperDesc];
                 }
-                $history[$idx]['desc'] = $rawDesc;
+                
+                $history[$idx]['desc'] = $this->translateToShopeeStyleIndonesian((string) $rawDesc, $loc, (string) ($h['status'] ?? ''));
                 $history[$idx]['date'] = $h['date'] ?? ($h['time'] ?? ($h['timestamp'] ?? '-'));
-                $history[$idx]['location'] = $h['location'] ?? ($h['city'] ?? '');
+                $history[$idx]['location'] = $loc;
             }
         }
 
@@ -319,6 +327,80 @@ class LogistikService
         $result['data']['history'] = $history;
 
         return $result;
+    }
+
+    /**
+     * Menerjemahkan deskripsi ekspedisi ke dalam bahasa Indonesia bergaya rinci (Shopee/Tokopedia style)
+     * agar pemohon/kasir langsung paham posisi dan status detail paket secara akurat.
+     */
+    protected function translateToShopeeStyleIndonesian(string $rawDesc, string $location = '', string $status = ''): string
+    {
+        $desc = trim($rawDesc);
+        if (empty($desc) || $desc === '-') {
+            return '-';
+        }
+
+        $upper = strtoupper($desc);
+        $locText = !empty($location) ? " ({$location})" : "";
+
+        // 1. Cek pola penerimaan / delivered
+        if (preg_match('/(?:DELIVERED TO|RECEIVED BY|DITERIMA OLEH|ITEM HAS BEEN DELIVERED(?: TO)?)\s*[:\-]?\s*(.*)/i', $desc, $matches)) {
+            $penerima = trim($matches[1] ?? '');
+            if (!empty($penerima) && !in_array(strtoupper($penerima), ['CUSTOMER', 'RECIPIENT', 'PENERIMA', 'YANG BERSANGKUTAN'])) {
+                return "Paket telah sampai dan berhasil diterima oleh [{$penerima}]{$locText}.";
+            }
+            return "Paket telah sampai dan berhasil diterima oleh penerima di alamat tujuan{$locText}.";
+        }
+        if (in_array($upper, ['DELIVERED', 'ITEM HAS BEEN DELIVERED', 'PAKET TELAH DITERIMA', 'SELESAI', 'ITEM HAS BEEN DELIVERED TO CUSTOMER'])) {
+            return "Paket telah sampai dan berhasil diterima oleh penerima di alamat tujuan{$locText}.";
+        }
+
+        // 2. Cek pola pengantaran kurir ke alamat (Out for Delivery)
+        if (preg_match('/(?:OUT FOR DELIVERY|WITH DELIVERY COURIER|ITEM IS ON THE WAY TO CUSTOMER|COURIER IS DELIVERING|PENGANTARAN KIRIMAN OLEH KURIR|DIANTAR OLEH KURIR)/i', $desc)) {
+            return "Kurir ekspedisi sedang dalam perjalanan mengantar paket menuju alamat tujuan penerima{$locText}.";
+        }
+
+        // 3. Cek pola penjemputan (Pick up / Counter pick up)
+        if (preg_match('/(?:COUNTER IS ON THE WAY TO PICK UP ITEM|PICK UP|PICKED UP|KURIR SEDANG MENUJU LOKASI PENJEMPUTAN|PENJEMPUTAN PAKET)/i', $desc)) {
+            return "Kurir/Petugas ekspedisi sedang menuju lokasi kantor pengirim untuk melakukan penjemputan paket.";
+        }
+
+        // 4. Cek pola pendaftaran / manifest di loket kantor pengirim
+        if (preg_match('/(?:SHIPMENT HAS BEEN MANIFESTED|MANIFESTED|PENERIMAAN KIRIMAN DI LOKET|ITEM ACCEPTED BY COURIER|PACKAGE RECEIVED AT WAREHOUSE)/i', $desc)) {
+            return "Paket telah diserahkan dan terdaftar di loket/gudang ekspedisi pengirim{$locText}.";
+        }
+
+        // 5. Cek pola keberangkatan dari hub/transit (Departed from / Leaving hub / Scan out)
+        if (preg_match('/(?:DEPARTED FROM|LEAVING|BERANGKAT DARI|KELUAR DARI|PROSES SCAN OUT|DISPATCHED TO)/i', $desc)) {
+            $cleanDetail = preg_replace('/^(?:DEPARTED FROM|LEAVING|BERANGKAT DARI|KELUAR DARI|DISPATCHED TO)\s*[:\-]?\s*/i', '', $desc);
+            if (!empty($cleanDetail) && strcasecmp($cleanDetail, $desc) !== 0 && strlen($cleanDetail) > 2) {
+                return "Paket telah berangkat dari pusat transit/sortir ({$cleanDetail}) menuju kota berikutnya.";
+            }
+            return "Paket telah berangkat dari pusat transit/sortir ekspedisi{$locText} menuju tahap pengiriman berikutnya.";
+        }
+
+        // 6. Cek pola ketibaan di hub/transit (Arrived at / Received at sorting center / Scan in)
+        if (preg_match('/(?:ARRIVED AT|ARRIVING|TIBA DI|RECEIVED AT SORTING CENTER|PROSES SCAN IN|MASUK KE)/i', $desc)) {
+            $cleanDetail = preg_replace('/^(?:ARRIVED AT|ARRIVING|TIBA DI|RECEIVED AT SORTING CENTER|PROSES SCAN IN)\s*[:\-]?\s*/i', '', $desc);
+            if (!empty($cleanDetail) && strcasecmp($cleanDetail, $desc) !== 0 && strlen($cleanDetail) > 2) {
+                return "Paket telah tiba di pusat transit/sortir ekspedisi ({$cleanDetail}).";
+            }
+            return "Paket telah tiba di pusat transit/sortir ekspedisi{$locText}.";
+        }
+
+        // 7. Cek pola On Process / In Transit umum
+        if (in_array($upper, ['ON PROCESS', 'ONPROCESS', 'IN TRANSIT', 'SEDANG DIPROSES', 'DALAM PERJALANAN'])) {
+            return "Paket sedang dalam proses pemrosesan dan pengiriman di jaringan ekspedisi{$locText}.";
+        }
+
+        // 8. Cek pola kegagalan / penundaan / retur
+        if (preg_match('/(?:FAILED TO DELIVER|RECIPIENT NOT AT HOME|ALAMAT TIDAK DITEMUKAN|RETURNED|GAGAL PENGANTARAN)/i', $desc)) {
+            return "Pengantaran paket tertunda atau gagal (Alamat tidak ditemukan / Penerima tidak di tempat). Akan dilakukan penjadwalan ulang oleh kurir.";
+        }
+
+        // 9. Jika deskripsi asli (baik dalam bahasa Indonesia maupun kalimat khusus ekspedisi domestik) tidak masuk ke pola di atas,
+        // kita bersihkan dan kembalikan seutuhnya agar informasi penting atau catatan kurir tidak hilang.
+        return $desc;
     }
 
     /**

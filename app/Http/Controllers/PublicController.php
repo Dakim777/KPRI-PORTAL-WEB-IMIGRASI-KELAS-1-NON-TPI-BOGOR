@@ -47,10 +47,11 @@ class PublicController extends Controller
             });
         }
 
+        $forceRefresh = $request->boolean('refresh');
         if (!$paspor) {
             // Coba cek langsung ke BinderByte jika format terlihat seperti resi ekspedisi murni walau tidak ada di DB lokal
             if (strlen($q) >= 8) {
-                $trackEkspedisi = $logistikService->lacakResi($q, 'pos');
+                $trackEkspedisi = $logistikService->lacakResi($q, 'pos', $forceRefresh);
                 if (($trackEkspedisi['status'] ?? 0) == 200 && !empty($trackEkspedisi['data']['summary']) && empty($trackEkspedisi['is_fallback'])) {
                     return response()->json([
                         'status'  => 'success',
@@ -111,7 +112,7 @@ class PublicController extends Controller
         // Khusus untuk status PROSES, SELESAI, dan BATAL: lakukan fetching real-time ke BinderByte
         if (in_array($statusInternal, ['diproses', 'selesai', 'batal'])) {
             if (!empty($paspor->no_resi) && $paspor->no_resi !== '-') {
-                $track = $logistikService->lacakResi($paspor->no_resi, strtolower($paspor->jenis_kurir ?? 'pos'));
+                $track = $logistikService->lacakResi($paspor->no_resi, strtolower($paspor->jenis_kurir ?? 'pos'), $forceRefresh);
                 if (($track['status'] ?? 0) == 200 && !empty($track['data']['summary']) && empty($track['is_fallback'])) {
                     $manifestEkspedisi = [
                         'summary' => $track['data']['summary'],

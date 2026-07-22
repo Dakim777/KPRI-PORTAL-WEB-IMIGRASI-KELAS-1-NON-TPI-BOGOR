@@ -268,7 +268,7 @@ class PasporController extends Controller
     }
 
     // --- API Logistik: Lacak Resi (BinderByte) ---
-    public function trackResi(TransaksiPaspor $paspor, LogistikService $logistikService)
+    public function trackResi(Request $request, TransaksiPaspor $paspor, LogistikService $logistikService)
     {
         if (empty($paspor->no_resi)) {
             return response()->json([
@@ -277,7 +277,8 @@ class PasporController extends Controller
             ], 400);
         }
 
-        $result = $logistikService->lacakResi($paspor->no_resi, strtolower($paspor->jenis_kurir ?? 'pos'));
+        $forceRefresh = $request->boolean('refresh');
+        $result = $logistikService->lacakResi($paspor->no_resi, strtolower($paspor->jenis_kurir ?? 'pos'), $forceRefresh);
 
         return response()->json($result);
     }
