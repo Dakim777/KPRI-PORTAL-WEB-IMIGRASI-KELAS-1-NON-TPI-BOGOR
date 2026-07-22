@@ -103,67 +103,36 @@ class PublicController extends Controller
             // Status transaksi: paspor sedang dalam masa pembuatan/pencetakan (pelacakan resi BELUM boleh dijalankan)
             $alertMessage = 'Paspor Anda masih dalam status TRANSAKSI. Artinya paspor sedang dalam masa pembuatan atau pencetakan di Kantor Imigrasi. Silahkan periksa kembali nanti setelah nomor resi pengiriman resmi dirilis dan dikirimkan ke WhatsApp Anda.';
         } elseif ($statusInternal === 'batal') {
-            // Status pembatalan: tampilkan alert pembatalan di atas, namun jika ada resi tetap coba lacak riwayat terakhirnya
+            // Status pembatalan: tampilkan alert pembatalan di atas
             $noResiText = !empty($paspor->no_resi) && $paspor->no_resi !== '-' ? $paspor->no_resi : 'yang didaftarkan';
             $alertMessage = "Maaf, status pengiriman Anda telah dibatalkan dengan nomor resi yang diinputkan ({$noResiText}).";
-            
-            if (!empty($paspor->no_resi) && $paspor->no_resi !== '-') {
-                $track = $logistikService->lacakResi($paspor->no_resi, strtolower($paspor->jenis_kurir ?? 'pos'));
-                if (($track['status'] ?? 0) == 200 && !empty($track['data']['summary']) && empty($track['is_fallback'])) {
-                    $manifestEkspedisi = [
-                        'summary' => $track['data']['summary'],
-                        'history' => $track['data']['history'] ?? [],
-                    ];
-                    $isMock = $track['is_mock'] ?? false;
-                } else {
-                    $manifestEkspedisi = [
-                        'summary' => [
-                            'awb'     => $paspor->no_resi,
-                            'courier' => strtoupper($paspor->jenis_kurir ?? 'POS'),
-                            'status'  => 'DIBATALKAN',
-                            'date'    => $paspor->updated_at ? $paspor->updated_at->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
-                            'desc'    => "Pengiriman paspor atas nama penerima telah dibatalkan."
-                        ],
-                        'history' => [
-                            [
-                                'date'     => $paspor->updated_at ? $paspor->updated_at->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
-                                'desc'     => "Pengiriman paspor ini telah dibatalkan oleh petugas.",
-                                'location' => 'Dibatalkan'
-                            ]
-                        ]
-                    ];
-                }
-            }
-        } elseif (in_array($statusInternal, ['diproses', 'selesai'])) {
-            // Status diproses & selesai: pelacakan resi live ke ekspedisi / BinderByte dijalankan
-            if (!empty($paspor->no_resi) && $paspor->no_resi !== '-') {
-                $track = $logistikService->lacakResi($paspor->no_resi, strtolower($paspor->jenis_kurir ?? 'pos'));
-                if (($track['status'] ?? 0) == 200 && !empty($track['data']['summary']) && empty($track['is_fallback'])) {
-                    $manifestEkspedisi = [
-                        'summary' => $track['data']['summary'],
-                        'history' => $track['data']['history'] ?? [],
-                    ];
-                    $isMock = $track['is_mock'] ?? false;
-                } else {
-                    $statusSummary = $statusInternal === 'selesai' ? 'SELESAI / DELIVERED' : 'MANIFESTED / ON PROCESS';
-                    $descSummary = $statusInternal === 'selesai' 
-                        ? "Paspor atas nama penerima telah selesai dikirim dan diterima (Terverifikasi Sistem Koperasi)."
-                        : "Nomor resi {$paspor->no_resi} (" . strtoupper($paspor->jenis_kurir ?? 'POS') . ") tercatat di loket Koperasi dan sedang dalam proses pengiriman.";
-                    $locationSummary = $statusInternal === 'selesai' ? 'Alamat Tujuan (Selesai)' : 'Bogor / Dalam Pengiriman';
+        }
 
+        // Khusus untuk status PROSES, SELESAI, dan BATAL: lakukan fetching real-time ke BinderByte
+        if (in_array($statusInternal, ['diproses', 'selesai', 'batal'])) {
+            if (!empty($paspor->no_resi) && $paspor->no_resi !== '-') {
+                $track = $logistikService->lacakResi($paspor->no_resi, strtolower($paspor->jenis_kurir ?? 'pos'));
+                if (($track['status'] ?? 0) == 200 && !empty($track['data']['summary']) && empty($track['is_fallback'])) {
+                    $manifestEkspedisi = [
+                        'summary' => $track['data']['summary'],
+                        'history' => $track['data']['history'] ?? [],
+                    ];
+                    $isMock = $track['is_mock'] ?? false;
+                } else {
+                    // Fallback jujur tanpa asumsi (sesuai arahan: minta refresh/periksa kembali tanpa membuat asumsi palsu status kurir)
                     $manifestEkspedisi = [
                         'summary' => [
                             'awb'     => $paspor->no_resi,
                             'courier' => strtoupper($paspor->jenis_kurir ?? 'POS'),
-                            'status'  => $statusSummary,
-                            'date'    => $paspor->updated_at ? $paspor->updated_at->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
-                            'desc'    => $descSummary
+                            'status'  => 'GAGAL MEMUAT / BELUM TERINDEKS',
+                            'date'    => now()->format('Y-m-d H:i:s'),
+                            'desc'    => "Gagal memuat data pengiriman secara real-time dari server ekspedisi (" . strtoupper($paspor->jenis_kurir ?? 'POS') . ") atau nomor resi belum terindeks di BinderByte. Silahkan refresh kembali halaman ini atau periksa beberapa saat lagi."
                         ],
                         'history' => [
                             [
-                                'date'     => $paspor->updated_at ? $paspor->updated_at->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
-                                'desc'     => $descSummary,
-                                'location' => $locationSummary
+                                'date'     => now()->format('Y-m-d H:i:s'),
+                                'desc'     => "Gagal memuat riwayat pergerakan paket dari server ekspedisi (" . strtoupper($paspor->jenis_kurir ?? 'POS') . "). Silahkan refresh kembali halaman atau coba beberapa saat lagi.",
+                                'location' => 'Server Ekspedisi / Belum Terindeks'
                             ]
                         ]
                     ];

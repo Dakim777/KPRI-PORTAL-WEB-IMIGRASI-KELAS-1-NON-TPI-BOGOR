@@ -230,30 +230,25 @@ class LogistikService
             Log::warning("Gangguan/Timeout API BinderByte lacakResi ({$nomorResi} via {$courier}): " . $e->getMessage());
         }
 
-        // Fallback transparan TANPA DI-CACHE agar pemanggilan berikutnya tetap mencoba melacak data baru/live
+        // Fallback jujur tanpa asumsi status kurir (sesuai arahan: tidak ada asumsi, minta refresh/periksa lagi)
         return [
             'status'      => 200,
-            'message'     => 'Resi terdaftar di sistem Koperasi (Belum terindeks/ditemukan pada pemindaian live ekspedisi)',
+            'message'     => 'Gagal memuat data pengiriman dari server ekspedisi atau resi belum terindeks',
             'is_fallback' => true,
             'is_mock'     => false,
             'data'        => [
                 'summary' => [
                     'awb'     => $nomorResi,
                     'courier' => strtoupper($courier),
-                    'status'  => 'MANIFESTED / ON PROCESS',
+                    'status'  => 'GAGAL MEMUAT / BELUM TERINDEKS',
                     'date'    => now()->format('Y-m-d H:i:s'),
-                    'desc'    => "Nomor resi {$nomorResi} telah dicatat pada sistem Koperasi Kantor Imigrasi Bogor dan dalam proses pengiriman via " . strtoupper($courier) . ". Jika resi baru dicetak, harap menunggu proses sinkronisasi pemindaian fisik oleh pihak kurir."
+                    'desc'    => "Gagal memuat data pengiriman secara real-time dari server ekspedisi (" . strtoupper($courier) . ") atau nomor resi belum terindeks di BinderByte. Silahkan refresh kembali halaman ini atau periksa beberapa saat lagi."
                 ],
                 'history' => [
                     [
-                        'date' => now()->format('Y-m-d H:i:s'),
-                        'desc' => "Nomor resi {$nomorResi} (" . strtoupper($courier) . ") tercatat dalam manifes pelayanan pengiriman paspor Koperasi Kantor Imigrasi Bogor.",
-                        'location' => strtoupper($courier) . ' / Dalam Proses'
-                    ],
-                    [
-                        'date' => now()->subMinutes(10)->format('Y-m-d H:i:s'),
-                        'desc' => "Data transaksi pengiriman paspor dicatat pada sistem Koperasi Kantor Imigrasi Kelas I Non-TPI Bogor.",
-                        'location' => 'Kantor Imigrasi Bogor'
+                        'date'     => now()->format('Y-m-d H:i:s'),
+                        'desc'     => "Gagal memuat riwayat pergerakan paket dari server ekspedisi (" . strtoupper($courier) . "). Silahkan refresh kembali halaman atau coba beberapa saat lagi.",
+                        'location' => 'Server Ekspedisi / Belum Terindeks'
                     ]
                 ]
             ]

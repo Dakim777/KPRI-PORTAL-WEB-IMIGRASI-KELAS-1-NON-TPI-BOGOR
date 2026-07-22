@@ -295,8 +295,8 @@
                                 renderManifest(data.data.ekspedisi);
                             } else {
                                 renderManifest({
-                                    summary: { awb: k.no_resi, courier: k.jenis_kurir || 'POS', status: 'DIBATALKAN' },
-                                    history: [{ date: k.tanggal_transaksi || '-', desc: 'Pengiriman paspor ini telah dibatalkan oleh petugas.', location: 'Dibatalkan' }]
+                                    summary: { awb: k.no_resi, courier: k.jenis_kurir || 'POS', status: 'GAGAL MEMUAT / BELUM TERINDEKS' },
+                                    history: [{ date: '-', desc: 'Gagal memuat data pengiriman secara real-time dari server ekspedisi (' + (k.jenis_kurir || 'POS').toUpperCase() + '). Silahkan refresh kembali halaman ini atau periksa beberapa saat lagi.', location: 'Server Ekspedisi / Belum Terindeks' }]
                                 });
                             }
                         }
@@ -308,8 +308,8 @@
                                 renderManifest(data.data.ekspedisi);
                             } else {
                                 renderManifest({
-                                    summary: { awb: k.no_resi, courier: k.jenis_kurir || 'POS', status: k.status_internal === 'selesai' ? 'SELESAI / DELIVERED' : 'ON PROCESS' },
-                                    history: [{ date: k.tanggal_transaksi || '-', desc: k.status_internal === 'selesai' ? 'Paspor atas nama penerima telah selesai dikirim dan diterima (Terverifikasi Sistem Koperasi).' : 'Resi pengiriman tercatat di loket Koperasi dan dalam proses pengiriman POS Indonesia.', location: k.status_internal === 'selesai' ? 'Selesai' : 'Bogor' }]
+                                    summary: { awb: k.no_resi, courier: k.jenis_kurir || 'POS', status: 'GAGAL MEMUAT / BELUM TERINDEKS' },
+                                    history: [{ date: '-', desc: 'Gagal memuat data pengiriman secara real-time dari server ekspedisi (' + (k.jenis_kurir || 'POS').toUpperCase() + '). Silahkan refresh kembali halaman ini atau periksa beberapa saat lagi.', location: 'Server Ekspedisi / Belum Terindeks' }]
                                 });
                             }
                         } else {
