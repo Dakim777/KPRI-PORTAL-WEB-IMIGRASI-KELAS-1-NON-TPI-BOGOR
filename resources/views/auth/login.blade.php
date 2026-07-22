@@ -85,9 +85,18 @@
         </div>
     </div>
 
-    <p class="text-center text-xs mt-5" style="color:#3A5A7A">
-        KPRI — Kantor Imigrasi Bogor Kelas 1 Non TPI Bogor &copy; {{ date('Y') }}
-    </p>
+    <div class="mt-6 flex flex-col items-center justify-center gap-3 text-xs" style="color:#3A5A7A">
+        <p class="text-center font-medium">
+            KPRI — Kantor Imigrasi Bogor Kelas 1 Non TPI Bogor &copy; {{ date('Y') }}
+        </p>
+        <div class="flex items-center gap-2 bg-white/60 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-gray-200 shadow-sm">
+            <span class="text-gray-500 font-medium text-[11px]">Developed by</span>
+            <div class="flex items-center gap-1.5 font-bold text-gray-800">
+                <img src="{{ asset('images/logo-if-itera.png') }}" alt="Logo IF ITERA" class="h-4.5 w-auto object-contain" style="height: 18px;" />
+                <span class="tracking-wider text-xs">Informatika ITERA</span>
+            </div>
+        </div>
+    </div>
 </div>
 
 </body>

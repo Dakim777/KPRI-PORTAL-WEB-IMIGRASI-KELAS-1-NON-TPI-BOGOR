@@ -177,6 +177,11 @@
                     Keluar
                 </button>
             </form>
+            <div class="mt-3 pt-2.5 border-t border-blue-900/50 text-[10px] text-center flex items-center justify-center gap-1.5">
+                <span class="text-blue-300/60 font-medium">Developed by</span>
+                <img src="{{ asset('images/logo-if-itera.png') }}" alt="Logo IF ITERA" class="h-3.5 w-auto object-contain brightness-110" />
+                <span class="font-bold tracking-wider text-white">IF ITERA</span>
+            </div>
         </div>
     </aside>
 
@@ -247,6 +252,18 @@
             @endif
 
             @yield('content')
+
+            {{-- Footer / Watermark --}}
+            <footer class="mt-8 pt-5 border-t border-gray-200/80 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-3 pb-2">
+                <p>&copy; {{ date('Y') }} KPRI Kantor Imigrasi Kelas I Non-TPI Bogor.</p>
+                <div class="flex items-center gap-2 bg-white/80 px-3.5 py-1.5 rounded-full border border-gray-200/80 shadow-sm">
+                    <span class="text-gray-400 font-medium">Developed by</span>
+                    <div class="flex items-center gap-1.5 font-bold text-gray-700">
+                        <img src="{{ asset('images/logo-if-itera.png') }}" alt="Logo IF ITERA" class="h-4.5 w-auto object-contain" style="height: 18px;" />
+                        <span class="tracking-wider text-xs">Informatika ITERA</span>
+                    </div>
+                </div>
+            </footer>
         </main>
     </div>
 
