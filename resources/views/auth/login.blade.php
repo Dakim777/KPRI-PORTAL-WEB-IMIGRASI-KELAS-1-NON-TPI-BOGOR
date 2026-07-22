@@ -89,10 +89,10 @@
         <p class="text-center font-medium">
             KPRI — Kantor Imigrasi Bogor Kelas 1 Non TPI Bogor &copy; {{ date('Y') }}
         </p>
-        <div class="flex items-center gap-2 bg-white/60 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-gray-200 shadow-sm">
-            <span class="text-gray-500 font-medium text-[11px]">Developed by</span>
-            <div class="flex items-center gap-1.5 font-bold text-gray-800">
-                <img src="{{ asset('images/logo-if-itera.png') }}" alt="Logo IF ITERA" class="h-4.5 w-auto object-contain" style="height: 18px;" />
+        <div class="flex items-center gap-2.5 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-gray-200 shadow-sm">
+            <span class="text-gray-500 font-medium text-xs">Developed by</span>
+            <div class="flex items-center gap-2 font-bold text-gray-800">
+                <img src="{{ asset('images/logo-if-itera-new.jpeg') }}" alt="Logo IF ITERA" class="w-auto object-contain rounded" style="height: 24px;" />
                 <span class="tracking-wider text-xs">Informatika ITERA</span>
             </div>
         </div>

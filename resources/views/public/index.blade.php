@@ -186,10 +186,10 @@
     <footer class="border-t border-slate-800 bg-slate-900/80 py-6 px-4 text-center text-xs text-slate-500">
         <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <p>&copy; {{ date('Y') }} KPRI Kantor Imigrasi Kelas I Non-TPI Bogor. All rights reserved.</p>
-            <div class="flex items-center gap-2.5 bg-slate-800/80 px-3.5 py-1.5 rounded-full border border-slate-700/60 shadow-sm">
-                <span class="text-[11px] font-medium text-slate-400 tracking-wide">Developed by</span>
-                <div class="flex items-center gap-1.5 font-bold text-slate-200">
-                    <img src="{{ asset('images/logo-if-itera.png') }}" alt="Logo IF ITERA" class="h-5 w-auto object-contain" />
+            <div class="flex items-center gap-3 bg-slate-800/90 px-4 py-2 rounded-full border border-slate-700 shadow-sm">
+                <span class="text-xs font-medium text-slate-400 tracking-wide">Developed by</span>
+                <div class="flex items-center gap-2 font-bold text-slate-100">
+                    <img src="{{ asset('images/logo-if-itera-new.jpeg') }}" alt="Logo IF ITERA" class="w-auto object-contain rounded" style="height: 26px;" />
                     <span class="tracking-wider text-xs">IF ITERA</span>
                 </div>
             </div>
