@@ -79,7 +79,7 @@
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     </div>
-                    <input type="text" id="trackingQuery" required value="{{ request()->get('q') }}" placeholder="Masukkan Nomor Resi (misal: POS123...) atau ID Transaksi..." 
+                    <input type="text" id="trackingQuery" required value="{{ request()->get('q') }}" placeholder="Masukkan Nomor Resi (misal: POS123...) atau Nama Penerima..." 
                            class="w-full bg-slate-900/90 border border-slate-700 rounded-xl pl-12 pr-4 py-3.5 text-sm sm:text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono uppercase transition">
                 </div>
                 <button type="submit" id="trackButton" 
@@ -91,9 +91,9 @@
 
             <div class="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-400">
                 <span class="font-semibold text-slate-300">Contoh pencarian:</span>
-                <button type="button" onclick="quickFill('POS99887766')" class="hover:text-blue-400 underline font-mono">POS99887766</button>
+                <button type="button" onclick="quickFill('P12345678912')" class="hover:text-blue-400 underline font-mono">P12345678912</button>
                 <span>•</span>
-                <button type="button" onclick="quickFill('TRX-PASPOR-260721-001')" class="hover:text-blue-400 underline font-mono">TRX-PASPOR-260721-001</button>
+                <button type="button" onclick="quickFill('Hafiz Hakim')" class="hover:text-blue-400 underline font-semibold">Hafiz Hakim</button>
             </div>
         </div>
 
@@ -112,7 +112,7 @@
         <div id="resultError" class="hidden my-8 bg-red-500/10 border border-red-500/30 rounded-2xl p-6 text-center max-w-xl mx-auto">
             <div class="w-12 h-12 bg-red-500/20 text-red-400 rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold">!</div>
             <h4 id="errorMessage" class="text-red-400 font-bold text-base mb-1">Data tidak ditemukan</h4>
-            <p class="text-slate-400 text-xs">Pastikan nomor resi atau ID transaksi yang Anda ketik sudah benar dan tercatat di loket Koperasi Imigrasi Bogor.</p>
+            <p class="text-slate-400 text-xs">Pastikan nomor resi atau nama pemegang/penerima paspor yang Anda ketik sudah benar dan tercatat di loket Koperasi Imigrasi Bogor.</p>
         </div>
 
         {{-- Success Display Container --}}
