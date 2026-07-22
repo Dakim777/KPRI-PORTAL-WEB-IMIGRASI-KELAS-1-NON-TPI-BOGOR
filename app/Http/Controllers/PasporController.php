@@ -279,6 +279,28 @@ class PasporController extends Controller
 
         $result = $logistikService->lacakResi($paspor->no_resi, strtolower($paspor->jenis_kurir ?? 'pos'));
 
+        // ── Real-Time Lazy Auto-Sync untuk Kasir / Admin ──
+        if (($result['status'] ?? 0) == 200 && !empty($result['data']['summary']['status']) && empty($result['is_fallback'])) {
+            $statusResi = strtoupper(trim($result['data']['summary']['status']));
+            if ($paspor->status_pengiriman === 'diproses' && in_array($statusResi, ['DELIVERED', 'SELESAI', 'TERKIRIM', 'SUCCESS', 'DITERIMA'])) {
+                $tanggalDiterima = today();
+                try {
+                    if (!empty($result['data']['summary']['date'])) {
+                        $tanggalDiterima = \Carbon\Carbon::parse($result['data']['summary']['date'])->format('Y-m-d');
+                    } elseif (!empty($result['data']['history'][0]['date'])) {
+                        $tanggalDiterima = \Carbon\Carbon::parse($result['data']['history'][0]['date'])->format('Y-m-d');
+                    }
+                } catch (\Exception $e) {
+                    $tanggalDiterima = today();
+                }
+
+                $paspor->update([
+                    'status_pengiriman'       => 'selesai',
+                    'tanggal_paspor_diterima' => $tanggalDiterima
+                ]);
+            }
+        }
+
         return response()->json($result);
     }
 }

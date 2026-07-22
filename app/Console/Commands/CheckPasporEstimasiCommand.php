@@ -82,9 +82,20 @@ class CheckPasporEstimasiCommand extends Command
                 $statusResi = strtoupper(trim($track['data']['summary']['status']));
                 // Jika status dari ekspedisi adalah DELIVERED / BERHASIL TERKIRIM / SELESAI
                 if (in_array($statusResi, ['DELIVERED', 'SELESAI', 'TERKIRIM', 'SUCCESS', 'DITERIMA'])) {
+                    $tanggalDiterima = today();
+                    try {
+                        if (!empty($track['data']['summary']['date'])) {
+                            $tanggalDiterima = \Carbon\Carbon::parse($track['data']['summary']['date'])->format('Y-m-d');
+                        } elseif (!empty($track['data']['history'][0]['date'])) {
+                            $tanggalDiterima = \Carbon\Carbon::parse($track['data']['history'][0]['date'])->format('Y-m-d');
+                        }
+                    } catch (\Exception $e) {
+                        $tanggalDiterima = today();
+                    }
+
                     $paspor->update([
                         'status_pengiriman'       => 'selesai',
-                        'tanggal_paspor_diterima' => today()
+                        'tanggal_paspor_diterima' => $tanggalDiterima
                     ]);
                     $syncedCount++;
                 }

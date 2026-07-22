@@ -118,6 +118,30 @@ class PublicController extends Controller
                         'history' => $track['data']['history'] ?? [],
                     ];
                     $isMock = $track['is_mock'] ?? false;
+
+                    // ── Real-Time Lazy Auto-Sync: Jika di DB masih 'diproses' dan ekspedisi melaporkan DELIVERED ──
+                    $statusResi = strtoupper(trim($track['data']['summary']['status'] ?? ''));
+                    if ($statusInternal === 'diproses' && in_array($statusResi, ['DELIVERED', 'SELESAI', 'TERKIRIM', 'SUCCESS', 'DITERIMA'])) {
+                        $tanggalDiterima = today();
+                        try {
+                            if (!empty($track['data']['summary']['date'])) {
+                                $tanggalDiterima = \Carbon\Carbon::parse($track['data']['summary']['date'])->format('Y-m-d');
+                            } elseif (!empty($track['data']['history'][0]['date'])) {
+                                $tanggalDiterima = \Carbon\Carbon::parse($track['data']['history'][0]['date'])->format('Y-m-d');
+                            }
+                        } catch (\Exception $e) {
+                            $tanggalDiterima = today();
+                        }
+
+                        $paspor->update([
+                            'status_pengiriman'       => 'selesai',
+                            'tanggal_paspor_diterima' => $tanggalDiterima
+                        ]);
+
+                        $statusInternal = 'selesai';
+                        $kpriStatus['status_internal'] = 'selesai';
+                        $messageStatus = 'selesai';
+                    }
                 } else {
                     // Fallback jujur tanpa asumsi (sesuai arahan: minta refresh/periksa kembali tanpa membuat asumsi palsu status kurir)
                     $manifestEkspedisi = [
