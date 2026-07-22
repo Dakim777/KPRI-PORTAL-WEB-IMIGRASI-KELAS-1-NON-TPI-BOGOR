@@ -323,8 +323,12 @@ function autoCekOngkir(e) {
                 if (jkField && data.data.courier) jkField.value = data.data.courier.toUpperCase();
                 const lkField = document.getElementById('layanan_kurir');
                 if (lkField && data.data.service) lkField.value = data.data.service;
-                let msg = `Tarif Live BinderByte (${data.data.courier} - ${data.data.service}): Rp ${cost.toLocaleString('id-ID')} (ETD: ${data.data.etd || '-'})`;
-                if (data.is_mock) {
+                let msg = `Tarif Ongkir (${data.data.courier} - ${data.data.service}): Rp ${cost.toLocaleString('id-ID')} (ETD: ${data.data.etd || '-'})`;
+                if (data.is_auto_fallback) {
+                    msg += `\n\n💡 Catatan: Tarif untuk kurir pilihan awal tidak tersedia pada rute kota ini di server BinderByte, sistem otomatis mencarikan tarif live dari kurir ${data.data.courier} yang tersedia.`;
+                } else if (data.is_fallback) {
+                    msg += `\n\n💡 Catatan: Tarif live ekspedisi dari BinderByte belum tersedia untuk rute kota ini, sistem menampilkan estimasi tarif standar Koperasi. Anda dapat menyesuaikan nominal biaya kurir secara manual jika diperlukan.`;
+                } else if (data.is_mock) {
                     msg += `\n\n(Mode Simulasi - API Key BinderByte belum dipasang di .env)`;
                 }
                 alert(msg);
