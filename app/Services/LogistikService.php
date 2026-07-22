@@ -97,13 +97,20 @@ class LogistikService
             // Konversi weight ke kg (minimum 1 kg standar ekspedisi via BinderByte)
             $weightKg = max(1, (int) ceil($weight / 1000));
 
-            $response = Http::asForm()->timeout(15)->post("{$baseUrl}/cost", [
-                'api_key'     => $apiKey,
-                'origin'      => $origin,
-                'destination' => $destination,
-                'weight'      => $weightKg,
-                'courier'     => strtolower($courier),
-            ]);
+            // Penambahan waktu buffering dan retry untuk ketahanan koneksi cek tarif
+            $response = Http::asForm()
+                ->timeout(45)
+                ->connectTimeout(15)
+                ->retry(3, 1500, function ($exception, $request) {
+                    return $exception instanceof \Illuminate\Http\Client\ConnectionException || $exception instanceof \Illuminate\Http\Client\RequestException;
+                })
+                ->post("{$baseUrl}/cost", [
+                    'api_key'     => $apiKey,
+                    'origin'      => $origin,
+                    'destination' => $destination,
+                    'weight'      => $weightKg,
+                    'courier'     => strtolower($courier),
+                ]);
 
             if ($response->successful()) {
                 $result = $response->json();
@@ -212,11 +219,18 @@ class LogistikService
         }
 
         try {
-            $response = Http::timeout(15)->get("{$baseUrl}/track", [
-                'api_key' => $apiKey,
-                'courier' => $courier,
-                'awb'     => $nomorResi,
-            ]);
+            // Penambahan waktu buffering (timeout 45 detik + connectTimeout 15 detik + auto-retry 3 kali)
+            // agar saat jaringan atau server ekspedisi sedang lambat, sistem tidak cepat menyerah (fallback) dan mencegah user bolak-balik refresh.
+            $response = Http::timeout(45)
+                ->connectTimeout(15)
+                ->retry(3, 1500, function ($exception, $request) {
+                    return $exception instanceof \Illuminate\Http\Client\ConnectionException || $exception instanceof \Illuminate\Http\Client\RequestException;
+                })
+                ->get("{$baseUrl}/track", [
+                    'api_key' => $apiKey,
+                    'courier' => $courier,
+                    'awb'     => $nomorResi,
+                ]);
 
             if ($response->successful() && !empty($response->json()['data']['summary'])) {
                 $json = $response->json();

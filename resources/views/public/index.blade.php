@@ -231,7 +231,7 @@
         if (!query) return;
 
         if (window.KPRILoader) {
-            window.KPRILoader.show('Menelusuri Resi & Paspor...', 'Menghubungkan ke server KPRI & mengecek live status POS Indonesia / BinderByte...');
+            window.KPRILoader.show('Menelusuri Resi & Paspor...', 'Menghubungkan ke server KPRI & memeriksa data ekspedisi secara real-time. Mohon tunggu sebentar jika jaringan sedikit lambat...');
         }
         document.getElementById('resultLoading').classList.remove('hidden');
         document.getElementById('resultError').classList.add('hidden');
