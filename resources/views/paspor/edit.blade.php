@@ -104,8 +104,15 @@
                         </div>
                         <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
                             <select id="rajaongkir_courier" class="border border-blue-300 rounded-lg px-2.5 py-1.5 text-xs bg-white font-semibold focus:ring-2 focus:ring-blue-500">
-                                <option value="pos">POS Indonesia</option>
+                                <option value="pos">POS Indonesia (Mitra Utama)</option>
                                 <option value="jne">JNE Express</option>
+                                <option value="tiki">TIKI (Titipan Kilat)</option>
+                                <option value="sicepat">SiCepat Ekspres</option>
+                                <option value="jnt">J&T Express</option>
+                                <option value="anteraja">AnterAja</option>
+                                <option value="lion">Lion Parcel</option>
+                                <option value="ninja">Ninja Xpress</option>
+                                <option value="ide">ID Express</option>
                             </select>
                             <select id="rajaongkir_destination" class="border border-blue-300 rounded-lg px-2.5 py-1.5 text-xs max-w-[240px] bg-white font-semibold focus:ring-2 focus:ring-blue-500 truncate">
                                 @if(isset($daftarKota) && is_array($daftarKota))
@@ -145,6 +152,27 @@
                             <label class="block text-xs font-semibold text-blue-800 uppercase tracking-wide mb-1.5">Biaya Kurir / Resi (Rp)</label>
                             <input type="number" id="biaya_kurir" name="biaya_kurir" value="{{ old('biaya_kurir', $paspor->biaya_kurir) }}" min="0"
                                    class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="jenis_kurir" class="block text-xs font-semibold text-blue-800 uppercase tracking-wide mb-1.5">Ekspedisi Pilihan</label>
+                            <select id="jenis_kurir" name="jenis_kurir" class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
+                                <option value="POS" {{ old('jenis_kurir', $paspor->jenis_kurir) == 'POS' ? 'selected' : '' }}>POS Indonesia (Mitra Utama)</option>
+                                <option value="JNE" {{ old('jenis_kurir', $paspor->jenis_kurir) == 'JNE' ? 'selected' : '' }}>JNE Express</option>
+                                <option value="TIKI" {{ old('jenis_kurir', $paspor->jenis_kurir) == 'TIKI' ? 'selected' : '' }}>TIKI (Titipan Kilat)</option>
+                                <option value="SICEPAT" {{ old('jenis_kurir', $paspor->jenis_kurir) == 'SICEPAT' ? 'selected' : '' }}>SiCepat Ekspres</option>
+                                <option value="JNT" {{ old('jenis_kurir', $paspor->jenis_kurir) == 'JNT' ? 'selected' : '' }}>J&T Express</option>
+                                <option value="ANTERAJA" {{ old('jenis_kurir', $paspor->jenis_kurir) == 'ANTERAJA' ? 'selected' : '' }}>AnterAja</option>
+                                <option value="LION" {{ old('jenis_kurir', $paspor->jenis_kurir) == 'LION' ? 'selected' : '' }}>Lion Parcel</option>
+                                <option value="NINJA" {{ old('jenis_kurir', $paspor->jenis_kurir) == 'NINJA' ? 'selected' : '' }}>Ninja Xpress</option>
+                                <option value="IDE" {{ old('jenis_kurir', $paspor->jenis_kurir) == 'IDE' ? 'selected' : '' }}>ID Express</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="layanan_kurir" class="block text-xs font-semibold text-blue-800 uppercase tracking-wide mb-1.5">Jenis Layanan</label>
+                            <input type="text" id="layanan_kurir" name="layanan_kurir" value="{{ old('layanan_kurir', $paspor->layanan_kurir ?? 'Reguler') }}" placeholder="Contoh: Reguler / YES / Kilat Khusus"
+                                class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-4 mb-4">
@@ -313,6 +341,10 @@ function autoCekOngkir(e) {
                 const courierField = document.getElementById('biaya_kurir');
                 courierField.value = cost;
                 courierField.dispatchEvent(new Event('input'));
+                const jkField = document.getElementById('jenis_kurir');
+                if (jkField && data.data.courier) jkField.value = data.data.courier.toUpperCase();
+                const lkField = document.getElementById('layanan_kurir');
+                if (lkField && data.data.service) lkField.value = data.data.service;
                 let msg = `Tarif Live BinderByte (${data.data.courier} - ${data.data.service}): Rp ${cost.toLocaleString('id-ID')} (ETD: ${data.data.etd || '-'})`;
                 if (data.is_mock) {
                     msg += `\n\n(Mode Simulasi - API Key BinderByte belum dipasang di .env)`;

@@ -84,7 +84,7 @@ class PublicController extends Controller
         $isMock = false;
 
         if (!empty($paspor->no_resi)) {
-            $track = $logistikService->lacakResi($paspor->no_resi, 'pos');
+            $track = $logistikService->lacakResi($paspor->no_resi, strtolower($paspor->jenis_kurir ?? 'pos'));
             if (($track['status'] ?? 0) == 200 && !empty($track['data']['summary'])) {
                 $manifestEkspedisi = [
                     'summary' => $track['data']['summary'],

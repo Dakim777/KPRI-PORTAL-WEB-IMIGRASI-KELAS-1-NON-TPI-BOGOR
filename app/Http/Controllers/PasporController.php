@@ -81,6 +81,8 @@ class PasporController extends Controller
             'metode_pembayaran'        => ['nullable', 'in:Cash,Transfer,QRIS'],
             'handling_fee'             => ['nullable', 'numeric', 'min:0'],
             'biaya_kurir'              => ['nullable', 'numeric', 'min:0'],
+            'jenis_kurir'              => ['nullable', 'string', 'max:50'],
+            'layanan_kurir'            => ['nullable', 'string', 'max:100'],
             'biaya_modal_packaging'    => ['nullable', 'numeric', 'min:0'],
             'harga_materai'            => ['nullable', 'numeric', 'min:0'],
             'harga_surat_kuasa'        => ['nullable', 'numeric', 'min:0'],
@@ -101,6 +103,8 @@ class PasporController extends Controller
         
         $data['kasir_id'] = Auth::id();
         $data['status_pengiriman'] = 'transaksi';
+        $data['jenis_kurir'] = $data['jenis_kurir'] ?? 'POS';
+        $data['layanan_kurir'] = $data['layanan_kurir'] ?? 'Reguler';
 
         $transaksi = TransaksiPaspor::create($data);
 
@@ -121,6 +125,8 @@ class PasporController extends Controller
             'status_pengiriman'        => ['required', 'in:transaksi,diproses,selesai,batal'],
             'total_pembayaran_pemohon' => ['nullable', 'numeric', 'min:0'],
             'biaya_kurir'              => ['nullable', 'numeric', 'min:0'],
+            'jenis_kurir'              => ['nullable', 'string', 'max:50'],
+            'layanan_kurir'            => ['nullable', 'string', 'max:100'],
             'biaya_modal_packaging'    => ['nullable', 'numeric', 'min:0'],
             'harga_materai'            => ['nullable', 'numeric', 'min:0'],
             'harga_surat_kuasa'        => ['nullable', 'numeric', 'min:0'],
@@ -132,7 +138,7 @@ class PasporController extends Controller
         $updates = ['status_pengiriman' => $newStatus];
 
         // Save biaya fields if provided
-        $biayaFields = ['total_pembayaran_pemohon', 'biaya_kurir', 'biaya_modal_packaging', 'harga_materai', 'harga_surat_kuasa', 'handling_fee', 'no_resi'];
+        $biayaFields = ['total_pembayaran_pemohon', 'biaya_kurir', 'jenis_kurir', 'layanan_kurir', 'biaya_modal_packaging', 'harga_materai', 'harga_surat_kuasa', 'handling_fee', 'no_resi'];
         foreach ($biayaFields as $field) {
             if ($request->filled($field)) {
                 $updates[$field] = $request->input($field);
@@ -271,7 +277,7 @@ class PasporController extends Controller
             ], 400);
         }
 
-        $result = $logistikService->lacakResi($paspor->no_resi, 'pos');
+        $result = $logistikService->lacakResi($paspor->no_resi, strtolower($paspor->jenis_kurir ?? 'pos'));
 
         return response()->json($result);
     }

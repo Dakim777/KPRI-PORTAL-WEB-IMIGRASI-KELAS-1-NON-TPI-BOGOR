@@ -22,6 +22,8 @@ class TransaksiPaspor extends Model
         'nama_paspor_list',
         'alamat_tujuan_pengiriman',
         'no_resi',
+        'jenis_kurir',
+        'layanan_kurir',
         'total_pembayaran_pemohon',
         'biaya_kurir',
         'biaya_modal_packaging',

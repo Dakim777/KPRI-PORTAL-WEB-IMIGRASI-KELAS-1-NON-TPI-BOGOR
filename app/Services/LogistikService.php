@@ -202,38 +202,41 @@ class LogistikService
                 ];
             }
 
-            try {
-                $response = Http::timeout(15)->get("{$baseUrl}/track", [
-                    'api_key' => $apiKey,
-                    'courier' => strtolower($courier),
-                    'awb'     => $nomorResi,
-                ]);
+            $couriersToTry = array_unique([strtolower($courier), 'pos', 'jne', 'sicepat', 'jnt', 'tiki', 'anteraja', 'lion', 'ninja', 'ide']);
+            
+            foreach ($couriersToTry as $tryCourier) {
+                try {
+                    $response = Http::timeout(12)->get("{$baseUrl}/track", [
+                        'api_key' => $apiKey,
+                        'courier' => $tryCourier,
+                        'awb'     => $nomorResi,
+                    ]);
 
-                if ($response->successful() && !empty($response->json()['data']['summary'])) {
-                    $json = $response->json();
-                    $json['is_mock'] = false;
-                    return $json;
+                    if ($response->successful() && !empty($response->json()['data']['summary'])) {
+                        $json = $response->json();
+                        $json['is_mock'] = false;
+                        return $json;
+                    }
+                } catch (\Exception $e) {
+                    Log::warning("Gangguan/Timeout API BinderByte lacakResi ({$nomorResi} via {$tryCourier}): " . $e->getMessage());
                 }
-
-                Cache::forget("tracking_resi_" . strtolower($courier) . "_{$nomorResi}");
-            } catch (\Exception $e) {
-                Cache::forget("tracking_resi_" . strtolower($courier) . "_{$nomorResi}");
-                Log::warning("Gangguan/Timeout API BinderByte lacakResi ({$nomorResi}): " . $e->getMessage());
             }
 
-            // Fallback transparan: jika resi tidak/belum ditemukan di server ekspedisi (karena baru dicetak / belum di-scan) atau API sedang timeout/sibuk
+            Cache::forget("tracking_resi_" . strtolower($courier) . "_{$nomorResi}");
+
+            // Fallback transparan: jika resi tidak/belum ditemukan di server ekspedisi mana pun (karena baru dicetak / belum di-scan)
             return [
                 'status'  => 200,
-                'message' => 'Resi terdaftar di sistem Koperasi (Belum terindeks/ditemukan pada pemindaian live POS Indonesia)',
+                'message' => 'Resi terdaftar di sistem Koperasi (Belum terindeks/ditemukan pada pemindaian live ekspedisi)',
                 'is_fallback' => true,
                 'is_mock' => false,
                 'data'    => [
                     'summary' => [
                         'awb'     => $nomorResi,
                         'courier' => strtoupper($courier),
-                        'status'  => 'BELUM TERINDEKS DI POS',
+                        'status'  => 'BELUM TERINDEKS DI POS / EKSPEDISI',
                         'date'    => now()->format('Y-m-d H:i:s'),
-                        'desc'    => "Nomor resi {$nomorResi} telah dicatat pada sistem Koperasi Kantor Imigrasi Bogor, namun saat ini belum ditemukan pada pangkalan data pemindaian POS Indonesia (Data Not Found). Jika resi baru dicetak, harap menunggu proses pemindaian fisik oleh pihak ekspedisi atau pastikan penulisan nomor resi sudah benar."
+                        'desc'    => "Nomor resi {$nomorResi} telah dicatat pada sistem Koperasi Kantor Imigrasi Bogor, namun saat ini belum ditemukan pada pangkalan data pemindaian ekspedisi ({$courier}). Jika resi baru dicetak, harap menunggu proses pemindaian fisik oleh kurir atau pastikan penulisan nomor resi sudah benar."
                     ],
                     'history' => [
                         [

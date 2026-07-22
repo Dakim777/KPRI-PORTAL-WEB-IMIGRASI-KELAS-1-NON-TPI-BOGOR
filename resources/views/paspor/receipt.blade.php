@@ -82,6 +82,10 @@
                 <td>No. HP</td>
                 <td>: {{ $paspor->no_hp ?? '-' }}</td>
             </tr>
+            <tr>
+                <td>Ekspedisi</td>
+                <td>: {{ strtoupper($paspor->jenis_kurir ?? 'POS') }} ({{ $paspor->layanan_kurir ?? 'Reguler' }})</td>
+            </tr>
         </table>
 
         <div class="border-dashed"></div>

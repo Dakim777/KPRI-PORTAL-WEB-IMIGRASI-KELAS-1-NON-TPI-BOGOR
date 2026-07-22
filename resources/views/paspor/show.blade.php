@@ -41,6 +41,11 @@
                     <p class="font-mono font-semibold text-gray-800">{{ $paspor->no_resi ?? 'Belum ada' }}</p>
                 </div>
 
+                <div>
+                    <p class="text-gray-400 text-xs uppercase tracking-wide mb-0.5">Ekspedisi & Layanan</p>
+                    <p class="font-semibold text-gray-800">{{ strtoupper($paspor->jenis_kurir ?? 'POS') }} - {{ $paspor->layanan_kurir ?? 'Reguler' }}</p>
+                </div>
+
                 <div class="col-span-2 md:col-span-3">
                     <p class="text-gray-400 text-xs uppercase tracking-wide mb-0.5">Daftar Nama Pemilik Paspor</p>
                     <div class="flex flex-wrap gap-2 mt-1">
@@ -191,10 +196,30 @@
                         <div class="flex items-center gap-2">
                             <input type="text" id="no_resi_show" name="no_resi"
                                 value="{{ old('no_resi', $paspor->no_resi) }}"
-                                class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
                                 placeholder="Scan atau ketik nomor resi..." />
                             <x-barcode-scanner targetId="no_resi_show" />
                         </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">Ekspedisi</label>
+                        <select name="jenis_kurir" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
+                            <option value="POS" {{ ($paspor->jenis_kurir ?? 'POS') == 'POS' ? 'selected' : '' }}>POS Indonesia (Mitra Utama)</option>
+                            <option value="JNE" {{ ($paspor->jenis_kurir ?? 'POS') == 'JNE' ? 'selected' : '' }}>JNE Express</option>
+                            <option value="TIKI" {{ ($paspor->jenis_kurir ?? 'POS') == 'TIKI' ? 'selected' : '' }}>TIKI (Titipan Kilat)</option>
+                            <option value="SICEPAT" {{ ($paspor->jenis_kurir ?? 'POS') == 'SICEPAT' ? 'selected' : '' }}>SiCepat Ekspres</option>
+                            <option value="JNT" {{ ($paspor->jenis_kurir ?? 'POS') == 'JNT' ? 'selected' : '' }}>J&T Express</option>
+                            <option value="ANTERAJA" {{ ($paspor->jenis_kurir ?? 'POS') == 'ANTERAJA' ? 'selected' : '' }}>AnterAja</option>
+                            <option value="LION" {{ ($paspor->jenis_kurir ?? 'POS') == 'LION' ? 'selected' : '' }}>Lion Parcel</option>
+                            <option value="NINJA" {{ ($paspor->jenis_kurir ?? 'POS') == 'NINJA' ? 'selected' : '' }}>Ninja Xpress</option>
+                            <option value="IDE" {{ ($paspor->jenis_kurir ?? 'POS') == 'IDE' ? 'selected' : '' }}>ID Express</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">Layanan</label>
+                        <input type="text" name="layanan_kurir" value="{{ $paspor->layanan_kurir ?? 'Reguler' }}"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
+                            placeholder="Reguler / YES" />
                     </div>
                 </div>
 
