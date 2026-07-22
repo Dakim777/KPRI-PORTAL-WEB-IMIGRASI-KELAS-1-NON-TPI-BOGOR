@@ -97,62 +97,57 @@ class LogistikService
             // Konversi weight ke kg (minimum 1 kg standar ekspedisi via BinderByte)
             $weightKg = max(1, (int) ceil($weight / 1000));
 
-            $couriersToTry = array_unique([strtolower($courier), 'tiki', 'jne', 'anteraja', 'ninja', 'sicepat', 'jnt', 'lion', 'ide', 'pos']);
+            $response = Http::asForm()->timeout(15)->post("{$baseUrl}/cost", [
+                'api_key'     => $apiKey,
+                'origin'      => $origin,
+                'destination' => $destination,
+                'weight'      => $weightKg,
+                'courier'     => strtolower($courier),
+            ]);
 
-            foreach ($couriersToTry as $tryCourier) {
-                try {
-                    $response = Http::asForm()->timeout(12)->post("{$baseUrl}/cost", [
-                        'api_key'     => $apiKey,
-                        'origin'      => $origin,
-                        'destination' => $destination,
-                        'weight'      => $weightKg,
-                        'courier'     => $tryCourier,
-                    ]);
-
-                    if ($response->successful()) {
-                        $result = $response->json();
-                        if (($result['status'] ?? 0) == 200 || ($result['code'] ?? '') == '200' || isset($result['data']['results'])) {
-                            $results = $result['data']['results'] ?? [];
-                            if (!empty($results)) {
-                                $costs = $results[0]['costs'] ?? [];
-                                if (!empty($costs)) {
-                                    $firstService = $costs[0];
-                                    return [
-                                        'status'           => 'success',
-                                        'is_mock'          => false,
-                                        'is_auto_fallback' => ($tryCourier !== strtolower($courier)),
-                                        'data'             => [
-                                            'courier'      => strtoupper($tryCourier),
-                                            'service'      => $firstService['service'] ?? ($firstService['description'] ?? 'REG'),
-                                            'biaya_ongkir' => (int) ($firstService['cost'] ?? ($firstService['price'] ?? 0)),
-                                            'etd'          => $firstService['etd'] ?? '1-2 Hari',
-                                        ]
-                                    ];
-                                }
-                            }
+            if ($response->successful()) {
+                $result = $response->json();
+                if (($result['status'] ?? 0) == 200 || ($result['code'] ?? '') == '200' || isset($result['data']['results'])) {
+                    $results = $result['data']['results'] ?? [];
+                    if (!empty($results)) {
+                        $costs = $results[0]['costs'] ?? [];
+                        if (!empty($costs)) {
+                            $firstService = $costs[0];
+                            return [
+                                'status'  => 'success',
+                                'is_mock' => false,
+                                'data'    => [
+                                    'courier'      => strtoupper($courier),
+                                    'service'      => $firstService['service'] ?? ($firstService['description'] ?? 'REG'),
+                                    'biaya_ongkir' => (int) ($firstService['cost'] ?? ($firstService['price'] ?? 0)),
+                                    'etd'          => $firstService['etd'] ?? '1-2 Hari',
+                                ]
+                            ];
                         }
                     }
-                } catch (\Exception $ex) {
-                    Log::warning("Gangguan/Timeout API BinderByte cekOngkir ({$destination} via {$tryCourier}): " . $ex->getMessage());
                 }
+
+                return [
+                    'status'  => 'error',
+                    'message' => 'Layanan kurir ' . strtoupper($courier) . ' saat ini tidak menyediakan pengantaran atau belum memiliki data tarif live ke daerah tersebut di pangkalan data resmi BinderByte. Silakan pilih ekspedisi atau daerah lain.'
+                ];
             }
+
+            $errorDesc = $response->json()['message'] ?? $response->body();
+            if ($errorDesc === 'Successfully calculated cost') {
+                $errorDesc = 'Rute pengantaran ke wilayah tersebut tidak tersedia untuk kurir ' . strtoupper($courier);
+            }
+            return [
+                'status'  => 'error',
+                'message' => 'Layanan kurir ' . strtoupper($courier) . ' tidak menyediakan rute pengantaran ke daerah tersebut: ' . $errorDesc
+            ];
         } catch (\Exception $e) {
             Log::error('Error BinderByte cekOngkir live: ' . $e->getMessage());
+            return [
+                'status'  => 'error',
+                'message' => 'Gagal terhubung ke server resmi BinderByte (' . $e->getMessage() . '). Periksa koneksi internet atau API Key Anda.'
+            ];
         }
-
-        // Fallback transparan & elegan jika seluruh kurir pada API BinderByte belum memiliki tarif live untuk rute kota tujuan tersebut
-        return [
-            'status'      => 'success',
-            'is_mock'     => false,
-            'is_fallback' => true,
-            'message'     => 'Tarif Estimasi Koperasi (Tarif live ekspedisi belum tersedia untuk rute ini di server BinderByte)',
-            'data'        => [
-                'courier'      => strtoupper($courier),
-                'service'      => 'Reguler / Kilat Koperasi',
-                'biaya_ongkir' => 15000,
-                'etd'          => '2-3 Hari',
-            ]
-        ];
     }
 
     /**

@@ -388,13 +388,43 @@
         .then(response => response.json().then(data => ({ status: response.status, body: data })))
         .then(({ status, body }) => {
             if (status === 200 && body.status === 'success') {
-                alert(body.message);
+                Swal.fire({
+                    title: 'Pesan Terkirim!',
+                    text: body.message,
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#1A3A6B',
+                    customClass: {
+                        popup: 'rounded-2xl shadow-xl border border-gray-100 font-sans p-6',
+                        confirmButton: 'rounded-xl px-6 py-2.5 font-semibold text-sm shadow-md'
+                    }
+                });
             } else {
-                alert('Gagal: ' + (body.message || 'Terjadi kesalahan saat mengirim WhatsApp. Pastikan bot sudah aktif di panel Admin.'));
+                Swal.fire({
+                    title: 'Gagal Mengirim WhatsApp',
+                    text: body.message || 'Terjadi kesalahan saat mengirim WhatsApp. Pastikan bot sudah aktif di panel Admin.',
+                    icon: 'error',
+                    confirmButtonText: 'Tutup',
+                    confirmButtonColor: '#d33',
+                    customClass: {
+                        popup: 'rounded-2xl shadow-xl border border-gray-100 font-sans p-6',
+                        confirmButton: 'rounded-xl px-6 py-2.5 font-semibold text-sm shadow-md'
+                    }
+                });
             }
         })
         .catch(err => {
-            alert('Terjadi kesalahan koneksi ke server bot.');
+            Swal.fire({
+                title: 'Gangguan Koneksi',
+                text: 'Terjadi kesalahan koneksi ke server notifikasi WhatsApp.',
+                icon: 'error',
+                confirmButtonText: 'Tutup',
+                confirmButtonColor: '#d33',
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl border border-gray-100 font-sans p-6',
+                    confirmButton: 'rounded-xl px-6 py-2.5 font-semibold text-sm shadow-md'
+                }
+            });
             console.error(err);
         });
     }

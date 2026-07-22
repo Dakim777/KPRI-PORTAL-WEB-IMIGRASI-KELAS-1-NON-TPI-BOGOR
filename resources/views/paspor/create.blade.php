@@ -323,23 +323,64 @@ function autoCekOngkir(e) {
                 if (jkField && data.data.courier) jkField.value = data.data.courier.toUpperCase();
                 const lkField = document.getElementById('layanan_kurir');
                 if (lkField && data.data.service) lkField.value = data.data.service;
-                let msg = `Tarif Ongkir (${data.data.courier} - ${data.data.service}): Rp ${cost.toLocaleString('id-ID')} (ETD: ${data.data.etd || '-'})`;
-                if (data.is_auto_fallback) {
-                    msg += `\n\n💡 Catatan: Tarif untuk kurir pilihan awal tidak tersedia pada rute kota ini di server BinderByte, sistem otomatis mencarikan tarif live dari kurir ${data.data.courier} yang tersedia.`;
-                } else if (data.is_fallback) {
-                    msg += `\n\n💡 Catatan: Tarif live ekspedisi dari BinderByte belum tersedia untuk rute kota ini, sistem menampilkan estimasi tarif standar Koperasi. Anda dapat menyesuaikan nominal biaya kurir secara manual jika diperlukan.`;
-                } else if (data.is_mock) {
-                    msg += `\n\n(Mode Simulasi - API Key BinderByte belum dipasang di .env)`;
-                }
-                alert(msg);
+
+                Swal.fire({
+                    title: 'Tarif Ongkir Ditemukan',
+                    html: `
+                        <div class="text-left font-sans mt-2">
+                            <div class="bg-blue-50/80 border border-blue-100 rounded-xl p-4 mb-4 text-center">
+                                <span class="text-xs font-semibold text-imigr uppercase tracking-wider block mb-1">Ekspedisi & Layanan</span>
+                                <span class="text-lg font-bold text-gray-900">${data.data.courier} &mdash; ${data.data.service}</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 mb-3 text-center">
+                                <div class="bg-gray-50 border border-gray-100 rounded-lg p-3">
+                                    <span class="text-xs text-gray-500 block mb-1">Biaya Ongkir</span>
+                                    <span class="text-base font-bold text-imigr">Rp ${cost.toLocaleString('id-ID')}</span>
+                                </div>
+                                <div class="bg-gray-50 border border-gray-100 rounded-lg p-3">
+                                    <span class="text-xs text-gray-500 block mb-1">Estimasi Tiba (ETD)</span>
+                                    <span class="text-base font-bold text-gray-700">${data.data.etd || '-'}</span>
+                                </div>
+                            </div>
+                            ${data.is_mock ? '<p class="text-xs text-amber-600 bg-amber-50 p-2.5 rounded-lg border border-amber-200 text-center font-medium mt-2">(Mode Simulasi - API Key BinderByte belum dipasang di .env)</p>' : ''}
+                        </div>
+                    `,
+                    icon: 'success',
+                    confirmButtonText: 'Terapkan Tarif Ini',
+                    confirmButtonColor: '#1A3A6B',
+                    customClass: {
+                        popup: 'rounded-2xl shadow-xl border border-gray-100 font-sans p-6',
+                        confirmButton: 'rounded-xl px-6 py-2.5 font-semibold text-sm shadow-md'
+                    }
+                });
             } else {
-                alert('Gagal mengambil tarif live BinderByte:\n' + (data.message || 'Periksa koneksi atau API Key BinderByte Anda.'));
+                Swal.fire({
+                    title: 'Layanan Kurir Tidak Tersedia',
+                    html: `<p class="text-sm text-gray-600 font-sans leading-relaxed text-center py-2">${data.message || 'Layanan untuk kurir pilihan ini tidak menyediakan rute pengantaran ke daerah tersebut.'}</p>`,
+                    icon: 'warning',
+                    confirmButtonText: 'Pilih Ekspedisi / Daerah Lain',
+                    confirmButtonColor: '#d33',
+                    customClass: {
+                        popup: 'rounded-2xl shadow-xl border border-gray-100 font-sans p-6',
+                        confirmButton: 'rounded-xl px-6 py-2.5 font-semibold text-sm shadow-md'
+                    }
+                });
             }
         })
         .catch(err => {
             btn.innerHTML = oldText;
             btn.disabled = false;
-            alert('Terjadi kesalahan koneksi saat mengecek ongkir.');
+            Swal.fire({
+                title: 'Gangguan Koneksi',
+                text: 'Terjadi kesalahan koneksi atau waktu habis saat menghubungi server ekspedisi resmi. Silakan coba kembali.',
+                icon: 'error',
+                confirmButtonText: 'Tutup',
+                confirmButtonColor: '#d33',
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl border border-gray-100 font-sans p-6',
+                    confirmButton: 'rounded-xl px-6 py-2.5 font-semibold text-sm shadow-md'
+                }
+            });
         });
 }
 </script>
