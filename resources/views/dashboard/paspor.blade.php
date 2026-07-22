@@ -110,20 +110,20 @@
     </div>
 
     {{-- ── Transaksi Terbaru ────────────────────────────────────────────────── --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
         <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
             <h3 class="font-semibold text-gray-800">Transaksi Terbaru</h3>
             <a href="{{ route('paspor.index') }}" class="text-xs text-blue-600 hover:underline">Lihat semua</a>
         </div>
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+        <div class="overflow-x-auto rounded-b-xl" style="-webkit-overflow-scrolling: touch; transform: translateZ(0); will-change: scroll-position;">
+            <table class="w-full min-w-[750px] text-sm">
                 <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
                     <tr>
-                        <th class="px-4 py-3 text-left">Pemohon</th>
-                        <th class="px-4 py-3 text-left">No. Resi</th>
-                        <th class="px-4 py-3 text-left">Status</th>
-                        <th class="px-4 py-3 text-right">Total</th>
-                        <th class="px-4 py-3 text-left">Waktu</th>
+                        <th class="px-4 py-3 text-left whitespace-nowrap">Pemohon</th>
+                        <th class="px-4 py-3 text-left whitespace-nowrap">No. Resi</th>
+                        <th class="px-4 py-3 text-left whitespace-nowrap">Status</th>
+                        <th class="px-4 py-3 text-right whitespace-nowrap">Total</th>
+                        <th class="px-4 py-3 text-left whitespace-nowrap">Waktu</th>
                         <th class="px-4 py-3"></th>
                     </tr>
                 </thead>

@@ -120,24 +120,24 @@
     </div>
 
     {{-- ── Data Table ───────────────────────────────────────────────────────── --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+        <div class="overflow-x-auto rounded-xl" style="-webkit-overflow-scrolling: touch; transform: translateZ(0); will-change: scroll-position;">
+            <table class="w-full min-w-[1050px] text-sm">
                 <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
                     <tr>
-                        <th class="px-4 py-3 text-left">Tgl Transaksi</th>
-                        <th class="px-4 py-3 text-left">ID Transaksi & Struk</th>
-                        <th class="px-4 py-3 text-left">Nama Penerima</th>
-                        <th class="px-4 py-3 text-left">No. Resi</th>
-                        <th class="px-4 py-3 text-center">Jml Paspor</th>
-                        <th class="px-4 py-3 text-right">Total Pembayaran</th>
-                        <th class="px-4 py-3 text-center">Status</th>
-                        <th class="px-4 py-3 text-center">Aksi</th>
+                        <th class="px-4 py-3 text-left whitespace-nowrap">Tgl Transaksi</th>
+                        <th class="px-4 py-3 text-left whitespace-nowrap">ID Transaksi & Struk</th>
+                        <th class="px-4 py-3 text-left whitespace-nowrap">Nama Penerima</th>
+                        <th class="px-4 py-3 text-left whitespace-nowrap">No. Resi</th>
+                        <th class="px-4 py-3 text-center whitespace-nowrap">Jml Paspor</th>
+                        <th class="px-4 py-3 text-right whitespace-nowrap">Total Pembayaran</th>
+                        <th class="px-4 py-3 text-center whitespace-nowrap">Status</th>
+                        <th class="px-4 py-3 text-center whitespace-nowrap">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">
                     @forelse($transaksis as $t)
-                    <tr class="hover:bg-gray-50 transition">
+                    <tr class="hover:bg-gray-50 transition-colors duration-100">
                         <td class="px-4 py-3 whitespace-nowrap text-xs">{{ $t->tanggal_transaksi?->format('d/m/Y') }}</td>
                         <td class="px-4 py-3">
                             <div class="font-bold text-blue-700 whitespace-nowrap">{{ $t->id_transaksi }}</div>

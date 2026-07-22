@@ -89,7 +89,7 @@
         </div>
 
         {{-- Navigation --}}
-        <nav class="flex-1 px-3 py-4 overflow-y-auto space-y-0.5">
+        <nav class="flex-1 px-3 py-4 overflow-y-auto space-y-0.5" style="-webkit-overflow-scrolling: touch; transform: translateZ(0); will-change: scroll-position;">
 
             @if(auth()->user()->role === 'super_admin')
                 <div class="sidebar-section">Administrasi</div>
@@ -230,7 +230,7 @@
         </header>
 
         {{-- Page Content --}}
-        <main class="flex-1 overflow-y-auto p-6">
+        <main class="flex-1 overflow-y-auto p-6" style="-webkit-overflow-scrolling: touch; transform: translateZ(0); will-change: scroll-position;">
 
             @if(session('success'))
                 <div class="mb-5 p-3.5 bg-green-50 border border-green-200 text-green-800 rounded-lg text-sm flex items-center gap-3">

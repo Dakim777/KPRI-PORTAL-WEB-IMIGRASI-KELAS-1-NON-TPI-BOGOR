@@ -4,19 +4,19 @@
 
 @section('content')
 <div class="space-y-5">
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-xl">
             <h3 class="font-semibold text-gray-800">Daftar Aktivitas Pengguna</h3>
         </div>
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+        <div class="overflow-x-auto rounded-b-xl" style="-webkit-overflow-scrolling: touch; transform: translateZ(0); will-change: scroll-position;">
+            <table class="w-full min-w-[750px] text-sm">
                 <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
                     <tr>
-                        <th class="px-4 py-3 text-left">Waktu</th>
-                        <th class="px-4 py-3 text-left">Pengguna</th>
-                        <th class="px-4 py-3 text-left">Aksi</th>
-                        <th class="px-4 py-3 text-left">Target (Model)</th>
-                        <th class="px-4 py-3 text-left">Detail Perubahan</th>
+                        <th class="px-4 py-3 text-left whitespace-nowrap">Waktu</th>
+                        <th class="px-4 py-3 text-left whitespace-nowrap">Pengguna</th>
+                        <th class="px-4 py-3 text-left whitespace-nowrap">Aksi</th>
+                        <th class="px-4 py-3 text-left whitespace-nowrap">Target (Model)</th>
+                        <th class="px-4 py-3 text-left whitespace-nowrap">Detail Perubahan</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">

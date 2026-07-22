@@ -57,22 +57,23 @@
     @endif
 
     {{-- ── Users Table ──────────────────────────────────────────────────── --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+    {{-- ── Users Table ──────────────────────────────────────────────────── --}}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+        <div class="overflow-x-auto rounded-xl" style="-webkit-overflow-scrolling: touch; transform: translateZ(0); will-change: scroll-position;">
+            <table class="w-full min-w-[700px] text-sm">
                 <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
                     <tr>
-                        <th class="px-4 py-3 text-left">No.</th>
-                        <th class="px-4 py-3 text-left">Nama</th>
-                        <th class="px-4 py-3 text-left">Email</th>
-                        <th class="px-4 py-3 text-center">Role</th>
-                        <th class="px-4 py-3 text-center">Terdaftar</th>
-                        <th class="px-4 py-3 text-center">Aksi</th>
+                        <th class="px-4 py-3 text-left whitespace-nowrap">No.</th>
+                        <th class="px-4 py-3 text-left whitespace-nowrap">Nama</th>
+                        <th class="px-4 py-3 text-left whitespace-nowrap">Email</th>
+                        <th class="px-4 py-3 text-center whitespace-nowrap">Role</th>
+                        <th class="px-4 py-3 text-center whitespace-nowrap">Terdaftar</th>
+                        <th class="px-4 py-3 text-center whitespace-nowrap">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">
                     @forelse($users as $user)
-                    <tr class="hover:bg-gray-50 transition {{ $user->id === auth()->id() ? 'bg-blue-50' : '' }}">
+                    <tr class="hover:bg-gray-50 transition-colors duration-100 {{ $user->id === auth()->id() ? 'bg-blue-50' : '' }}">
                         <td class="px-4 py-3 text-gray-400 text-xs">
                             {{ $loop->iteration + ($users->firstItem() - 1) }}
                         </td>
