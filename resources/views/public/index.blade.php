@@ -289,19 +289,27 @@
                     } else if (k.status_internal === 'batal') {
                         document.getElementById('batalAlertCard').classList.remove('hidden');
                         if (data.data.alert_message) document.getElementById('batalAlertText').textContent = data.data.alert_message;
-                        if (k.no_resi && k.no_resi !== '-' && data.data.ekspedisi) {
-                            document.getElementById('ekspedisiCard').classList.remove('hidden');
-                            renderManifest(data.data.ekspedisi);
-                        }
-                    } else {
                         if (k.no_resi && k.no_resi !== '-') {
                             document.getElementById('ekspedisiCard').classList.remove('hidden');
                             if (data.data.ekspedisi) {
                                 renderManifest(data.data.ekspedisi);
                             } else {
                                 renderManifest({
-                                    summary: { awb: k.no_resi, courier: 'POS', status: 'ON PROCESS' },
-                                    history: [{ date: k.tanggal_transaksi || '-', desc: 'Resi pengiriman tercatat di loket Koperasi dan dalam proses pengiriman POS Indonesia.', location: 'Bogor' }]
+                                    summary: { awb: k.no_resi, courier: k.jenis_kurir || 'POS', status: 'DIBATALKAN' },
+                                    history: [{ date: k.tanggal_transaksi || '-', desc: 'Pengiriman paspor ini telah dibatalkan oleh petugas.', location: 'Dibatalkan' }]
+                                });
+                            }
+                        }
+                    } else {
+                        // Status diproses & selesai
+                        if (k.no_resi && k.no_resi !== '-') {
+                            document.getElementById('ekspedisiCard').classList.remove('hidden');
+                            if (data.data.ekspedisi) {
+                                renderManifest(data.data.ekspedisi);
+                            } else {
+                                renderManifest({
+                                    summary: { awb: k.no_resi, courier: k.jenis_kurir || 'POS', status: k.status_internal === 'selesai' ? 'SELESAI / DELIVERED' : 'ON PROCESS' },
+                                    history: [{ date: k.tanggal_transaksi || '-', desc: k.status_internal === 'selesai' ? 'Paspor atas nama penerima telah selesai dikirim dan diterima (Terverifikasi Sistem Koperasi).' : 'Resi pengiriman tercatat di loket Koperasi dan dalam proses pengiriman POS Indonesia.', location: k.status_internal === 'selesai' ? 'Selesai' : 'Bogor' }]
                                 });
                             }
                         } else {
