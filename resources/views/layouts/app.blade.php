@@ -267,8 +267,7 @@
         </main>
     </div>
 
-</div>
-
+@include('components.loading-buffer')
 @stack('scripts')
 </body>
 </html>

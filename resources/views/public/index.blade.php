@@ -74,7 +74,7 @@
 
         {{-- Search Card --}}
         <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-4 sm:p-6 shadow-2xl backdrop-blur-xl relative">
-            <form id="trackForm" onsubmit="handlePublicTrack(event)" class="flex flex-col sm:flex-row gap-3">
+            <form id="trackForm" onsubmit="handlePublicTrack(event)" class="flex flex-col sm:flex-row gap-3" data-no-loader="true">
                 <div class="relative flex-1">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -208,6 +208,9 @@
         const query = document.getElementById('trackingQuery').value.trim();
         if (!query) return;
 
+        if (window.KPRILoader) {
+            window.KPRILoader.show('Menelusuri Resi & Paspor...', 'Menghubungkan ke server KPRI & mengecek live status POS Indonesia / BinderByte...');
+        }
         document.getElementById('resultLoading').classList.remove('hidden');
         document.getElementById('resultError').classList.add('hidden');
         document.getElementById('resultContainer').classList.add('hidden');
@@ -215,6 +218,7 @@
         fetch(`/api/track?q=${encodeURIComponent(query)}`)
             .then(res => res.json())
             .then(data => {
+                if (window.KPRILoader) window.KPRILoader.hide();
                 document.getElementById('resultLoading').classList.add('hidden');
 
                 if (data.status === 'error' || (typeof data.status === 'number' && data.status !== 200)) {
@@ -276,6 +280,7 @@
                 }
             })
             .catch(err => {
+                if (window.KPRILoader) window.KPRILoader.hide();
                 document.getElementById('resultLoading').classList.add('hidden');
                 document.getElementById('resultError').classList.remove('hidden');
                 document.getElementById('errorMessage').textContent = 'Terjadi kesalahan jaringan saat melacak status.';
@@ -315,5 +320,6 @@
         }
     });
     </script>
+    @include('components.loading-buffer')
 </body>
 </html>

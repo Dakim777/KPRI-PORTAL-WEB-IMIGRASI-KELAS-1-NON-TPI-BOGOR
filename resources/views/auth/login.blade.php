@@ -42,7 +42,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login.post') }}" class="space-y-4">
+            <form method="POST" action="{{ route('login.post') }}" class="space-y-4" data-loader-title="Memverifikasi Kredensial..." data-loader-desc="Mohon tunggu, sedang memeriksa username dan password Anda...">
                 @csrf
 
                 <div>
@@ -101,5 +101,6 @@
     </div>
 </div>
 
+@include('components.loading-buffer')
 </body>
 </html>
