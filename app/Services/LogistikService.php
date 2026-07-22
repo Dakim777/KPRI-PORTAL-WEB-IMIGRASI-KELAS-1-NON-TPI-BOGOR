@@ -182,7 +182,7 @@ class LogistikService
         $cacheKey = "tracking_resi_{$courier}_{$nomorResi}";
         $cached = Cache::get($cacheKey);
         if ($cached && !empty($cached['data']['summary']) && empty($cached['is_fallback']) && empty($cached['is_error'])) {
-            return $cached;
+            return $this->enrichTrackingResult($cached);
         }
 
         $apiKey = config('services.binderbyte.key');
@@ -190,7 +190,7 @@ class LogistikService
 
         if (empty($apiKey)) {
             // Mode simulasi/mock jika BINDERBYTE_API_KEY belum dipasang di .env
-            return [
+            return $this->enrichTrackingResult([
                 'status'  => 200,
                 'message' => 'API Key BinderByte belum dipasang di .env (Mode Simulasi Lacak Resi)',
                 'is_mock' => true,
@@ -215,7 +215,7 @@ class LogistikService
                         ]
                     ]
                 ]
-            ];
+            ]);
         }
 
         try {
@@ -236,6 +236,7 @@ class LogistikService
                 $json = $response->json();
                 $json['is_mock'] = false;
                 $json['is_fallback'] = false;
+                $json = $this->enrichTrackingResult($json);
                 // Cache hasil sukses selama 30 menit
                 Cache::put($cacheKey, $json, 30 * 60);
                 return $json;
@@ -245,7 +246,7 @@ class LogistikService
         }
 
         // Fallback jujur tanpa asumsi status kurir (sesuai arahan: tidak ada asumsi, minta refresh/periksa lagi)
-        return [
+        return $this->enrichTrackingResult([
             'status'      => 200,
             'message'     => 'Gagal memuat data pengiriman dari server ekspedisi atau resi belum terindeks',
             'is_fallback' => true,
@@ -266,7 +267,58 @@ class LogistikService
                     ]
                 ]
             ]
+        ]);
+    }
+
+    /**
+     * Normalisasi deskripsi dan terjemahan status agar riwayat pengiriman detail, real, dan mudah dipahami dalam bahasa Indonesia.
+     */
+    protected function enrichTrackingResult(array $result): array
+    {
+        if (empty($result['data']['summary'])) {
+            return $result;
+        }
+
+        $summary = $result['data']['summary'];
+        $history = $result['data']['history'] ?? [];
+
+        // Terjemahan/pemetaan status utama dari bahasa Inggris ke Bahasa Indonesia yang rapi (tetap mempertahankan kode aslinya)
+        $rawStatus = strtoupper(trim((string) ($summary['status'] ?? 'PROSES')));
+        $statusMap = [
+            'DELIVERED'               => 'SELESAI / TERKIRIM (DELIVERED)',
+            'ON PROCESS'              => 'SEDANG DIPROSES / ON PROCESS',
+            'ONPROCESS'               => 'SEDANG DIPROSES / ON PROCESS',
+            'TRANSIT'                 => 'DALAM PERJALANAN / TRANSIT',
+            'MANIFESTED'              => 'TERCATAT DI LOKET / MANIFESTED',
+            'OUT FOR DELIVERY'        => 'SEDANG DIANTAR KURIR / OUT FOR DELIVERY',
+            'RECEIVED ON DESTINATION' => 'TIBA DI KOTA TUJUAN / RECEIVED',
+            'RETURNED'                => 'DIKEMBALIKAN KE PENGIRIM (RETURNED)',
+            'FAILED'                  => 'GAGAL DIANTAR / FAILED',
         ];
+        $summary['status_indonesia'] = $statusMap[$rawStatus] ?? $rawStatus;
+        // Pastikan deskripsi real terkini dari ekspedisi selalu terisi dan akurat
+        $summary['desc'] = $summary['desc'] ?? ($summary['description'] ?? ($summary['message'] ?? ($summary['note'] ?? $rawStatus)));
+
+        // Normalisasi seluruh riwayat (history) agar deskripsi real dari ekspedisi tidak hilang atau kosong
+        if (is_array($history)) {
+            foreach ($history as $idx => $h) {
+                $rawDesc = $h['desc'] ?? ($h['description'] ?? ($h['note'] ?? ($h['message'] ?? ($h['status'] ?? '-'))));
+                
+                // Jika deskripsi hanya berisi satu kata status Inggris standar (seperti DELIVERED / ON PROCESS), berikan penjelasan terjemahannya
+                $upperDesc = strtoupper(trim((string) $rawDesc));
+                if (isset($statusMap[$upperDesc])) {
+                    $rawDesc = $statusMap[$upperDesc];
+                }
+                $history[$idx]['desc'] = $rawDesc;
+                $history[$idx]['date'] = $h['date'] ?? ($h['time'] ?? ($h['timestamp'] ?? '-'));
+                $history[$idx]['location'] = $h['location'] ?? ($h['city'] ?? '');
+            }
+        }
+
+        $result['data']['summary'] = $summary;
+        $result['data']['history'] = $history;
+
+        return $result;
     }
 
     /**

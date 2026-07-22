@@ -280,14 +280,20 @@
                         </div>
                     </div>
 
-                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 flex items-center justify-between text-sm">
-                        <div>
-                            <p class="text-xs text-gray-400 uppercase font-bold">Status Saat Ini</p>
-                            <p id="trackingStatusBadge" class="font-extrabold text-blue-700 text-base mt-0.5">ON PROCESS</p>
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 space-y-3 text-sm">
+                        <div class="flex items-center justify-between border-b border-gray-200/60 pb-2.5">
+                            <div>
+                                <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Status Ekspedisi</p>
+                                <p id="trackingStatusBadge" class="font-extrabold text-blue-700 text-sm mt-0.5">ON PROCESS</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Kurir</p>
+                                <p id="trackingCourier" class="font-bold text-gray-800 text-sm mt-0.5">POS</p>
+                            </div>
                         </div>
-                        <div class="text-right">
-                            <p class="text-xs text-gray-400 uppercase font-bold">Kurir</p>
-                            <p id="trackingCourier" class="font-bold text-gray-800 text-base mt-0.5">POS</p>
+                        <div>
+                            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Deskripsi Terkini dari Ekspedisi (Real)</p>
+                            <p id="trackingSummaryDesc" class="font-bold text-gray-800 text-xs sm:text-sm mt-0.5 leading-snug">-</p>
                         </div>
                     </div>
 
@@ -339,8 +345,12 @@
                 const summary = data.data.summary || {};
                 const history = data.data.history || [];
 
-                document.getElementById('trackingStatusBadge').textContent = summary.status || 'PROSES';
-                document.getElementById('trackingCourier').textContent = summary.courier || 'POS';
+                document.getElementById('trackingStatusBadge').textContent = summary.status_indonesia || summary.status || 'PROSES';
+                document.getElementById('trackingCourier').textContent = summary.courier ? summary.courier.toUpperCase() : 'POS';
+                const summaryDescEl = document.getElementById('trackingSummaryDesc');
+                if (summaryDescEl) {
+                    summaryDescEl.textContent = summary.desc || summary.description || summary.status_indonesia || summary.status || '-';
+                }
 
                 const timelineEl = document.getElementById('trackingTimeline');
                 timelineEl.innerHTML = '';

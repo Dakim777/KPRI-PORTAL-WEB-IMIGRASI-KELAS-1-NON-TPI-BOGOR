@@ -193,6 +193,19 @@
                     <span id="resCourierName" class="text-xs font-mono font-bold bg-slate-900 px-3 py-1 rounded-lg border border-slate-700 text-slate-300">POS INDONESIA</span>
                 </div>
 
+                {{-- Status & Deskripsi Real-time dari Ekspedisi --}}
+                <div id="resSummaryBox" class="bg-slate-900/90 border border-slate-700/80 rounded-xl p-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex-1">
+                        <span class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-blue-400">Deskripsi Terkini Ekspedisi (Real-Time)</span>
+                        <p id="resSummaryDesc" class="text-sm sm:text-base font-bold text-white mt-1 leading-snug">-</p>
+                    </div>
+                    <div>
+                        <span id="resSummaryStatus" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-extrabold tracking-wide uppercase bg-blue-500/20 text-blue-300 border border-blue-500/40 whitespace-nowrap">
+                            PROSES
+                        </span>
+                    </div>
+                </div>
+
                 <div id="resManifestTimeline" class="relative border-l-2 border-blue-500 ml-3 pl-6 space-y-7 py-2">
                     {{-- Injected via JS --}}
                 </div>
@@ -335,6 +348,14 @@
         const history = ekspedisi.history || [];
 
         document.getElementById('resCourierName').textContent = summary.courier ? summary.courier.toUpperCase() : 'EKSPEDISI';
+        const summaryDescEl = document.getElementById('resSummaryDesc');
+        if (summaryDescEl) {
+            summaryDescEl.textContent = summary.desc || summary.description || summary.status_indonesia || summary.status || 'Sedang dalam proses pengantaran / verifikasi ekspedisi';
+        }
+        const summaryStatusEl = document.getElementById('resSummaryStatus');
+        if (summaryStatusEl) {
+            summaryStatusEl.textContent = summary.status_indonesia || summary.status || 'PROSES';
+        }
 
         const timelineEl = document.getElementById('resManifestTimeline');
         timelineEl.innerHTML = '';
