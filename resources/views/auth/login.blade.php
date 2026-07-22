@@ -85,17 +85,19 @@
         </div>
     </div>
 
-    <div class="mt-6 flex flex-col items-center justify-center gap-3 text-xs" style="color:#3A5A7A">
+    <div class="mt-6 flex flex-col items-center justify-center text-xs" style="color:#8AAFE8">
         <p class="text-center font-medium">
             KPRI — Kantor Imigrasi Bogor Kelas 1 Non TPI Bogor &copy; {{ date('Y') }}
         </p>
-        <div class="flex items-center gap-2.5 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-gray-200 shadow-sm">
-            <span class="text-gray-500 font-medium text-xs">Developed by</span>
-            <div class="flex items-center gap-2 font-bold text-gray-800">
-                <img src="{{ asset('images/logo-if-itera-new.jpeg') }}" alt="Logo IF ITERA" class="w-auto object-contain rounded" style="height: 24px;" />
-                <span class="tracking-wider text-xs">Informatika ITERA</span>
-            </div>
-        </div>
+    </div>
+</div>
+
+{{-- Credit Logo - Pojok Kanan Bawah --}}
+<div class="fixed bottom-5 right-5 z-50 flex items-center gap-2.5 bg-white/95 backdrop-blur-md px-4 py-2 rounded-full border border-gray-200 shadow-xl transition-all">
+    <span class="text-gray-600 font-medium text-xs">Developed by</span>
+    <div class="flex items-center gap-2 font-bold text-gray-900">
+        <img src="{{ asset('images/logo-if-itera-new.jpeg') }}" alt="Logo IF ITERA" class="w-auto object-contain rounded" style="height: 28px;" />
+        <span class="tracking-wider text-xs">Informatika ITERA</span>
     </div>
 </div>
 
