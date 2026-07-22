@@ -137,7 +137,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-50">
                     @forelse($transaksis as $t)
-                    <tr class="hover:bg-gray-50 transition-colors duration-100">
+                    <tr class="hover:bg-gray-50">
                         <td class="px-4 py-3 whitespace-nowrap text-xs">{{ $t->tanggal_transaksi?->format('d/m/Y') }}</td>
                         <td class="px-4 py-3">
                             <div class="font-bold text-blue-700 whitespace-nowrap">{{ $t->id_transaksi }}</div>
@@ -238,7 +238,7 @@
     </div>
 
     {{-- ── Modal Lacak Resi (BinderByte Tracking Timeline) ──────────────────── --}}
-    <div id="trackingModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="trackingModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/70 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden transform transition-all">
             <div class="bg-gradient-to-r from-blue-900 to-indigo-800 px-6 py-4 flex items-center justify-between text-white">
                 <div>

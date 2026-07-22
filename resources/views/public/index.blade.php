@@ -30,12 +30,12 @@
 </head>
 <body class="bg-slate-900 font-sans min-h-screen flex flex-col text-slate-100 selection:bg-blue-600 selection:text-white relative overflow-x-hidden">
 
-    {{-- Background Glow --}}
-    <div class="absolute -top-40 -left-40 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute top-1/3 -right-40 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none"></div>
+    {{-- Background Glow (Optimized for Low-Spec Office PC: no blur-3xl) --}}
+    <div class="absolute -top-40 -left-40 w-96 h-96 bg-gradient-to-br from-blue-900/20 to-transparent rounded-full pointer-events-none"></div>
+    <div class="absolute top-1/3 -right-40 w-96 h-96 bg-gradient-to-bl from-indigo-900/15 to-transparent rounded-full pointer-events-none"></div>
 
-    {{-- Top Navbar --}}
-    <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-40">
+    {{-- Top Navbar (Optimized: solid background instead of heavy backdrop-blur) --}}
+    <header class="border-b border-slate-800 bg-slate-900/95 sticky top-0 z-40">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
             <div class="flex items-center gap-2.5 sm:gap-3.5">
                 <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
@@ -72,8 +72,8 @@
             </p>
         </div>
 
-        {{-- Search Card --}}
-        <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-4 sm:p-6 shadow-2xl backdrop-blur-xl relative">
+        {{-- Search Card (Optimized: solid background instead of backdrop-blur-xl) --}}
+        <div class="bg-slate-800/95 border border-slate-700 rounded-2xl p-4 sm:p-6 shadow-xl relative">
             <form id="trackForm" onsubmit="handlePublicTrack(event)" class="flex flex-col sm:flex-row gap-3" data-no-loader="true">
                 <div class="relative flex-1">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">

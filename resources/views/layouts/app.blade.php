@@ -257,7 +257,7 @@
             {{-- Footer / Watermark --}}
             <footer class="mt-8 pt-5 border-t border-gray-200/80 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-3 pb-2">
                 <p>&copy; {{ date('Y') }} KPRI Kantor Imigrasi Kelas I Non-TPI Bogor.</p>
-                <div class="flex items-center gap-2.5 bg-white/90 px-4 py-2 rounded-full border border-gray-200 shadow-sm">
+                <div class="flex items-center gap-2.5 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm">
                     <span class="text-gray-500 font-medium text-xs">Developed by</span>
                     <div class="flex items-center gap-2 font-bold text-gray-800">
                         <img src="{{ asset('images/logo-if-itera-new.jpeg') }}" alt="Logo IF ITERA" class="w-auto object-contain rounded" style="height: 24px;" />

@@ -1,17 +1,12 @@
-{{-- Global Clean & Professional Loading Buffer Animation --}}
-<div id="kpri-global-loader" class="fixed inset-0 z-[999999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none">
-    <div id="kpri-global-loader-card" class="bg-slate-900/95 border border-slate-700/80 rounded-2xl p-6 sm:p-8 shadow-2xl shadow-blue-950/50 flex flex-col items-center justify-center gap-5 max-w-sm w-full mx-4 transform scale-95 transition-all duration-300">
-        {{-- Animated Dual Orbital & Glowing Spinner --}}
-        <div class="relative w-20 h-20 flex items-center justify-center">
-            {{-- Outer Subtle Ring --}}
-            <div class="absolute inset-0 rounded-full border-4 border-blue-500/15 shadow-inner"></div>
-            {{-- Primary Spinning Ring --}}
-            <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-500 border-r-indigo-500 animate-spin" style="animation-duration: 0.75s;"></div>
-            {{-- Reverse Secondary Spinning Ring --}}
-            <div class="absolute inset-2 rounded-full border-4 border-transparent border-b-amber-400 border-l-blue-400 animate-spin" style="animation-duration: 1.1s; animation-direction: reverse;"></div>
-            {{-- Center Badge --}}
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center shadow-md shadow-blue-500/40 animate-pulse">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+{{-- Global Clean & Professional Loading Buffer Animation (Optimized for Low-Spec Office PCs) --}}
+<div id="kpri-global-loader" class="fixed inset-0 z-[999999] bg-slate-950/85 flex items-center justify-center transition-opacity duration-200 opacity-0 pointer-events-none">
+    <div id="kpri-global-loader-card" class="bg-slate-900 border border-slate-700 rounded-2xl p-6 sm:p-8 shadow-2xl flex flex-col items-center justify-center gap-5 max-w-sm w-full mx-4 transform scale-95 transition-transform duration-200">
+        {{-- Clean Single Orbital Spinner (Low CPU/GPU Load) --}}
+        <div class="relative w-16 h-16 flex items-center justify-center">
+            <div class="absolute inset-0 rounded-full border-4 border-slate-800"></div>
+            <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-500 border-r-indigo-500 animate-spin" style="animation-duration: 0.7s; will-change: transform;"></div>
+            <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </div>
@@ -23,9 +18,9 @@
             <p id="kpri-loader-desc" class="text-slate-400 text-xs sm:text-sm leading-relaxed">Mohon tunggu sebentar, sistem sedang mengolah dan memverifikasi permintaan Anda.</p>
         </div>
 
-        {{-- Smooth Pulse Progress Line --}}
+        {{-- Static Clean Progress Bar --}}
         <div class="w-full bg-slate-800 rounded-full h-1 overflow-hidden">
-            <div class="bg-gradient-to-r from-blue-500 via-indigo-400 to-amber-400 h-1 rounded-full animate-pulse w-full"></div>
+            <div class="bg-gradient-to-r from-blue-500 to-indigo-500 h-1 rounded-full w-full"></div>
         </div>
     </div>
 </div>
