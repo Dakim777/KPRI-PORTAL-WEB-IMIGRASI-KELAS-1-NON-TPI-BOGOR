@@ -161,6 +161,28 @@
                 </div>
             </div>
 
+            {{-- Transaksi Alert Card --}}
+            <div id="transaksiAlertCard" class="hidden bg-amber-500/15 border-2 border-amber-500/40 rounded-2xl p-6 text-center shadow-xl">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 mb-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <h4 class="font-bold text-amber-300 text-lg mb-2 uppercase tracking-wide">Paspor Dalam Status Transaksi / Pembuatan</h4>
+                <p id="transaksiAlertText" class="text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
+                    Paspor Anda masih dalam status transaksi (Masa pembuatan atau pencetakan di Kantor Imigrasi). Silahkan periksa kembali secara berkala; nomor resi pengiriman akan resmi dirilis dan dikirimkan otomatis ke WhatsApp Anda setelah paspor selesai dicetak dan siap dikirim.
+                </p>
+            </div>
+
+            {{-- Batal Alert Banner --}}
+            <div id="batalAlertCard" class="hidden bg-red-500/15 border-2 border-red-500/50 rounded-2xl p-6 text-center shadow-xl">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-500/20 text-red-400 mb-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                </div>
+                <h4 class="font-bold text-red-300 text-lg mb-2 uppercase tracking-wide">Status Pengiriman Telah Dibatalkan</h4>
+                <p id="batalAlertText" class="text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
+                    Maaf, status pengiriman Anda telah dibatalkan dengan nomor resi yang diinputkan.
+                </p>
+            </div>
+
             {{-- Expedition Manifest Card --}}
             <div id="ekspedisiCard" class="bg-slate-800/90 border border-slate-700 rounded-2xl p-6 shadow-xl">
                 <div class="flex items-center justify-between border-b border-slate-700/80 pb-4 mb-6">
@@ -213,7 +235,12 @@
         }
         document.getElementById('resultLoading').classList.remove('hidden');
         document.getElementById('resultError').classList.add('hidden');
-        document.getElementById('resultContainer').classList.add('hidden');
+        document.getElementById('resultContainer').classList.remove('hidden');
+        document.getElementById('kpriCard').classList.add('hidden');
+        document.getElementById('transaksiAlertCard').classList.add('hidden');
+        document.getElementById('batalAlertCard').classList.add('hidden');
+        document.getElementById('ekspedisiCard').classList.add('hidden');
+        document.getElementById('noResiWarning').classList.add('hidden');
 
         fetch(`/api/track?q=${encodeURIComponent(query)}`)
             .then(res => res.json())
@@ -226,8 +253,6 @@
                     document.getElementById('errorMessage').textContent = data.message || 'Data tidak ditemukan di sistem.';
                     return;
                 }
-
-                document.getElementById('resultContainer').classList.remove('hidden');
 
                 if (data.is_mock) {
                     document.getElementById('publicMockBadge').classList.remove('hidden');
@@ -251,30 +276,40 @@
                         badge.className = 'inline-flex items-center px-4 py-1.5 rounded-full text-xs font-extrabold tracking-wide uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
                     } else if (k.status_internal === 'batal') {
                         badge.className = 'inline-flex items-center px-4 py-1.5 rounded-full text-xs font-extrabold tracking-wide uppercase bg-red-500/20 text-red-300 border border-red-500/40';
+                    } else if (k.status_internal === 'transaksi') {
+                        badge.className = 'inline-flex items-center px-4 py-1.5 rounded-full text-xs font-extrabold tracking-wide uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40';
                     } else {
                         badge.className = 'inline-flex items-center px-4 py-1.5 rounded-full text-xs font-extrabold tracking-wide uppercase bg-blue-500/20 text-blue-300 border border-blue-500/40';
                     }
 
-                    // Manifest ekspedisi
-                    if (k.no_resi && k.no_resi !== '-') {
-                        document.getElementById('ekspedisiCard').classList.remove('hidden');
-                        document.getElementById('noResiWarning').classList.add('hidden');
-                        if (data.data.ekspedisi) {
+                    // Manifest ekspedisi logic
+                    if (k.status_internal === 'transaksi') {
+                        document.getElementById('transaksiAlertCard').classList.remove('hidden');
+                        if (data.data.alert_message) document.getElementById('transaksiAlertText').textContent = data.data.alert_message;
+                    } else if (k.status_internal === 'batal') {
+                        document.getElementById('batalAlertCard').classList.remove('hidden');
+                        if (data.data.alert_message) document.getElementById('batalAlertText').textContent = data.data.alert_message;
+                        if (k.no_resi && k.no_resi !== '-' && data.data.ekspedisi) {
+                            document.getElementById('ekspedisiCard').classList.remove('hidden');
                             renderManifest(data.data.ekspedisi);
-                        } else {
-                            renderManifest({
-                                summary: { awb: k.no_resi, courier: 'POS', status: 'ON PROCESS' },
-                                history: [{ date: k.tanggal_transaksi || '-', desc: 'Resi pengiriman tercatat di loket Koperasi dan dalam proses pengiriman POS Indonesia.', location: 'Bogor' }]
-                            });
                         }
                     } else {
-                        document.getElementById('ekspedisiCard').classList.add('hidden');
-                        document.getElementById('noResiWarning').classList.remove('hidden');
+                        if (k.no_resi && k.no_resi !== '-') {
+                            document.getElementById('ekspedisiCard').classList.remove('hidden');
+                            if (data.data.ekspedisi) {
+                                renderManifest(data.data.ekspedisi);
+                            } else {
+                                renderManifest({
+                                    summary: { awb: k.no_resi, courier: 'POS', status: 'ON PROCESS' },
+                                    history: [{ date: k.tanggal_transaksi || '-', desc: 'Resi pengiriman tercatat di loket Koperasi dan dalam proses pengiriman POS Indonesia.', location: 'Bogor' }]
+                                });
+                            }
+                        } else {
+                            document.getElementById('noResiWarning').classList.remove('hidden');
+                        }
                     }
                 } else if (data.source === 'ekspedisi_direct') {
-                    // Cek resi langsung ke ekspedisi
                     document.getElementById('kpriCard').classList.add('hidden');
-                    document.getElementById('noResiWarning').classList.add('hidden');
                     document.getElementById('ekspedisiCard').classList.remove('hidden');
                     renderManifest(data.data);
                 }

@@ -40,9 +40,10 @@ class TransaksiPaspor extends Model
     ];
 
     protected $casts = [
+        'nama_penerima'             => \App\Casts\SafeEncryptedCast::class,
         'nama_paspor_list'          => 'encrypted:array',
-        'alamat_tujuan_pengiriman'  => 'encrypted',
-        'no_hp'                     => 'encrypted',
+        'alamat_tujuan_pengiriman'  => \App\Casts\SafeEncryptedCast::class,
+        'no_hp'                     => \App\Casts\SafeEncryptedCast::class,
         'tanggal_transaksi'         => 'date',
         'tanggal_pengiriman_paspor' => 'date',
         'tanggal_paspor_diterima'   => 'date',
@@ -115,10 +116,23 @@ class TransaksiPaspor extends Model
             return $query;
         }
 
-        return $query->where(function (Builder $q) use ($term) {
-            $q->where('nama_penerima', 'like', "%{$term}%")
-              ->orWhere('id_transaksi', 'like', "%{$term}%")
-              ->orWhere('no_resi', 'like', "%{$term}%");
+        // Karena nama_penerima terenkripsi di database, cari ID yang cocok setelah didekripsi di PHP
+        $matchingIds = static::all()->filter(function ($item) use ($term) {
+            try {
+                return stripos((string) $item->nama_penerima, trim($term)) !== false;
+            } catch (\Exception $e) {
+                return false;
+            }
+        })->pluck('id')->toArray();
+
+        return $query->where(function (Builder $q) use ($term, $matchingIds) {
+            $q->where('id_transaksi', 'like', "%{$term}%")
+              ->orWhere('no_resi', 'like', "%{$term}%")
+              ->orWhere('no_struk', 'like', "%{$term}%");
+
+            if (!empty($matchingIds)) {
+                $q->orWhereIn('id', $matchingIds);
+            }
         });
     }
 
