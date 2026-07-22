@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Models\TransaksiPaspor;
 use App\Models\User;
 use App\Notifications\PasporSiapDikirimNotification;
-use App\Services\LogistikService;
 use Illuminate\Console\Command;
 
 class CheckPasporEstimasiCommand extends Command
@@ -65,45 +64,5 @@ class CheckPasporEstimasiCommand extends Command
         }
 
         $this->info("Berhasil mengirim notifikasi untuk {$count} paspor.");
-
-        // ── Auto-sync status resi dari BinderByte (jika status 'diproses' dan ada no_resi) ──
-        $this->info("Memeriksa status resi ekspedisi via BinderByte...");
-        $diprosesWithResi = TransaksiPaspor::where('status_pengiriman', 'diproses')
-            ->whereNotNull('no_resi')
-            ->where('no_resi', '!=', '')
-            ->get();
-
-        $logistikService = app(LogistikService::class);
-        $syncedCount = 0;
-
-        foreach ($diprosesWithResi as $paspor) {
-            $track = $logistikService->lacakResi($paspor->no_resi, strtolower($paspor->jenis_kurir ?? 'pos'));
-            if (($track['status'] ?? 0) == 200 && !empty($track['data']['summary']['status']) && empty($track['is_fallback'])) {
-                $statusResi = strtoupper(trim($track['data']['summary']['status']));
-                // Jika status dari ekspedisi adalah DELIVERED / BERHASIL TERKIRIM / SELESAI
-                if (in_array($statusResi, ['DELIVERED', 'SELESAI', 'TERKIRIM', 'SUCCESS', 'DITERIMA'])) {
-                    $tanggalDiterima = today();
-                    try {
-                        if (!empty($track['data']['summary']['date'])) {
-                            $tanggalDiterima = \Carbon\Carbon::parse($track['data']['summary']['date'])->format('Y-m-d');
-                        } elseif (!empty($track['data']['history'][0]['date'])) {
-                            $tanggalDiterima = \Carbon\Carbon::parse($track['data']['history'][0]['date'])->format('Y-m-d');
-                        }
-                    } catch (\Exception $e) {
-                        $tanggalDiterima = today();
-                    }
-
-                    $paspor->update([
-                        'status_pengiriman'       => 'selesai',
-                        'tanggal_paspor_diterima' => $tanggalDiterima
-                    ]);
-                    $syncedCount++;
-                }
-            }
-        }
-
-        if ($syncedCount > 0) {
-            $this->info("Otomatis memperbarui {$syncedCount} paspor menjadi status Selesai berdasarkan resi.");
-        }
     }
 }
