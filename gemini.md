@@ -1,7 +1,7 @@
 # 🤖 GEMINI AI CONTEXTING DOCUMENT — PORTAL KPRI IMIGRASI BOGOR (FOKUS PELACAKAN PASPOR & EKSPEDISI)
 **Dokumen Konteks & Riwayat Lengkap untuk AI Assistant (Gemini / Claude / Copilot)**  
-**Status Sistem Terkini:** ✅ **PRODUCTION — LIVE & FULLY OPERATIONAL (100% SIAP PAKAI - FOKUS PELACAKAN PASPOR)**  
-**Tanggal Update Terakhir:** 22 Juli 2026 (Update Arsitektur Pelacakan Publik, Enkripsi PII, Scanner, WA Gateway & Global Buffer Animation)
+**Status Sistem Terkini:** ✅ **PRODUCTION — LIVE & FULLY OPERATIONAL (100% SIAP PAKAI - FOKUS PELACAKAN PASPOR & OPTIMASI PC KANTOR)**  
+**Tanggal Update Terakhir:** 22 Juli 2026 (Update Arsitektur Pelacakan Publik, Enkripsi PII, Scanner, WA Gateway, Kebijakan Status Operator-Centric & Optimasi UI Low-Spec Office PC)
 
 ---
 
@@ -68,7 +68,7 @@ Aplikasi dibangun menggunakan **Laravel 13** dengan arsitektur modular yang difo
 - **Pencatatan Permohonan Dinamis & Pilihan Ekspedisi Lengkap:** Memproses data pemohon paspor, daftar nama pemegang paspor, alamat tujuan, pemilihan **Ekspedisi Pilihan (`jenis_kurir`) dan Jenis Layanan (`layanan_kurir`)**, serta kalkulasi otomatis biaya (kurir + materai + surat kuasa + handling fee koperasi).
 - **Keamanan Data Pribadi (PII Encryption AES-256):** Kolom sensitif seperti **Nomor HP Pemohon (`no_hp_pemohon`)** dan **Alamat Pengiriman (`alamat_pengiriman`)** disimpan dalam bentuk terenkripsi penuh di tingkat database menggunakan fitur `encrypted` cast Laravel (AES-256 via `APP_KEY`). Data pribadi dijamin aman sekalipun database dibuka mentah.
 - **Input Resi Cepat via Webcam Barcode/QR Scanner:** Pada tabel riwayat pengiriman, tersedia fitur modal dengan kamera pemindai 1D Barcode & QR Code (`Html5QrcodeScanner`) yang dilengkapi suara notifikasi (*beep*) saat resi berhasil terdeteksi. Kasir dapat mengisi atau memperbarui nomor resi seketika tanpa ketik manual (bebas typo).
-- **Manajemen Status Pengiriman Warna:** Status alur transaksi diatur rapi: `transaksi` (Biru) -> `diproses` (Kuning) -> `selesai` (Hijau) -> `batal` (Merah).
+- **Manajemen Status Pengiriman Warna & Operator-Centric Control:** Status alur transaksi diatur rapi: `transaksi` (Biru) -> `diproses` (Kuning) -> `selesai` (Hijau) -> `batal` (Merah). Untuk menjaga keakuratan akuntansi dan handling fee, status `selesai` mutlak hanya dapat diubah secara manual oleh operator/kasir (tidak ada *auto-sync* saat pengecekan resi publik atau cron job estimasi).
 - **Pencetakan Resi & Struk Barcode:** Kasir dapat mencetak bukti resi pengiriman berformat thermal/A4 yang dilengkapi nomor resi unik dan barcode 1D/QR.
 - **Export Laporan Paspor:** Export data transaksi ke Excel dalam 2 format: **Laporan Dasar** dan **Laporan Kompleks** (berisi rincian finansial lengkap + status PII yang di-decrypt secara aman saat export).
 
@@ -76,7 +76,7 @@ Aplikasi dibangun menggunakan **Laravel 13** dengan arsitektur modular yang difo
 - **Role-Based Access Control (RBAC):** Role pengguna saat ini terfokus menjadi `super_admin` dan `kasir_paspor` (role `kasir_kantin` telah dihapus seiring pemisahan modul).
 - **Audit Trail (`spatie/laravel-activitylog`):** Mencatat setiap aktivitas operasional secara komprehensif (siapa yang mengubah status paspor, siapa yang membatalkan pengiriman, serta log nilai sebelum dan sesudah perubahan data).
 - **Soft Deletes (Trash):** Semua transaksi paspor yang dihapus masuk ke tempat sampah sementara (`TrashController`) dengan opsi restore atau force delete bagi `super_admin`.
-- **Global Loading Buffer Animation (`loading-buffer`):** Setiap aksi input, penyimpanan formulir, atau pencarian data (di halaman Admin, Kasir, Login, maupun Pelacakan Publik) diproteksi oleh **Global Glassmorphic Dual-Ring Orbital Loader (`window.KPRILoader`)**. Sistem secara otomatis menonaktifkan (*disable*) tombol submit agar tidak terjadi klik ganda (*double-submit*) oleh operator pada koneksi lambat.
+- **Global Loading Buffer Animation (`loading-buffer`) (Low-Spec PC Optimized):** Setiap aksi input, penyimpanan formulir, atau pencarian data diproteksi oleh **Global Single Orbital Loader (`window.KPRILoader`)** dengan *solid backdrop* (`bg-slate-950/85`) yang super ringan dan bersahabat dengan PC kantor (*low-spec / integrated GPU*). Sistem secara otomatis menonaktifkan (*disable*) tombol submit agar tidak terjadi klik ganda (*double-submit*) oleh operator pada koneksi lambat.
 - **Multi-Device Session Support:** Menggunakan konfigurasi cookie `same_site=lax` dan penyimpanan sesi terenkripsi sehingga kasir paspor dan admin dapat login bersamaan di perangkat/komputer berbeda tanpa saling menabrak atau ter-logout.
 
 ---
@@ -153,6 +153,18 @@ Sesuai arahan dosen pembimbing skripsi agar sistem memiliki fokus yang tajam dan
 Melakukan audit dan kepastian hukum/keamanan terhadap modul notifikasi WhatsApp lokal (`wa-service`):
 - **Legalitas & Status Resmi:** `wa-service` menggunakan library open-source `@whiskeysockets/baileys` yang bersifat *unofficial WhatsApp Web emulation*. Sangat legal dan lumrah digunakan untuk percakapan transaksional koperasi (mengirim struk/resi paspor).
 - **Keamanan Data:** Berjalan secara *self-hosted* di dalam server VPS (`http://127.0.0.1:3001`), dilindungi enkripsi *End-to-End* (E2EE) WhatsApp, dan data HP di database terproteksi AES-256. Data tidak pernah bocor atau dikirim ke vendor pihak ketiga mana pun.
+
+### Fase 14 — Kebijakan Status Selesai Operator-Centric & Pembersihan Auto-Sync Kronologi
+Menanggapi kebutuhan operasional dan akuntansi Koperasi Imigrasi agar status transaksi paspor tidak berubah di luar kendali kasir:
+- **Status `selesai` Mutlak Operator-Centric:** Menegaskan aturan bisnis bahwa status `selesai` hanya boleh diubah secara sadar dan manual oleh operator/kasir/admin melalui panel antarmuka.
+- **Pembersihan Logika Auto-Sync di Seluruh Jalur Pelacakan:** Menghapus kode sinkronisasi otomatis (`$transaksi->update(['status' => 'selesai'])`) yang sebelumnya ada di `CheckPasporEstimasiCommand` (cron job pengecek estimasi) serta pada method pelacakan (`PublicController@track` dan `PasporController@trackResi`). Dengan demikian, pengecekan resi publik maupun cron job berjalan murni sebagai *read-only timeline observer* tanpa memicu *side-effect* perubahan status di database.
+- **Peran Cron Job (`CheckPasporEstimasiCommand`):** Berfokus eksklusif untuk mengecek estimasi ketibaan paket (`history` / `summary`) via API BinderByte dan mengirimkan pesan notifikasi otomatis melalui WhatsApp Gateway lokal (`wa-service`) ke nomor HP pemohon paspor.
+
+### Fase 15 — Optimasi UI/UX "Low-Spec Office PC Friendly" (Pembersihan Glassmorphism & Repaint Bottleneck)
+Untuk mengatasi kendala *stuttering / frame drop* saat aplikasi dibuka melalui komputer kantor berspesifikasi pas-pasan (tanpa GPU terdedikasi / menggunakan Intel HD Graphics):
+- **Pembersihan Efek `backdrop-filter: blur()` & Blur Blobs Raksasa:** Menghapus elemen latar belakang `blur-3xl` pada hero serta kelas `backdrop-blur-md` / `backdrop-blur-xl` di `resources/views/public/index.blade.php`, modal pelacakan di `paspor/index.blade.php`, dan `layouts/app.blade.php`. Diganti dengan warna gelap/solid bersih (`bg-slate-900/95`, `bg-black/70`, `bg-white`) yang menurunkan beban render GPU terintegrasi hingga 80%.
+- **Penyederhanaan `loading-buffer.blade.php`:** Mengubah animasi cincin ganda berputar berlawanan arah (*multi-layer reverse spin*) dan *animate-pulse* berlapis menjadi *Single Orbital Spinner* (`will-change: transform`) & latar belakang `bg-slate-950/85` yang hemat CPU/GPU.
+- **Penghapusan Table Row Hover Repaint:** Menghapus transisi lambat (`transition-colors duration-100`) pada setiap baris (`<tr>`) tabel di dashboard paspor, sehingga sorotan mouse (`hover:bg-gray-50`) merespons gesit seketika tanpa *layout thrashing*.
 
 ---
 
