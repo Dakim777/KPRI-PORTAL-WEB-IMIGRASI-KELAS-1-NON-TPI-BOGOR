@@ -189,8 +189,8 @@
             <div class="flex items-center gap-3 bg-slate-800/90 px-4 py-2 rounded-full border border-slate-700 shadow-sm">
                 <span class="text-xs font-medium text-slate-400 tracking-wide">Developed by</span>
                 <div class="flex items-center gap-2 font-bold text-slate-100">
-                    <img src="{{ asset('images/logo-if-itera-new.jpeg') }}" alt="Logo IF ITERA" class="w-auto object-contain rounded" style="height: 26px;" />
-                    <span class="tracking-wider text-xs">IF ITERA</span>
+                    <img src="{{ asset('images/logo-if-itera-new.jpeg') }}" alt="Logo Informatika ITERA" class="w-auto object-contain rounded" style="height: 26px;" />
+                    <span class="tracking-wider text-xs">Informatika ITERA</span>
                 </div>
             </div>
         </div>

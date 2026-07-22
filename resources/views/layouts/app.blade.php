@@ -179,8 +179,8 @@
             </form>
             <div class="mt-3 pt-2.5 border-t border-blue-900/50 text-[10.5px] text-center flex items-center justify-center gap-2">
                 <span class="text-blue-300/70 font-medium">Developed by</span>
-                <img src="{{ asset('images/logo-if-itera-new.jpeg') }}" alt="Logo IF ITERA" class="w-auto object-contain rounded-sm" style="height: 20px;" />
-                <span class="font-bold tracking-wider text-white">IF ITERA</span>
+                <img src="{{ asset('images/logo-if-itera-new.jpeg') }}" alt="Logo Informatika ITERA" class="w-auto object-contain rounded-sm" style="height: 20px;" />
+                <span class="font-bold tracking-wider text-white">Informatika ITERA</span>
             </div>
         </div>
     </aside>
