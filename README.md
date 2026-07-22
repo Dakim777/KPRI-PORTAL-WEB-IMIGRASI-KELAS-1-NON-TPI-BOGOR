@@ -446,60 +446,61 @@ flowchart TD
     classDef start      fill:#d1fae5,color:#065f46,stroke:#059669;
     classDef security   fill:#fef08a,color:#854d0e,stroke:#ca8a04;
     classDef newfeature fill:#dbeafe,color:#1e3a8a,stroke:#3b82f6;
-    classDef production fill:#f0fdf4,color:#166534,stroke:#16a34a,stroke-width:2px;
+    classDef publicflow fill:#f0fdf4,color:#166534,stroke:#16a34a,stroke-width:2px;
 
-    %% ── PRODUCTION ENTRY ─────────────────────────────────
-    PROD(["🌐 https://kpriimigrasibogor.my.id\n✅ PRODUCTION — SSL HTTPS Aktif\n(Portal Pelacakan Paspor)"])
-    PROD --> A
+    %% ── PUBLIC GATEWAY & TRACKING ────────────────────────
+    subgraph Public_Tracking ["PELACAKAN PASPOR PUBLIK & CEK RESI EKSPEDISI"]
+        P_START(["🌐 Buka Portal KPRI\nkpriimigrasibogor.my.id"]) --> P_HOME["Halaman Pelacakan Paspor Publik\n(Logo Ditjen Imigrasi & Informatika ITERA)"]
+        P_HOME --> P_SEARCH["Input Nomor Resi / Nama / No Paspor"]
+        P_SEARCH --> P_RESULT["Tampilkan Status Live Koperasi"]
+        P_RESULT --> P_API{"Cek API Ekspedisi\n(BinderByte / POS)"}
+        P_API -- "Data Ditemukan" --> P_MANIFEST["Riwayat Perjalanan Resi POS Indonesia"]
+        P_API -- "Belum Terindeks / Timeout" --> P_FALLBACK["Graceful Fallback:\nBelum Terindeks di POS / Dalam Pengemasan"]
+        P_HOME --> |"Klik Login Petugas"| B
+    end
 
     %% ── ALUR UTAMA & AUTENTIKASI ─────────────────────────
     subgraph Autentikasi ["LOGIN & ROLE PENGGUNA"]
-        A(["Buka Website KPRI"]) --> B["Halaman Login"]
-        B --> C{"Cek Autentikasi?"}
-        C -- Gagal --> B
-        C -- Berhasil --> D{"Pemisahan Hak Akses\nRole-Based Access Control"}
+        B["Halaman Login Petugas\n(Multi-Device Support)"] --> C{"Cek Autentikasi?"}
+        C -- "Gagal" --> B
+        C -- "Berhasil" --> D{"Pemisahan Hak Akses\nRole-Based Access Control"}
     end
 
     %% ── MODUL SUPER ADMIN ────────────────────────────────
     subgraph Modul_Admin ["MODUL SUPER ADMIN"]
-        D -- super_admin --> E["Dashboard Admin Paspor"]
-        E --> E1["Kelola Akun Pengguna\n(Tambah / Edit / Hapus)"]
-        E --> E2["Audit Trail\n(Log Aktivitas Lengkap)"]
-        E --> E3["Soft Deletes (Trash)\nData Tidak Hilang Permanen"]
+        D -- "super_admin" --> E["Dashboard Admin Paspor"]
+        E --> E1["Kelola Akun Pengguna\n(Tambah/Edit/Hapus)"]
+        E --> E2["Audit Trail\n(Log Aktivitas & Riwayat Perubahan)"]
+        E --> E3["Soft Deletes (Trash)\nRiwayat Transaksi Tetap Terjaga"]
         E --> E4["Monitoring Omset & Statistik\nPengiriman Paspor"]
-
+        
         class E role;
         class E1,E4 aksi;
         class E2,E3 security;
     end
 
-    %% ── SUPER ADMIN AKSES KE MODUL PASPOR ────────────────
+    %% ── KONEKSI ROLE SUPER ADMIN KE MODUL PASPOR ─────────
     E -.-> |"Akses Penuh (Full Role)"| G
 
     %% ── MODUL PASPOR ─────────────────────────────────────
     subgraph Modul_Paspor ["MODUL PENGIRIMAN & PELACAKAN PASPOR"]
-        D -- kasir_paspor --> G["Dashboard Paspor"]
-
-        G --> G1["Pendaftaran Permohonan\nPengiriman Paspor"]
-        G1 --> G1_A["Input Dinamis:\nHandling Fee + Materai + SK"]
-        G1_A --> G11["Enkripsi Data PII\n(AES-256 via Laravel)"]
-
-        G --> G2["Daftar Riwayat Pengiriman\n(Pagination & Filter)"]
+        D -- "kasir_paspor" --> G["Dashboard Paspor"]
+        
+        G --> G1["Pendaftaran Permohonan Paspor"]
+        G1 --> G1_A["Input Dinamis:\nHandling Fee, Materai, SK"]
+        G1_A --> G11["Enkripsi Data PII (AES-256)"]
+        
+        G --> G2["Daftar Riwayat Pengiriman"]
         G2 --> G2_A["Pencarian by Nama/Paspor/Resi"]
-        G2 --> G21["Kelola Status Pengiriman"]
-        G21 --> G21_1["🔵 Transaksi\n(Status Awal - Baru Masuk)"]
-        G21_1 --> |"Kasir Update"| G21_2["🟡 Diproses\n(Sedang Dikurir/Dikirim)"]
-        G21_2 --> |"Sudah Terkirim"| G21_3["🟢 Selesai\n(Paspor Diterima)"]
-        G21_2 --> |"Dibatalkan"| G21_4["🔴 Batal\n(Transaksi Dibatalkan)"]
-        G21_1 --> |"Dibatalkan"| G21_4
-        G2 --> G22["Edit Transaksi / Input Resi"]
-        G22 --> |"Webcam Scanner 1D & QR"| G2_C["Input No Resi Otomatis\n(+ Suara Beep)"]
-        G2 --> G2_B["Cetak Kwitansi / Struk Resi\n(Dilengkapi Barcode Unik)"]
-
+        G2 --> G21["Update Status Warna:\nBiru (Transaksi) → Kuning (Diproses) → Hijau (Selesai) / Merah (Batal)"]
+        G2 --> G22["Edit Transaksi / Input Resi Baru"]
+        G22 --> |"Webcam Scanner 1D & QR Code\n(Cepat & Akurat)"| G2_C["Input No Resi Otomatis (+ Suara Beep)"]
+        G2 --> G2_B["Cetak Kwitansi / Struk Resi\n(Dilengkapi Barcode Unik & No Resi)"]
+        
         G --> G_EXP["Export Laporan Paspor"]
         G_EXP --> G_EXP1["Laporan Dasar (Excel)"]
-        G_EXP --> G_EXP2["Laporan Kompleks (Excel)\nData Lengkap + Biaya Rinci"]
-
+        G_EXP --> G_EXP2["Laporan Kompleks (Excel)\n(Data Lengkap + Rincian Biaya)"]
+        
         class G role;
         class G1,G2,G21 aksi;
         class G11,G22 security;
@@ -508,18 +509,18 @@ flowchart TD
 
     %% ── DATABASE & CORE SYSTEM ───────────────────────────
     subgraph Core_Database ["DATABASE MYSQL & SISTEM INTI"]
-        DB[("☁️ Database MySQL\nsql_kpriimigrasibogor_my_id\n(Tabel Transaksi & Audit)")]
-
+        DB[("Database Utama Koperasi\n(Tabel Transaksi & Audit)")]
+        
         E1 --> DB
         E3 --> DB
         G11 --> DB
         G21 --> DB
-
-        DB --> |"Audit Trail"| E2
-        DB --> |"Cron Job Tiap Menit"| Cron{"Cek Estimasi Selesai\nPaspor"}
-
-        Cron -- "Estimasi Selesai Hari Ini" --> NP["🔔 Notifikasi Lonceng\nPaspor Siap Kirim"]
-        Cron -- "Belum Jatuh Tempo / Selesai" --> NX(["✅ Aman"])
+        
+        DB --> |"Aksi CRUD"| E2
+        DB --> |"Jadwal Cron Harian (07:00)"| Cron{"Cek Estimasi Paspor\n(paspor:check-estimasi)"}
+        
+        Cron -- "H-0 Selesai / Siap Kirim" --> NP["Notifikasi Lonceng Paspor & Sinkronisasi BinderByte"]
+        Cron -- "Belum Jatuh Tempo / Selesai" --> NX(["Aman"])
 
         class DB db;
         class NP warning;
@@ -527,19 +528,6 @@ flowchart TD
         class Cron newfeature;
     end
 
-    %% ── DEVELOPER / OPS LAYER ────────────────────────────
-    subgraph Dev_Ops ["DEVELOPER & OPS (MAINTENANCE)"]
-        DEV_LOCAL["💻 Laptop Lokal\n/Users/dakim/Herd/portal-koperasi"]
-        DEV_LOCAL --> |"git push origin main"| GITHUB["☁️ GitHub Repository\n(Private)"]
-        GITHUB --> |"git pull origin main"| VPS["🖥️ VPS Server Ubuntu\n103.247.11.194\n/www/wwwroot/kpriimigrasibogor.my.id"]
-        VPS --> |"php artisan config/route/view:cache"| PROD
-
-        TABLEPLUS["🔍 TablePlus (Mac)\nOver SSH Tunnel\nMonitoring Tabel DB"]
-        TABLEPLUS -.-> |"SSH :22 → MySQL :3306"| DB
-
-        class DEV_LOCAL,GITHUB,VPS newfeature;
-        class TABLEPLUS security;
-    end
-
-    class A,PROD start;
+    class P_START,NX start;
+    class P_HOME,P_SEARCH,P_RESULT,P_API,P_MANIFEST,P_FALLBACK publicflow;
 ```
