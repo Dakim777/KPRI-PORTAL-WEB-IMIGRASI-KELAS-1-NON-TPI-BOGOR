@@ -93,7 +93,7 @@
                 <span class="font-semibold text-slate-300">Contoh pencarian:</span>
                 <button type="button" onclick="quickFill('P12345678912')" class="hover:text-blue-400 underline font-mono">P12345678912</button>
                 <span>•</span>
-                <button type="button" onclick="quickFill('Hafiz Hakim')" class="hover:text-blue-400 underline font-semibold">Hafiz Hakim</button>
+                <button type="button" onclick="quickFill('John Doe')" class="hover:text-blue-400 underline font-semibold">John Doe</button>
             </div>
         </div>
 
