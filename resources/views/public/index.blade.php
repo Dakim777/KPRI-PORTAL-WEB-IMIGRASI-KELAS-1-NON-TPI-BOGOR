@@ -36,20 +36,21 @@
 
     {{-- Top Navbar --}}
     <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-40">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-500/20 text-white font-extrabold text-xl">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5 sm:gap-3.5">
+                <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                    <img src="{{ asset('images/logo-kementrian-imigrasi.png') }}" alt="Logo Kementerian Imigrasi" class="h-9 w-9 sm:h-11 sm:w-11 object-contain filter drop-shadow" />
+                    <img src="{{ asset('images/logo-ditjen-imigrasi.png') }}" alt="Logo Ditjen Imigrasi" class="h-9 w-9 sm:h-11 sm:w-11 object-contain filter drop-shadow" />
                 </div>
-                <div>
-                    <h1 class="font-bold text-base sm:text-lg tracking-tight text-white leading-snug">
+                <div class="border-l border-slate-700/80 pl-2.5 sm:pl-3.5">
+                    <h1 class="font-extrabold text-sm sm:text-lg tracking-tight text-white leading-tight sm:leading-snug">
                         KPRI KANTOR IMIGRASI BOGOR
                     </h1>
-                    <p class="text-xs text-blue-400 font-medium">Layanan Pengiriman Paspor & Pelacakan Resi</p>
+                    <p class="text-[10px] sm:text-xs text-blue-400 font-medium">Layanan Pengiriman Paspor & Pelacakan Resi</p>
                 </div>
             </div>
             <div>
-                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/60 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition shadow-sm hover:border-slate-600">
+                <a href="{{ route('login') }}" class="inline-flex items-center gap-1.5 sm:gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/60 px-3 py-2 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition shadow-sm hover:border-slate-600 flex-shrink-0">
                     <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                     <span>Login Petugas</span>
                 </a>
