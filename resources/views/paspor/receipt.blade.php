@@ -67,8 +67,12 @@
         <!-- Info -->
         <table class="info-table">
             <tr>
-                <td>No. Resi/Kwitansi</td>
-                <td>: {{ $paspor->no_resi ?? $paspor->no_struk }}</td>
+                <td>ID Transaksi</td>
+                <td>: <span class="font-bold">{{ $paspor->id_transaksi }}</span> (Struk #{{ str_pad($paspor->no_struk, 3, '0', STR_PAD_LEFT) }})</td>
+            </tr>
+            <tr>
+                <td>No. Resi Ekspedisi</td>
+                <td>: <span class="font-bold">{{ !empty($paspor->no_resi) && $paspor->no_resi !== '-' ? $paspor->no_resi : 'Belum Diinput (Menunggu Loket)' }}</span></td>
             </tr>
             <tr>
                 <td>Tanggal</td>
@@ -143,8 +147,11 @@
         <!-- Footer -->
         <div class="footer">
             <p>PERHATIAN:<br>
-            1. Dokumen paspor yang sudah dikirim menjadi tanggung jawab ekspedisi. Silakan cek berkala status kiriman.<br>
-            2. Mohon Cek berkala ke nomor Hotline Kami di 082121240900 (wa only)</p>
+            1. Lacak status paspor Anda secara real-time kapan saja di website resmi:<br>
+               <strong>https://kpriimigrasibogor.my.id</strong><br>
+               Gunakan <strong>ID Transaksi ({{ $paspor->id_transaksi }})</strong> atau Nomor Resi di atas.<br>
+            2. Dokumen paspor yang sudah dikirim menjadi tanggung jawab ekspedisi. Silakan cek berkala status kiriman.<br>
+            3. Mohon hubungi nomor Hotline Kami di 082121240900 (WA only) untuk bantuan.</p>
             <br>
             <p>Terima kasih telah menggunakan jasa<br>
             KPRI Imigrasi Bogor</p>

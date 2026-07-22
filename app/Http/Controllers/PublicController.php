@@ -29,21 +29,22 @@ class PublicController extends Controller
             ], 400);
         }
 
-        // Cari transaksi berdasarkan no_resi, id_transaksi, atau no_struk
+        // Normalisasi query input (bersihkan spasi & ubah ke huruf besar)
+        $qClean = strtoupper(trim($q));
+
+        // Cari transaksi berdasarkan no_resi, id_transaksi persis, atau no_struk
         $paspor = TransaksiPaspor::where('no_resi', $q)
             ->orWhere('id_transaksi', $q)
+            ->orWhere('id_transaksi', $qClean)
             ->orWhere('no_struk', $q)
             ->first();
 
+        // Jika tidak ketemu langsung, coba cocokkan id_transaksi tanpa tanda hubung (-) atau case-insensitive
         if (!$paspor) {
-            // Karena nama_penerima terenkripsi di database, kita cari mencocokkan hasil dekripsi di PHP
-            $paspor = TransaksiPaspor::all()->first(function ($t) use ($q) {
-                try {
-                    return strcasecmp(trim((string) $t->nama_penerima), trim($q)) === 0
-                        || stripos((string) $t->nama_penerima, trim($q)) !== false;
-                } catch (\Exception $e) {
-                    return false;
-                }
+            $paspor = TransaksiPaspor::all()->first(function ($t) use ($qClean) {
+                $idClean = str_replace('-', '', strtoupper((string) $t->id_transaksi));
+                $queryClean = str_replace('-', '', $qClean);
+                return $idClean !== '' && $idClean === $queryClean;
             });
         }
 
@@ -67,7 +68,7 @@ class PublicController extends Controller
 
             return response()->json([
                 'status'  => 'error',
-                'message' => 'Data pengiriman paspor dengan nomor atau nama "' . htmlspecialchars($q) . '" tidak ditemukan.'
+                'message' => 'Data pengiriman dengan ID Transaksi atau Nomor Resi "' . htmlspecialchars($q) . '" tidak ditemukan. Silakan periksa nomor pada Struk atau WhatsApp Anda.'
             ], 404);
         }
 

@@ -97,9 +97,9 @@ class PasporController extends Controller
                         ->max('no_struk');
         $data['no_struk'] = $lastStruk ? $lastStruk + 1 : 1;
         
-        // Generate ID Transaksi (TRX-PASPOR-YYMMDD-XXX)
+        // Generate ID Transaksi (KBG-YYMMDD-XXX) yang profesional, singkat, dan 100% unik
         $dateCode = Carbon::parse($today)->format('ymd');
-        $data['id_transaksi'] = 'TRX-PASPOR-' . $dateCode . '-' . str_pad($data['no_struk'], 3, '0', STR_PAD_LEFT);
+        $data['id_transaksi'] = 'KBG-' . $dateCode . '-' . str_pad($data['no_struk'], 3, '0', STR_PAD_LEFT);
         
         $data['kasir_id'] = Auth::id();
         $data['status_pengiriman'] = 'transaksi';
