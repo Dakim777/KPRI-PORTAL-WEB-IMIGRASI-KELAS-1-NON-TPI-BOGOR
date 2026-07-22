@@ -167,94 +167,97 @@ class LogistikService
             ];
         }
 
-        // Cache selama 120 menit (2 jam) agar tidak boros kuota BinderByte untuk resi yang sama
-        $cacheKey = "tracking_resi_" . strtolower($courier) . "_{$nomorResi}";
+        $courier = strtolower(trim($courier));
+        if (empty($courier)) {
+            $courier = 'pos';
+        }
 
-        return Cache::remember($cacheKey, 120 * 60, function () use ($nomorResi, $courier) {
-            $apiKey = config('services.binderbyte.key');
-            $baseUrl = config('services.binderbyte.base_url', 'https://api.binderbyte.com/v1');
+        $cacheKey = "tracking_resi_{$courier}_{$nomorResi}";
+        $cached = Cache::get($cacheKey);
+        if ($cached && !empty($cached['data']['summary']) && empty($cached['is_fallback']) && empty($cached['is_error'])) {
+            return $cached;
+        }
 
-            if (empty($apiKey)) {
-                // Mode simulasi/mock jika BINDERBYTE_API_KEY belum dipasang di .env
-                return [
-                    'status'  => 200,
-                    'message' => 'API Key BinderByte belum dipasang di .env (Mode Simulasi Lacak Resi)',
-                    'is_mock' => true,
-                    'data'    => [
-                        'summary' => [
-                            'awb'     => $nomorResi,
-                            'courier' => strtoupper($courier),
-                            'status'  => 'ON PROCESS',
-                            'date'    => now()->format('Y-m-d H:i:s'),
-                            'desc'    => 'Paket sedang dalam proses pengantaran ke alamat pemohon paspor'
-                        ],
-                        'history' => [
-                            [
-                                'date' => now()->format('Y-m-d H:i:s'),
-                                'desc' => 'Paket dibawa oleh kurir ' . strtoupper($courier) . ' menuju alamat pemohon (Kota Bogor / Sekitar)',
-                                'location' => 'Bogor'
-                            ],
-                            [
-                                'date' => now()->subHours(3)->format('Y-m-d H:i:s'),
-                                'desc' => 'Paket telah diterima di Kantor Cabang Pengirim ' . strtoupper($courier),
-                                'location' => 'Kantor POS Bogor'
-                            ]
-                        ]
-                    ]
-                ];
-            }
+        $apiKey = config('services.binderbyte.key');
+        $baseUrl = config('services.binderbyte.base_url', 'https://api.binderbyte.com/v1');
 
-            $couriersToTry = array_unique([strtolower($courier), 'pos', 'jne', 'sicepat', 'jnt', 'tiki', 'anteraja', 'lion', 'ninja', 'ide']);
-            
-            foreach ($couriersToTry as $tryCourier) {
-                try {
-                    $response = Http::timeout(12)->get("{$baseUrl}/track", [
-                        'api_key' => $apiKey,
-                        'courier' => $tryCourier,
-                        'awb'     => $nomorResi,
-                    ]);
-
-                    if ($response->successful() && !empty($response->json()['data']['summary'])) {
-                        $json = $response->json();
-                        $json['is_mock'] = false;
-                        return $json;
-                    }
-                } catch (\Exception $e) {
-                    Log::warning("Gangguan/Timeout API BinderByte lacakResi ({$nomorResi} via {$tryCourier}): " . $e->getMessage());
-                }
-            }
-
-            Cache::forget("tracking_resi_" . strtolower($courier) . "_{$nomorResi}");
-
-            // Fallback transparan: jika resi tidak/belum ditemukan di server ekspedisi mana pun (karena baru dicetak / belum di-scan)
+        if (empty($apiKey)) {
+            // Mode simulasi/mock jika BINDERBYTE_API_KEY belum dipasang di .env
             return [
                 'status'  => 200,
-                'message' => 'Resi terdaftar di sistem Koperasi (Belum terindeks/ditemukan pada pemindaian live ekspedisi)',
-                'is_fallback' => true,
-                'is_mock' => false,
+                'message' => 'API Key BinderByte belum dipasang di .env (Mode Simulasi Lacak Resi)',
+                'is_mock' => true,
                 'data'    => [
                     'summary' => [
                         'awb'     => $nomorResi,
                         'courier' => strtoupper($courier),
-                        'status'  => 'BELUM TERINDEKS DI POS / EKSPEDISI',
+                        'status'  => 'ON PROCESS',
                         'date'    => now()->format('Y-m-d H:i:s'),
-                        'desc'    => "Nomor resi {$nomorResi} telah dicatat pada sistem Koperasi Kantor Imigrasi Bogor, namun saat ini belum ditemukan pada pangkalan data pemindaian ekspedisi ({$courier}). Jika resi baru dicetak, harap menunggu proses pemindaian fisik oleh kurir atau pastikan penulisan nomor resi sudah benar."
+                        'desc'    => 'Paket sedang dalam proses pengantaran ke alamat pemohon paspor'
                     ],
                     'history' => [
                         [
                             'date' => now()->format('Y-m-d H:i:s'),
-                            'desc' => "Nomor resi {$nomorResi} (" . strtoupper($courier) . ") belum muncul di pemindaian live POS Indonesia. Status saat ini: Menunggu sinkronisasi atau pemindaian fisik dari kurir ekspedisi.",
-                            'location' => 'POS Indonesia / Dalam Proses'
+                            'desc' => 'Paket dibawa oleh kurir ' . strtoupper($courier) . ' menuju alamat pemohon (Kota Bogor / Sekitar)',
+                            'location' => 'Bogor'
                         ],
                         [
-                            'date' => now()->subMinutes(10)->format('Y-m-d H:i:s'),
-                            'desc' => "Data transaksi pengiriman paspor dicatat pada sistem Koperasi Kantor Imigrasi Kelas I Non-TPI Bogor.",
-                            'location' => 'Kantor Imigrasi Bogor'
+                            'date' => now()->subHours(3)->format('Y-m-d H:i:s'),
+                            'desc' => 'Paket telah diterima di Kantor Cabang Pengirim ' . strtoupper($courier),
+                            'location' => 'Kantor POS Bogor'
                         ]
                     ]
                 ]
             ];
-        });
+        }
+
+        try {
+            $response = Http::timeout(15)->get("{$baseUrl}/track", [
+                'api_key' => $apiKey,
+                'courier' => $courier,
+                'awb'     => $nomorResi,
+            ]);
+
+            if ($response->successful() && !empty($response->json()['data']['summary'])) {
+                $json = $response->json();
+                $json['is_mock'] = false;
+                $json['is_fallback'] = false;
+                // Cache hasil sukses selama 30 menit
+                Cache::put($cacheKey, $json, 30 * 60);
+                return $json;
+            }
+        } catch (\Exception $e) {
+            Log::warning("Gangguan/Timeout API BinderByte lacakResi ({$nomorResi} via {$courier}): " . $e->getMessage());
+        }
+
+        // Fallback transparan TANPA DI-CACHE agar pemanggilan berikutnya tetap mencoba melacak data baru/live
+        return [
+            'status'      => 200,
+            'message'     => 'Resi terdaftar di sistem Koperasi (Belum terindeks/ditemukan pada pemindaian live ekspedisi)',
+            'is_fallback' => true,
+            'is_mock'     => false,
+            'data'        => [
+                'summary' => [
+                    'awb'     => $nomorResi,
+                    'courier' => strtoupper($courier),
+                    'status'  => 'MANIFESTED / ON PROCESS',
+                    'date'    => now()->format('Y-m-d H:i:s'),
+                    'desc'    => "Nomor resi {$nomorResi} telah dicatat pada sistem Koperasi Kantor Imigrasi Bogor dan dalam proses pengiriman via " . strtoupper($courier) . ". Jika resi baru dicetak, harap menunggu proses sinkronisasi pemindaian fisik oleh pihak kurir."
+                ],
+                'history' => [
+                    [
+                        'date' => now()->format('Y-m-d H:i:s'),
+                        'desc' => "Nomor resi {$nomorResi} (" . strtoupper($courier) . ") tercatat dalam manifes pelayanan pengiriman paspor Koperasi Kantor Imigrasi Bogor.",
+                        'location' => strtoupper($courier) . ' / Dalam Proses'
+                    ],
+                    [
+                        'date' => now()->subMinutes(10)->format('Y-m-d H:i:s'),
+                        'desc' => "Data transaksi pengiriman paspor dicatat pada sistem Koperasi Kantor Imigrasi Kelas I Non-TPI Bogor.",
+                        'location' => 'Kantor Imigrasi Bogor'
+                    ]
+                ]
+            ]
+        ];
     }
 
     /**

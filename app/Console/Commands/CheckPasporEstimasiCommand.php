@@ -77,8 +77,8 @@ class CheckPasporEstimasiCommand extends Command
         $syncedCount = 0;
 
         foreach ($diprosesWithResi as $paspor) {
-            $track = $logistikService->lacakResi($paspor->no_resi, 'pos');
-            if (($track['status'] ?? 0) == 200 && !empty($track['data']['summary']['status'])) {
+            $track = $logistikService->lacakResi($paspor->no_resi, strtolower($paspor->jenis_kurir ?? 'pos'));
+            if (($track['status'] ?? 0) == 200 && !empty($track['data']['summary']['status']) && empty($track['is_fallback'])) {
                 $statusResi = strtoupper(trim($track['data']['summary']['status']));
                 // Jika status dari ekspedisi adalah DELIVERED / BERHASIL TERKIRIM / SELESAI
                 if (in_array($statusResi, ['DELIVERED', 'SELESAI', 'TERKIRIM', 'SUCCESS', 'DITERIMA'])) {

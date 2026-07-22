@@ -85,27 +85,42 @@ class PublicController extends Controller
 
         if (!empty($paspor->no_resi)) {
             $track = $logistikService->lacakResi($paspor->no_resi, strtolower($paspor->jenis_kurir ?? 'pos'));
-            if (($track['status'] ?? 0) == 200 && !empty($track['data']['summary'])) {
+            if (($track['status'] ?? 0) == 200 && !empty($track['data']['summary']) && empty($track['is_fallback'])) {
                 $manifestEkspedisi = [
                     'summary' => $track['data']['summary'],
                     'history' => $track['data']['history'] ?? [],
                 ];
                 $isMock = $track['is_mock'] ?? false;
             } else {
-                // Jika resi sudah ada tapi belum terindeks/tersinkron di server POS Indonesia
+                // Jika hasil lacak adalah fallback (atau belum tersinkron di server live ekspedisi),
+                // Kita sesuaikan status summary berdasarkan status_pengiriman di database Koperasi
+                $statusSummary = 'MANIFESTED / ON PROCESS';
+                $descSummary = "Nomor resi {$paspor->no_resi} (" . strtoupper($paspor->jenis_kurir ?? 'POS') . ") tercatat di loket Koperasi dan sedang dalam proses pengiriman.";
+                $locationSummary = 'Bogor / Dalam Pengiriman';
+                
+                if ($paspor->status_pengiriman === 'selesai') {
+                    $statusSummary = 'SELESAI / DELIVERED';
+                    $descSummary = "Paspor atas nama penerima telah selesai dikirim dan diterima (Terverifikasi Sistem Koperasi).";
+                    $locationSummary = 'Alamat Tujuan (Selesai)';
+                } elseif ($paspor->status_pengiriman === 'batal') {
+                    $statusSummary = 'DIBATALKAN';
+                    $descSummary = "Pengiriman paspor ini telah dibatalkan.";
+                    $locationSummary = 'Dibatalkan';
+                }
+
                 $manifestEkspedisi = [
                     'summary' => [
                         'awb'     => $paspor->no_resi,
                         'courier' => strtoupper($paspor->jenis_kurir ?? 'POS'),
-                        'status'  => 'BELUM TERINDEKS DI POS',
+                        'status'  => $statusSummary,
                         'date'    => $paspor->updated_at ? $paspor->updated_at->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
-                        'desc'    => 'Nomor resi tercatat pada sistem Koperasi Kantor Imigrasi Bogor, namun saat ini belum ditemukan pada pemindaian live POS Indonesia.'
+                        'desc'    => $descSummary
                     ],
                     'history' => [
                         [
                             'date'     => $paspor->updated_at ? $paspor->updated_at->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
-                            'desc'     => 'Data transaksi pengiriman paspor dicatat di Koperasi (Menunggu sinkronisasi atau pemindaian fisik oleh kurir POS Indonesia)',
-                            'location' => 'Bogor'
+                            'desc'     => $descSummary,
+                            'location' => $locationSummary
                         ]
                     ]
                 ];
