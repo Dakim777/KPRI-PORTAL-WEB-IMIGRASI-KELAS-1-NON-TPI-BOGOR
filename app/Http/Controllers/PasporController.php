@@ -277,6 +277,26 @@ class PasporController extends Controller
             ], 400);
         }
 
+        if ($paspor->status_pengiriman === 'batal') {
+            return response()->json([
+                'status'  => 200,
+                'message' => 'Status pengiriman paspor ini telah dibatalkan.',
+                'is_fallback' => false,
+                'is_mock' => false,
+                'data'    => [
+                    'summary' => [
+                        'awb'     => $paspor->no_resi,
+                        'courier' => strtoupper($paspor->jenis_kurir ?? 'POS'),
+                        'status'  => 'DIBATALKAN (CANCELLED)',
+                        'status_indonesia' => 'DIBATALKAN (CANCELLED)',
+                        'date'    => $paspor->updated_at ? $paspor->updated_at->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
+                        'desc'    => 'Pengiriman atau pemrosesan paspor ini telah DIBATALKAN. Riwayat pergerakan paket tidak dapat diakses.'
+                    ],
+                    'history' => []
+                ]
+            ]);
+        }
+
         $forceRefresh = $request->boolean('refresh');
         $result = $logistikService->lacakResi($paspor->no_resi, strtolower($paspor->jenis_kurir ?? 'pos'), $forceRefresh);
 

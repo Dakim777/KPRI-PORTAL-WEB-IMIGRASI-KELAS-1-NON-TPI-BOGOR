@@ -104,13 +104,13 @@ class PublicController extends Controller
             // Status transaksi: paspor sedang dalam masa pembuatan/pencetakan (pelacakan resi BELUM boleh dijalankan)
             $alertMessage = 'Paspor Anda masih dalam status TRANSAKSI. Artinya paspor sedang dalam masa pembuatan atau pencetakan di Kantor Imigrasi. Silahkan periksa kembali nanti setelah nomor resi pengiriman resmi dirilis dan dikirimkan ke WhatsApp Anda.';
         } elseif ($statusInternal === 'batal') {
-            // Status pembatalan: tampilkan alert pembatalan di atas
+            // Status pembatalan: tampilkan alert pembatalan dan tidak memuat riwayat pengiriman
             $noResiText = !empty($paspor->no_resi) && $paspor->no_resi !== '-' ? $paspor->no_resi : 'yang didaftarkan';
-            $alertMessage = "Maaf, status pengiriman Anda telah dibatalkan dengan nomor resi yang diinputkan ({$noResiText}).";
+            $alertMessage = "Maaf, status pengiriman paspor Anda telah DIBATALKAN. Pengiriman atau pemrosesan paspor dengan nomor resi ({$noResiText}) tidak dilanjutkan dan riwayat pelacakan tidak dapat diakses.";
         }
 
-        // Khusus untuk status PROSES, SELESAI, dan BATAL: lakukan fetching real-time ke BinderByte
-        if (in_array($statusInternal, ['diproses', 'selesai', 'batal'])) {
+        // Khusus untuk status PROSES dan SELESAI: lakukan fetching real-time ke BinderByte
+        if (in_array($statusInternal, ['diproses', 'selesai'])) {
             if (!empty($paspor->no_resi) && $paspor->no_resi !== '-') {
                 $track = $logistikService->lacakResi($paspor->no_resi, strtolower($paspor->jenis_kurir ?? 'pos'), $forceRefresh);
                 if (($track['status'] ?? 0) == 200 && !empty($track['data']['summary']) && empty($track['is_fallback'])) {
