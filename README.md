@@ -452,8 +452,11 @@ flowchart TD
     subgraph Public_Tracking ["PELACAKAN PASPOR PUBLIK & CEK RESI EKSPEDISI"]
         P_START(["🌐 Buka Portal KPRI\nkpriimigrasibogor.my.id"]) --> P_HOME["Halaman Pelacakan Paspor Publik\n(Logo Ditjen Imigrasi & Informatika ITERA)"]
         P_HOME --> P_SEARCH["Input ID Transaksi (KBG-...) / Nomor Resi\n(Pencarian Nama Dihapus demi Privasi PII)"]
-        P_SEARCH --> P_RESULT["Tampilkan Status Live Koperasi"]
-        P_RESULT --> P_API{"Cek API Ekspedisi\n(BinderByte / POS)"}
+        P_SEARCH --> P_CHECK_DB{"Cek Database\nKPRI Lokal"}
+        P_CHECK_DB -- "Tidak Ditemukan" --> P_NOT_FOUND["Error 404: Ditolak\n(Strict Validation Anti-Misuse)"]
+        P_CHECK_DB -- "Ditemukan" --> P_STATUS_INTERNAL{"Cek Status\nInternal KPRI"}
+        P_STATUS_INTERNAL -- "Transaksi / Batal" --> P_RESULT["Tampilkan Pesan Status\n(Tanpa Lacak API)"]
+        P_STATUS_INTERNAL -- "Diproses / Selesai" --> P_API{"Cek API Ekspedisi\n(BinderByte / POS)"}
         P_API -- "Data Ditemukan" --> P_MANIFEST["Riwayat Perjalanan Resi POS Indonesia"]
         P_API -- "Belum Terindeks / Timeout" --> P_FALLBACK["Graceful Fallback:\nBelum Terindeks di POS / Dalam Pengemasan"]
         P_HOME --> |"Klik Login Petugas"| B
@@ -531,5 +534,6 @@ flowchart TD
     end
 
     class P_START,NX start;
-    class P_HOME,P_SEARCH,P_RESULT,P_API,P_MANIFEST,P_FALLBACK publicflow;
+    class P_HOME,P_SEARCH,P_CHECK_DB,P_STATUS_INTERNAL,P_RESULT,P_API,P_MANIFEST,P_FALLBACK publicflow;
+    class P_NOT_FOUND warning;
 ```
