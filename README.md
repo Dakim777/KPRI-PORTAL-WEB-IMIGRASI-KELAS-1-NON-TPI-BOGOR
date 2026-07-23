@@ -451,7 +451,7 @@ flowchart TD
     %% ── PUBLIC GATEWAY & TRACKING ────────────────────────
     subgraph Public_Tracking ["PELACAKAN PASPOR PUBLIK & CEK RESI EKSPEDISI"]
         P_START(["🌐 Buka Portal KPRI\nkpriimigrasibogor.my.id"]) --> P_HOME["Halaman Pelacakan Paspor Publik\n(Logo Ditjen Imigrasi & Informatika ITERA)"]
-        P_HOME --> P_SEARCH["Input Nomor Resi / Nama / No Paspor"]
+        P_HOME --> P_SEARCH["Input ID Transaksi (KBG-...) / Nomor Resi\n(Pencarian Nama Dihapus demi Privasi PII)"]
         P_SEARCH --> P_RESULT["Tampilkan Status Live Koperasi"]
         P_RESULT --> P_API{"Cek API Ekspedisi\n(BinderByte / POS)"}
         P_API -- "Data Ditemukan" --> P_MANIFEST["Riwayat Perjalanan Resi POS Indonesia"]
@@ -491,11 +491,11 @@ flowchart TD
         G1_A --> G11["Enkripsi Data PII (AES-256)"]
         
         G --> G2["Daftar Riwayat Pengiriman"]
-        G2 --> G2_A["Pencarian by Nama/Paspor/Resi"]
+        G2 --> G2_A["Pencarian Transaksi"]
         G2 --> G21["Update Status Warna:\nBiru (Transaksi) → Kuning (Diproses) → Hijau (Selesai) / Merah (Batal)"]
         G2 --> G22["Edit Transaksi / Input Resi Baru"]
         G22 --> |"Webcam Scanner 1D & QR Code\n(Cepat & Akurat)"| G2_C["Input No Resi Otomatis (+ Suara Beep)"]
-        G2 --> G2_B["Cetak Kwitansi / Struk Resi\n(Dilengkapi Barcode Unik & No Resi)"]
+        G2 --> G2_B["Cetak Kwitansi / Struk Resi\n(Menampilkan ID Transaksi KBG-... & Barcode)"]
         
         G --> G_EXP["Export Laporan Paspor"]
         G_EXP --> G_EXP1["Laporan Dasar (Excel)"]
@@ -519,11 +519,13 @@ flowchart TD
         DB --> |"Aksi CRUD"| E2
         DB --> |"Jadwal Cron Harian (07:00)"| Cron{"Cek Estimasi Paspor\n(paspor:check-estimasi)"}
         
-        Cron -- "H-0 Selesai / Siap Kirim" --> NP["Notifikasi Lonceng Paspor & Sinkronisasi BinderByte"]
+        Cron -- "H-0 Selesai / Siap Kirim" --> WA["WhatsApp Gateway (wa-service)\nKirim Pesan & Direct Tracking URL"]
+        WA --> NP["Notifikasi Lonceng Internal Paspor"]
         Cron -- "Belum Jatuh Tempo / Selesai" --> NX(["Aman"])
 
         class DB db;
         class NP warning;
+        class WA newfeature;
         class NX start;
         class Cron newfeature;
     end
