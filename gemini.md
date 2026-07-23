@@ -173,6 +173,12 @@ Sebagai respons atas potensi *collision* (tabrakan data) pada pencarian publik m
 - **Zero Manual Typing (WhatsApp Direct URL):** WhatsApp Gateway (`wa-service`) kini menyertakan URL *direct-track* (`/?q=KBG-260722-001`) yang ketika diklik pemohon di HP, akan langsung mengisi dan menelusuri data tanpa pemohon mengetik satu huruf pun.
 - **Penghapusan Pencarian Publik by Nama:** Mencabut total kapabilitas pencarian berdasarkan `nama_penerima` di `PublicController.php`. Pemohon kini wajib menggunakan Nomor Resi atau ID Transaksi, memastikan kerahasiaan PII (Personal Identifiable Information) 100% aman dan mustahil menampilkan data orang lain yang memiliki kesamaan nama (*zero collision*). Input pencarian dilengkapi *smart normalizer* yang bisa membaca ID walaupun diketik tanpa tanda hubung (misal: `kbg260722001`).
 
+### Fase 17 — Pemindahan WhatsApp Gateway (Akses Kasir) & Solusi Bug 404 Route Shadowing
+Mengakomodasi kebutuhan kasir paspor agar dapat mandiri memindai QR Code WhatsApp bot tanpa perlu hak akses Super Admin:
+- **Relokasi Gateway WA:** Memindahkan kontrol dan rute Gateway WhatsApp dari lingkup `admin` (Role `super_admin`) ke lingkup `paspor` (Role `kasir_paspor` & `super_admin`). File view dipindahkan dari `admin/whatsapp.blade.php` ke `paspor/whatsapp.blade.php`.
+- **Bug Route Shadowing (404 Not Found Nginx/Laravel):** Saat memindahkan rute ke dalam grup `paspor` di `web.php`, terjadi konflik *Route Shadowing*. Rute spesifik `/paspor/whatsapp` diletakkan di bawah rute *wildcard* `/paspor/{paspor}` (seperti rute `show` atau `destroy`), sehingga ketika URL Gateway diakses, Laravel menangkap string "whatsapp" sebagai parameter `{paspor}` dan mencari id paspor "whatsapp" ke database, menghasilkan *ModelNotFoundException* (404 Error).
+- **Solusi Hierarki Rute:** Masalah diatasi dengan menempatkan blok rute statis `whatsapp` di bagian teratas grup `paspor` (sebelum rute dinamis `/{paspor}`), sesuai standar *best practice* hierarki pemrosesan rute Laravel (Top-Down Evaluation).
+
 ---
 
 ## IV. CHEAT SHEET COMMAND & TROUBLESHOOTING UTAMA
