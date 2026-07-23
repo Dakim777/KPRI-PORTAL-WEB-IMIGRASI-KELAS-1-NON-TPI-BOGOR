@@ -70,5 +70,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/{paspor}/send-wa', [WhatsappController::class, 'sendResiPaspor'])->name('send-wa');
         Route::get('/{paspor}', [PasporController::class, 'show'])->name('show');
         Route::delete('/{paspor}', [PasporController::class, 'destroy'])->name('destroy');
+
+        // WhatsApp Gateway Management
+        Route::get('whatsapp', [WhatsappController::class, 'index'])->name('whatsapp.index');
+        Route::get('whatsapp/status-ajax', [WhatsappController::class, 'statusAjax'])->name('whatsapp.status-ajax');
+        Route::post('whatsapp/send-test', [WhatsappController::class, 'sendTest'])->name('whatsapp.send-test');
+        Route::post('whatsapp/logout', [WhatsappController::class, 'logout'])->name('whatsapp.logout');
     });
 });
