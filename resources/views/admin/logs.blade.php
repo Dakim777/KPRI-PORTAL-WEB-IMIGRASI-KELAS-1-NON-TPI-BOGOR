@@ -41,10 +41,15 @@
                             {{ class_basename($log->subject_type) }} #{{ $log->subject_id }}
                         </td>
                         <td class="px-4 py-3 text-xs text-gray-700">
-                            @if($log->description === 'updated' && isset($log->properties['attributes']) && isset($log->properties['old']))
+                            @php 
+                                $changesData = $log->attribute_changes && $log->attribute_changes->count() > 0 
+                                                ? $log->attribute_changes 
+                                                : $log->properties;
+                            @endphp
+                            @if($log->description === 'updated' && isset($changesData['attributes']) && isset($changesData['old']))
                                 <ul class="list-disc pl-4 space-y-1">
-                                    @foreach($log->properties['attributes'] as $key => $newValue)
-                                        @php $oldValue = $log->properties['old'][$key] ?? null; @endphp
+                                    @foreach($changesData['attributes'] as $key => $newValue)
+                                        @php $oldValue = $changesData['old'][$key] ?? null; @endphp
                                         @if($oldValue != $newValue)
                                             <li>
                                                 Ubah <b>{{ str_replace('_', ' ', Str::title($key)) }}</b> 
@@ -58,10 +63,10 @@
                                 <span class="text-green-600 font-medium">Membuat data baru.</span>
                             @elseif($log->description === 'deleted')
                                 <span class="text-red-600 font-medium">Menghapus data ini.</span>
-                            @elseif($log->properties && $log->properties->count() > 0)
+                            @elseif($changesData && $changesData->count() > 0)
                                 <details class="cursor-pointer">
                                     <summary class="text-blue-600 hover:underline">Lihat Detail</summary>
-                                    <pre class="mt-2 p-2 bg-gray-100 rounded text-[10px] overflow-x-auto">{{ json_encode($log->properties, JSON_PRETTY_PRINT) }}</pre>
+                                    <pre class="mt-2 p-2 bg-gray-100 rounded text-[10px] overflow-x-auto">{{ json_encode($changesData, JSON_PRETTY_PRINT) }}</pre>
                                 </details>
                             @else
                                 -

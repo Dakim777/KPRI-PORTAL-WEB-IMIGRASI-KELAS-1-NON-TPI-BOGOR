@@ -53,7 +53,14 @@ class TransaksiPaspor extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logAll()
+            ->logOnly([
+                'kasir_id', 'id_transaksi', 'no_struk', 'nama_penerima', 'jumlah_paspor',
+                'nama_paspor_list', 'alamat_tujuan_pengiriman', 'no_resi', 'jenis_kurir',
+                'layanan_kurir', 'total_pembayaran_pemohon', 'biaya_kurir', 'biaya_modal_packaging',
+                'harga_materai', 'harga_surat_kuasa', 'tanggal_transaksi', 'tanggal_pengiriman_paspor',
+                'tanggal_paspor_diterima', 'status_pengiriman', 'no_hp', 'metode_pembayaran',
+                'handling_fee', 'estimasi_tanggal_selesai'
+            ])
             ->logOnlyDirty()
             ->dontLogEmptyChanges();
     }
