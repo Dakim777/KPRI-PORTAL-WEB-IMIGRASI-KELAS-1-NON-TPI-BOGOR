@@ -1,7 +1,7 @@
 # 🤖 GEMINI AI CONTEXTING DOCUMENT — PORTAL KPRI IMIGRASI BOGOR (FOKUS PELACAKAN PASPOR & EKSPEDISI)
 **Dokumen Konteks & Riwayat Lengkap untuk AI Assistant (Gemini / Claude / Copilot)**  
 **Status Sistem Terkini:** ✅ **PRODUCTION — LIVE & FULLY OPERATIONAL (100% SIAP PAKAI - FOKUS PELACAKAN PASPOR & OPTIMASI PC KANTOR)**  
-**Tanggal Update Terakhir:** 22 Juli 2026 (Update Arsitektur Pelacakan Publik, Enkripsi PII, Scanner, WA Gateway, Kebijakan Status Operator-Centric & Optimasi UI Low-Spec Office PC)
+**Tanggal Update Terakhir:** 23 Juli 2026 (Update ID Transaksi Baru `KBG-YYMMDD-XXX` & Keamanan PII Anti-Nabrak Tanpa Pencarian Nama)
 
 ---
 
@@ -70,7 +70,7 @@ Aplikasi dibangun menggunakan **Laravel 13** dengan arsitektur modular yang difo
 - **Input Resi Cepat via Webcam Barcode/QR Scanner:** Pada tabel riwayat pengiriman, tersedia fitur modal dengan kamera pemindai 1D Barcode & QR Code (`Html5QrcodeScanner`) yang dilengkapi suara notifikasi (*beep*) saat resi berhasil terdeteksi. Kasir dapat mengisi atau memperbarui nomor resi seketika tanpa ketik manual (bebas typo).
 - **Manajemen Status Pengiriman Warna & Operator-Centric Control:** Status alur transaksi diatur rapi: `transaksi` (Biru) -> `diproses` (Kuning) -> `selesai` (Hijau) -> `batal` (Merah). Untuk menjaga keakuratan akuntansi dan handling fee, status `selesai` mutlak hanya dapat diubah secara manual oleh operator/kasir (tidak ada *auto-sync* saat pengecekan resi publik atau cron job estimasi).
 - **Pencetakan Resi & Struk Barcode:** Kasir dapat mencetak bukti resi pengiriman berformat thermal/A4 yang dilengkapi nomor resi unik dan barcode 1D/QR.
-- **Export Laporan Paspor:** Export data transaksi ke Excel dalam 2 format: **Laporan Dasar** dan **Laporan Kompleks** (berisi rincian finansial lengkap + status PII yang di-decrypt secara aman saat export).
+- **Export Laporan Paspor:** Export data transaksi ke Excel (berisi rincian finansial lengkap + status PII yang di-decrypt secara aman saat export).
 
 ### 3. Modul Manajemen Pengguna, Audit Log, Trash & Global Buffer
 - **Role-Based Access Control (RBAC):** Role pengguna saat ini terfokus menjadi `super_admin` dan `kasir_paspor` (role `kasir_kantin` telah dihapus seiring pemisahan modul).
@@ -165,6 +165,13 @@ Untuk mengatasi kendala *stuttering / frame drop* saat aplikasi dibuka melalui k
 - **Pembersihan Efek `backdrop-filter: blur()` & Blur Blobs Raksasa:** Menghapus elemen latar belakang `blur-3xl` pada hero serta kelas `backdrop-blur-md` / `backdrop-blur-xl` di `resources/views/public/index.blade.php`, modal pelacakan di `paspor/index.blade.php`, dan `layouts/app.blade.php`. Diganti dengan warna gelap/solid bersih (`bg-slate-900/95`, `bg-black/70`, `bg-white`) yang menurunkan beban render GPU terintegrasi hingga 80%.
 - **Penyederhanaan `loading-buffer.blade.php`:** Mengubah animasi cincin ganda berputar berlawanan arah (*multi-layer reverse spin*) dan *animate-pulse* berlapis menjadi *Single Orbital Spinner* (`will-change: transform`) & latar belakang `bg-slate-950/85` yang hemat CPU/GPU.
 - **Penghapusan Table Row Hover Repaint:** Menghapus transisi lambat (`transition-colors duration-100`) pada setiap baris (`<tr>`) tabel di dashboard paspor, sehingga sorotan mouse (`hover:bg-gray-50`) merespons gesit seketika tanpa *layout thrashing*.
+
+### Fase 16 — Redesain ID Transaksi (`KBG-YYMMDD-XXX`) & Peningkatan Keamanan PII (Anti-Nabrak Data)
+Sebagai respons atas potensi *collision* (tabrakan data) pada pencarian publik menggunakan nama:
+- **Redesain ID Transaksi:** Mengganti format ID lama (`TRX-PASPOR-...`) yang berkesan "template AI" menjadi format resmi berwibawa: **`KBG-YYMMDD-XXX`** (KPRI Bogor + Tanggal + Sequence, contoh: `KBG-260722-001`). Format ini 100% unik setiap harinya dan tidak akan pernah terduplikasi sepanjang masa.
+- **Pencetakan Struk Resmi (`receipt.blade.php`):** Menempatkan ID Transaksi `KBG-...` di urutan teratas pada tabel informasi kwitansi/thermal agar pemohon selalu mengetahui kunci unik pelacakan mereka, lengkap beserta URL lacaknya.
+- **Zero Manual Typing (WhatsApp Direct URL):** WhatsApp Gateway (`wa-service`) kini menyertakan URL *direct-track* (`/?q=KBG-260722-001`) yang ketika diklik pemohon di HP, akan langsung mengisi dan menelusuri data tanpa pemohon mengetik satu huruf pun.
+- **Penghapusan Pencarian Publik by Nama:** Mencabut total kapabilitas pencarian berdasarkan `nama_penerima` di `PublicController.php`. Pemohon kini wajib menggunakan Nomor Resi atau ID Transaksi, memastikan kerahasiaan PII (Personal Identifiable Information) 100% aman dan mustahil menampilkan data orang lain yang memiliki kesamaan nama (*zero collision*). Input pencarian dilengkapi *smart normalizer* yang bisa membaca ID walaupun diketik tanpa tanda hubung (misal: `kbg260722001`).
 
 ---
 

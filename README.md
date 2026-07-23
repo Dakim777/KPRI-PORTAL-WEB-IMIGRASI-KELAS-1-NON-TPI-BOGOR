@@ -29,7 +29,7 @@
 2. **Modul Paspor (Layanan Pengiriman Paspor & Resi)**
    - Pencatatan permohonan pengiriman paspor (pemohon, daftar paspor, alamat tujuan, biaya kurir/materai/surat kuasa/handling fee).
    - Pengelolaan Status Pengiriman (`transaksi`, `diproses`, `selesai`, `batal`).
-   - Struk Resi Pengiriman dan Export Laporan Excel (Dasar & Kompleks) dengan validasi enkripsi data PII.
+   - Struk Resi Pengiriman dan Export Laporan Excel (Data Lengkap + Rincian Biaya) dengan validasi enkripsi data PII.
 3. **Modul Manajemen Pengguna & Log Aktivitas**
    - Role-based Access Control (`super_admin`, `kasir_paspor`, dll.).
    - Audit Trail (`spatie/laravel-activitylog`) untuk memantau semua aktivitas perubahan data oleh operator.
@@ -497,14 +497,12 @@ flowchart TD
         G22 --> |"Webcam Scanner 1D & QR Code\n(Cepat & Akurat)"| G2_C["Input No Resi Otomatis (+ Suara Beep)"]
         G2 --> G2_B["Cetak Kwitansi / Struk Resi\n(Menampilkan ID Transaksi KBG-... & Barcode)"]
         
-        G --> G_EXP["Export Laporan Paspor"]
-        G_EXP --> G_EXP1["Laporan Dasar (Excel)"]
-        G_EXP --> G_EXP2["Laporan Kompleks (Excel)\n(Data Lengkap + Rincian Biaya)"]
+        G --> G_EXP["Export Laporan Paspor (Excel)\n(Data Lengkap + Rincian Biaya)"]
         
         class G role;
         class G1,G2,G21 aksi;
         class G11,G22 security;
-        class G1_A,G2_A,G2_B,G2_C,G_EXP,G_EXP1,G_EXP2 newfeature;
+        class G1_A,G2_A,G2_B,G2_C,G_EXP newfeature;
     end
 
     %% ── DATABASE & CORE SYSTEM ───────────────────────────
