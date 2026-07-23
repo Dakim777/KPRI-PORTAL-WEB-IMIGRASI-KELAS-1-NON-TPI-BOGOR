@@ -49,11 +49,6 @@ Route::middleware('auth')->group(function () {
         Route::post('trash/restore-paspor/{id}', [TrashController::class, 'restorePaspor'])->name('trash.restore-paspor');
         Route::delete('trash/force-paspor/{id}', [TrashController::class, 'forceDeletePaspor'])->name('trash.force-paspor');
 
-        // WhatsApp Gateway Management
-        Route::get('whatsapp', [WhatsappController::class, 'index'])->name('whatsapp.index');
-        Route::get('whatsapp/status-ajax', [WhatsappController::class, 'statusAjax'])->name('whatsapp.status-ajax');
-        Route::post('whatsapp/send-test', [WhatsappController::class, 'sendTest'])->name('whatsapp.send-test');
-        Route::post('whatsapp/logout', [WhatsappController::class, 'logout'])->name('whatsapp.logout');
     });
 
     // ── Modul Paspor (kasir_paspor + super_admin) ───────────────────────────

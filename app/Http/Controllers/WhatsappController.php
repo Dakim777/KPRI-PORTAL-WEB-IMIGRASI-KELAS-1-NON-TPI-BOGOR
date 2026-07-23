@@ -20,7 +20,7 @@ class WhatsappController extends Controller
     public function index()
     {
         $status = $this->waService->getStatus();
-        return view('admin.whatsapp', compact('status'));
+        return view('paspor.whatsapp', compact('status'));
     }
 
     /**

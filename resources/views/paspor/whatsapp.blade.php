@@ -61,7 +61,7 @@
 
         {{-- Tombol Logout / Reset Sesi --}}
         <div class="flex items-center gap-3">
-            <form method="POST" action="{{ route('admin.whatsapp.logout') }}" onsubmit="return confirm('Apakah Anda yakin ingin memutuskan sesi nomor WhatsApp saat ini? Anda akan diminta memindai QR Code baru setelah sesi direset.')">
+            <form method="POST" action="{{ route('paspor.whatsapp.logout') }}" onsubmit="return confirm('Apakah Anda yakin ingin memutuskan sesi nomor WhatsApp saat ini? Anda akan diminta memindai QR Code baru setelah sesi direset.')">
                 @csrf
                 <button type="submit" id="btn-logout" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-semibold shadow-sm transition flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
@@ -121,7 +121,7 @@
                 </div>
                 <p class="text-xs text-gray-500 mb-6">Uji coba pengiriman pesan langsung dari dasbor untuk memastikan koneksi bot berjalan lancar sebelum dihubungkan ke form transaksi paspor.</p>
 
-                <form method="POST" action="{{ route('admin.whatsapp.send-test') }}" class="space-y-4">
+                <form method="POST" action="{{ route('paspor.whatsapp.send-test') }}" class="space-y-4">
                     @csrf
                     <div>
                         <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Nomor HP Tujuan (Contoh: 081234567890)</label>
@@ -159,7 +159,7 @@ Halo! Ini adalah pesan pengujian dari sistem otomatis Koperasi Kantor Imigrasi B
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         function checkWaStatus() {
-            fetch("{{ route('admin.whatsapp.status-ajax') }}", {
+            fetch("{{ route('paspor.whatsapp.status-ajax') }}", {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'Accept': 'application/json'

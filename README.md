@@ -499,10 +499,12 @@ flowchart TD
         
         G --> G_EXP["Export Laporan Paspor (Excel)\n(Data Lengkap + Rincian Biaya)"]
         
+        G --> G_WA["Halaman Gateway WhatsApp\n(Scan QR, Logout, Test Kirim)"]
+        
         class G role;
         class G1,G2,G21 aksi;
         class G11,G22 security;
-        class G1_A,G2_A,G2_B,G2_C,G_EXP newfeature;
+        class G1_A,G2_A,G2_B,G2_C,G_EXP,G_WA newfeature;
     end
 
     %% ── DATABASE & CORE SYSTEM ───────────────────────────
