@@ -49,12 +49,16 @@
                             @if($log->description === 'updated' && isset($changesData['attributes']) && isset($changesData['old']))
                                 <ul class="list-disc pl-4 space-y-1">
                                     @foreach($changesData['attributes'] as $key => $newValue)
-                                        @php $oldValue = $changesData['old'][$key] ?? null; @endphp
+                                        @php 
+                                            $oldValue = $changesData['old'][$key] ?? null;
+                                            $oldStr = is_array($oldValue) ? implode(', ', $oldValue) : $oldValue;
+                                            $newStr = is_array($newValue) ? implode(', ', $newValue) : $newValue;
+                                        @endphp
                                         @if($oldValue != $newValue)
                                             <li>
                                                 Ubah <b>{{ str_replace('_', ' ', Str::title($key)) }}</b> 
-                                                dari <span class="line-through text-red-500">{{ $oldValue ?: 'kosong' }}</span> 
-                                                ke <span class="text-green-600 font-medium">{{ $newValue ?: 'kosong' }}</span>
+                                                dari <span class="line-through text-red-500">{{ $oldStr ?: 'kosong' }}</span> 
+                                                ke <span class="text-green-600 font-medium">{{ $newStr ?: 'kosong' }}</span>
                                             </li>
                                         @endif
                                     @endforeach
