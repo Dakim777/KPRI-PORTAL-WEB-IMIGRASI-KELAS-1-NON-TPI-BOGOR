@@ -57,24 +57,26 @@ Route::middleware('auth')->group(function () {
         // Dashboard Paspor
         Route::get('/dashboard', [DashboardController::class, 'paspor'])->name('dashboard');
 
+        // WhatsApp Gateway Management
+        Route::get('whatsapp', [WhatsappController::class, 'index'])->name('whatsapp.index');
+        Route::get('whatsapp/status-ajax', [WhatsappController::class, 'statusAjax'])->name('whatsapp.status-ajax');
+        Route::post('whatsapp/send-test', [WhatsappController::class, 'sendTest'])->name('whatsapp.send-test');
+        Route::post('whatsapp/logout', [WhatsappController::class, 'logout'])->name('whatsapp.logout');
+
         Route::get('/', [PasporController::class, 'index'])->name('index');
         Route::get('/create', [PasporController::class, 'create'])->name('create');
         Route::post('/', [PasporController::class, 'store'])->name('store');
-        Route::get('/{paspor}/edit', [PasporController::class, 'edit'])->name('edit');
-        Route::put('/{paspor}', [PasporController::class, 'update'])->name('update');
         Route::get('/export/kompleks', [PasporController::class, 'exportKompleks'])->name('export.kompleks');
         Route::get('/api/cek-ongkir', [PasporController::class, 'cekOngkir'])->name('api.cek-ongkir');
+
+        // Wildcard routes must be at the bottom to prevent shadowing
+        Route::get('/{paspor}/edit', [PasporController::class, 'edit'])->name('edit');
+        Route::put('/{paspor}', [PasporController::class, 'update'])->name('update');
         Route::get('/{paspor}/print', [PasporController::class, 'printReceipt'])->name('print');
         Route::get('/{paspor}/track', [PasporController::class, 'trackResi'])->name('track');
         Route::patch('/{paspor}/status', [PasporController::class, 'updateStatus'])->name('update-status');
         Route::post('/{paspor}/send-wa', [WhatsappController::class, 'sendResiPaspor'])->name('send-wa');
         Route::get('/{paspor}', [PasporController::class, 'show'])->name('show');
         Route::delete('/{paspor}', [PasporController::class, 'destroy'])->name('destroy');
-
-        // WhatsApp Gateway Management
-        Route::get('whatsapp', [WhatsappController::class, 'index'])->name('whatsapp.index');
-        Route::get('whatsapp/status-ajax', [WhatsappController::class, 'statusAjax'])->name('whatsapp.status-ajax');
-        Route::post('whatsapp/send-test', [WhatsappController::class, 'sendTest'])->name('whatsapp.send-test');
-        Route::post('whatsapp/logout', [WhatsappController::class, 'logout'])->name('whatsapp.logout');
     });
 });
