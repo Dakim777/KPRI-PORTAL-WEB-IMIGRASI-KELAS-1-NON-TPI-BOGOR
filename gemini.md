@@ -179,6 +179,14 @@ Mengakomodasi kebutuhan kasir paspor agar dapat mandiri memindai QR Code WhatsAp
 - **Bug Route Shadowing (404 Not Found Nginx/Laravel):** Saat memindahkan rute ke dalam grup `paspor` di `web.php`, terjadi konflik *Route Shadowing*. Rute spesifik `/paspor/whatsapp` diletakkan di bawah rute *wildcard* `/paspor/{paspor}` (seperti rute `show` atau `destroy`), sehingga ketika URL Gateway diakses, Laravel menangkap string "whatsapp" sebagai parameter `{paspor}` dan mencari id paspor "whatsapp" ke database, menghasilkan *ModelNotFoundException* (404 Error).
 - **Solusi Hierarki Rute:** Masalah diatasi dengan menempatkan blok rute statis `whatsapp` di bagian teratas grup `paspor` (sebelum rute dinamis `/{paspor}`), sesuai standar *best practice* hierarki pemrosesan rute Laravel (Top-Down Evaluation).
 
+### Fase 18 — Hardening Pencarian Publik & Penghapusan Sisa Tabel Kantin (Database Cleanup)
+- **Strict Public Tracking:** Mencabut API Fallback dari pencarian publik untuk ID resi yang tidak valid. Jika masyarakat mencari ID resi/transaksi yang tidak tercatat di database lokal, sistem akan mutlak menampilkan pesan `404 Not Found` atau "Data tidak ditemukan" untuk mencegah eksploitasi API BinderByte oleh pihak luar.
+- **Pembersihan Database:** Menghapus secara permanen 6 buah tabel sisa dari modul Kantin (`detail_kantins`, `detail_pembelians`, `kategori_kantins`, `pembelian_kantins`, `produk_kantins`, `transaksi_kantins`) melalui skrip *database migration*. Basis data produksi kini 100% ramping dan eksklusif hanya melayani sistem logistik paspor.
+
+### Fase 19 — Perbaikan Human-Readable Audit Trail (Bug Array-to-String 500 & Spatie v5 `attribute_changes`)
+- **Migrasi Properti Activitylog v5:** Terjadi anomali di mana detail perubahan kolom pada saat status *updated* terlihat kosong. Masalah dianalisis hingga ke *core* `spatie/laravel-activitylog` versi 5 yang ternyata telah memisahkan array lama/baru ke dalam kolom tabel `attribute_changes` alih-alih `properties`. View `logs.blade.php` berhasil disesuaikan untuk membaca struktur koleksi baru ini.
+- **Resolusi Server Error 500 (Array-to-String Conversion):** Ketika pengguna bergeser ke halaman pagination log lama (contoh: halaman 2), sistem mengalami *crash/500 Error* karena Blade *engine* (`htmlspecialchars`) mencoba merender kolom yang bertipe Array (seperti field `nama_paspor_list`). Bug ditambal dengan menggunakan deteksi `is_array()` lalu mengekstrak isinya menggunakan `implode(', ')`, sehingga perubahan daftar nama paspor dapat terbaca secara natural (manusiawi) dan server kembali beroperasi normal.
+
 ---
 
 ## IV. CHEAT SHEET COMMAND & TROUBLESHOOTING UTAMA
