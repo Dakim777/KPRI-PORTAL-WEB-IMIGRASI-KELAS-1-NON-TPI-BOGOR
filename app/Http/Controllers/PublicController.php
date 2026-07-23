@@ -50,25 +50,9 @@ class PublicController extends Controller
 
         $forceRefresh = $request->boolean('refresh');
         if (!$paspor) {
-            // Coba cek langsung ke BinderByte jika format terlihat seperti resi ekspedisi murni walau tidak ada di DB lokal
-            if (strlen($q) >= 8) {
-                $trackEkspedisi = $logistikService->lacakResi($q, 'pos', $forceRefresh);
-                if (($trackEkspedisi['status'] ?? 0) == 200 && !empty($trackEkspedisi['data']['summary']) && empty($trackEkspedisi['is_fallback'])) {
-                    return response()->json([
-                        'status'  => 'success',
-                        'is_mock' => $trackEkspedisi['is_mock'] ?? false,
-                        'source'  => 'ekspedisi_direct',
-                        'data'    => [
-                            'summary' => $trackEkspedisi['data']['summary'],
-                            'history' => $trackEkspedisi['data']['history'] ?? [],
-                        ]
-                    ]);
-                }
-            }
-
             return response()->json([
                 'status'  => 'error',
-                'message' => 'Data pengiriman dengan ID Transaksi atau Nomor Resi "' . htmlspecialchars($q) . '" tidak ditemukan. Silakan periksa nomor pada Struk atau WhatsApp Anda.'
+                'message' => 'Data pengiriman dengan ID Transaksi atau Nomor Resi "' . htmlspecialchars($q) . '" tidak ditemukan dalam sistem paspor kami. Silakan periksa nomor pada Struk atau WhatsApp Anda.'
             ], 404);
         }
 
