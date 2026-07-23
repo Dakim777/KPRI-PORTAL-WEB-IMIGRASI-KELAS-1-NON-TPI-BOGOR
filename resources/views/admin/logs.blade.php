@@ -40,8 +40,25 @@
                         <td class="px-4 py-3 text-xs text-gray-600 font-mono">
                             {{ class_basename($log->subject_type) }} #{{ $log->subject_id }}
                         </td>
-                        <td class="px-4 py-3 text-xs text-gray-500">
-                            @if($log->properties && $log->properties->count() > 0)
+                        <td class="px-4 py-3 text-xs text-gray-700">
+                            @if($log->description === 'updated' && isset($log->properties['attributes']) && isset($log->properties['old']))
+                                <ul class="list-disc pl-4 space-y-1">
+                                    @foreach($log->properties['attributes'] as $key => $newValue)
+                                        @php $oldValue = $log->properties['old'][$key] ?? null; @endphp
+                                        @if($oldValue != $newValue)
+                                            <li>
+                                                Ubah <b>{{ str_replace('_', ' ', Str::title($key)) }}</b> 
+                                                dari <span class="line-through text-red-500">{{ $oldValue ?: 'kosong' }}</span> 
+                                                ke <span class="text-green-600 font-medium">{{ $newValue ?: 'kosong' }}</span>
+                                            </li>
+                                        @endif
+                                    @endforeach
+                                </ul>
+                            @elseif($log->description === 'created')
+                                <span class="text-green-600 font-medium">Membuat data baru.</span>
+                            @elseif($log->description === 'deleted')
+                                <span class="text-red-600 font-medium">Menghapus data ini.</span>
+                            @elseif($log->properties && $log->properties->count() > 0)
                                 <details class="cursor-pointer">
                                     <summary class="text-blue-600 hover:underline">Lihat Detail</summary>
                                     <pre class="mt-2 p-2 bg-gray-100 rounded text-[10px] overflow-x-auto">{{ json_encode($log->properties, JSON_PRETTY_PRINT) }}</pre>
