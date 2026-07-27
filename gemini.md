@@ -290,3 +290,39 @@ Jika fitur baru menambahkan tabel atau kolom baru di database:
 
 ---
 *Dokumen ini adalah acuan resmi sistem Portal KPRI Imigrasi Bogor untuk AI Assistant dan tim pengembang.*
+
+---
+
+## VI. REFERENSI PENULISAN LAPORAN / SKRIPSI (ARSITEKTUR 0-100)
+
+> **Catatan untuk Mahasiswa/Developer:** Bagian ini dirancang khusus dengan bahasa akademis dan teknikal tingkat lanjut sebagai referensi *copy-paste* atau rujukan untuk penulisan **Bab III (Analisis & Perancangan Sistem)** dan **Bab IV (Implementasi Sistem)** pada dokumen Skripsi/Tugas Akhir.
+
+### 1. Deskripsi Umum Sistem (System Overview)
+Sistem Informasi Pelacakan Pengiriman Paspor dan Logistik (Portal KPRI Imigrasi Bogor) adalah sebuah platform web aplikasi berbasis *enterprise* yang dirancang untuk mengotomatisasi proses bisnis distribusi paspor dari Kantor Imigrasi Kelas I Non-TPI Bogor kepada masyarakat. Sistem ini menggabungkan pencatatan operasional kasir (Point of Sales logistik) dengan portal pelacakan resi publik (*Public Tracking Gateway*), serta sistem notifikasi pesan instan (*Real-Time Messaging Gateway*).
+
+### 2. Arsitektur Perangkat Lunak (Software Architecture)
+Sistem ini dibangun menggunakan pendekatan **Model-View-Controller (MVC)** melalui *framework* **Laravel 11 (PHP 8.4)**. Untuk menangani beban kerja asinkron (*asynchronous workloads*) dan menjaga kestabilan *main thread*, arsitektur sistem dimodifikasi menjadi pola **Internal Microservices Architecture**. 
+- **Monolithic Core (Laravel):** Menangani *business logic*, transaksi basis data relasional (MySQL 8.0) berskala ACID, otentikasi, dan perenderan antarmuka dinamis (*Blade Templating Engine*).
+- **Background Daemon (Node.js):** Menangani koneksi *WebSocket* berkelanjutan (persisten) untuk keperluan gerbang notifikasi. Kedua layanan ini berkomunikasi secara terisolasi di dalam *local loopback interface* (127.0.0.1) menggunakan protokol **Internal REST API**.
+
+### 3. Modul Integrasi Logistik Publik (BinderByte API Integration)
+Modul pelacakan resi diimplementasikan melalui komunikasi HTTP Client (*third-party API consumption*) terhadap pangkalan data BinderByte. Algoritma pelacakan ini mengusung empat teknologi kunci:
+1. **Multi-Courier Auto-Discovery:** Implementasi algoritma pencarian bergulir (*sequential scanning*) yang akan mencari rekam jejak resi secara silang pada 9 *endpoint* ekspedisi nasional secara *background* jika pengujian *courier* awal gagal (mengembalikan kode HTTP 404).
+2. **Shopee-Style Description Normalizer:** Modul pencegat respon (*Response Interceptor*) yang menggunakan *Regular Expression (Regex)* untuk melakukan *parsing* atas teks bahasa Inggris kaku dari server ekspedisi (misal: `"MANIFESTED"`) menjadi susunan kalimat Bahasa Indonesia komprehensif bergaya *e-commerce* (*"Paket telah diserahkan dan terdaftar di loket pengirim"*).
+3. **Intelligent State Caching:** Mekanisme penyimpanan sementara di memori server (*Cache*) untuk meminimalisasi repetisi kueri ke server API (penghematan kuota). Logika *cache* bersifat adaptif: mengunci data selama 2 Menit untuk paket berstatus `"Sedang Diproses"` (*real-time constraint*) dan 120 Menit (2 Jam) untuk paket dengan status final (`"SELESAI/DELIVERED"`).
+4. **Graceful Fallback & Fault Tolerance:** Mekanisme penanganan eksepsi (*Exception Handling*) cerdas yang meredam kesalahan kueri/koneksi saat resi belum terindeks di pusat, sehingga menghindarkan sistem dari kondisi *500 Internal Server Error* dan memberikan umpan balik (UX) yang tidak membingungkan pengguna.
+
+### 4. Modul Gateway Notifikasi Real-Time (WhatsApp Engine)
+Fungsi pengiriman bukti transaksi (struk) dilakukan tanpa intervensi manual kasir melalui integrasi **Self-Hosted WhatsApp Gateway**.
+- **Engine Pustaka:** Menggunakan pustaka *open-source* `@whiskeysockets/baileys` yang berjalan di atas runtime **Node.js**. 
+- **Mekanisme Otentikasi (Multi-file Auth State):** Kredensial koneksi perangkat disimpan dan dienkripsi di server, memungkinkan sistem untuk menyambung ulang (*auto-reconnect*) secara independen tanpa memerlukan pemindaian kode QR berulang setelah server *restart*.
+- **Keamanan Komunikasi:** Karena modul ini berjalan secara *self-hosted* di server internal tanpa bergantung pada vendor *API/Gateway* eksternal pihak ketiga, seluruh jalur pengiriman pesan dienkripsi secara penuh (*End-to-End Encryption / E2EE* menggunakan protokol Signal). Nomor tujuan dan rekam jejak percakapan pemohon paspor dijamin tidak akan mengalami kebocoran data (Data Breach) ke entitas luar.
+
+### 5. Keamanan Data Pemohon (PII Security & RBAC)
+Sistem menjunjung tinggi keamanan data informasi yang dapat mengidentifikasi individu (*Personally Identifiable Information / PII*).
+- **Enkripsi Basis Data (AES-256):** Atribut entitas yang sensitif, meliputi *Nomor Handphone Pemohon* (`no_hp_pemohon`) dan *Alamat Pengiriman Lengkap* (`alamat_pengiriman`), dikonversi menjadi *ciphertext* tingkat militer menggunakan metode AES-256 (Algoritma Enkripsi Simetris) di level *framework* (Laravel *Encrypted Casts*). Data ini hanya didekripsi (*decrypted*) saat sedang di-render di antarmuka sistem (GUI), sehingga apabila terjadi eksekusi basis data yang tidak sah (*SQL Injection / Raw DB Access*), peretas tidak akan dapat membaca informasi asli pemohon.
+- **Role-Based Access Control (RBAC):** Pemisahan otorisasi ketat antara peran (role) `super_admin` (dengan akses ke konfigurasi utilitas dan log sistem) dan `kasir_paspor` (akses eksklusif pada fungsi transaksional operasional).
+
+### 6. Optimasi Kinerja Antarmuka (Performance & UX Engineering)
+- **Zero Collision Request:** Penerapan pengacakan ID Transaksi bertipe dinamis (Format: `KBG-YYMMDD-XXX`) serta pencabutan parameter pencarian publik berdasarkan "*Nama*". Hal ini mencegah bentrokan relasi data (*data collision*) jika terdapat pemohon paspor dengan nama yang sama, sekaligus menutup eksploitasi pencurian data identitas.
+- **Global Orbital Buffering:** Untuk menyesuaikan spesifikasi perangkat keras (PC Kantor) dengan RAM dan *Integrated GPU* terbatas, transisi perpindahan halaman dan subjek *submit-form* diproteksi oleh komponen *Single Orbital Spinner* berformat 2D solid yang mengeliminasi fenomena *stuttering* (kelebihan beban *repaint* peramban web) dan klik ganda dari pengguna (*Double-submit Prevention*).
