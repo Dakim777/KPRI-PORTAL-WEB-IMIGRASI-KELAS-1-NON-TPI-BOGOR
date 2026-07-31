@@ -32,6 +32,9 @@ class PasporSiapDikirimNotification extends Notification
 
     /**
      * Get the array representation of the notification.
+     * CATATAN KEAMANAN: Sengaja tidak menyimpan nama_penerima (PII) secara plaintext
+     * di tabel notifications. Hanya ID yang disimpan, nama diambil dari tabel
+     * transaksi_paspors (yang sudah terenkripsi AES-256) saat ditampilkan di UI.
      *
      * @return array<string, mixed>
      */
@@ -40,8 +43,9 @@ class PasporSiapDikirimNotification extends Notification
         return [
             'transaksi_id' => $this->paspor->id,
             'id_transaksi' => $this->paspor->id_transaksi,
-            'nama_penerima' => $this->paspor->nama_penerima,
-            'pesan' => "Paspor atas nama {$this->paspor->nama_penerima} ({$this->paspor->id_transaksi}) siap dikirim hari ini."
+            'jumlah_paspor' => $this->paspor->jumlah_paspor,
+            'status' => $this->paspor->status_pengiriman,
+            'jenis_kurir' => $this->paspor->jenis_kurir,
         ];
     }
 }
