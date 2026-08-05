@@ -44,7 +44,7 @@
         @if(auth()->user()->role === 'super_admin')
         {{-- Export Laporan Paspor (Hanya Admin) --}}
         <div class="ml-auto flex items-center gap-2">
-            <form method="GET" action="{{ route('paspor.export.kompleks') }}" class="flex items-center gap-2">
+            <form method="GET" action="{{ route('paspor.export.kompleks') }}" data-is-download="true" class="flex items-center gap-2">
                 <input type="date" name="tanggal_dari"
                        value="{{ request('tanggal_dari', now()->startOfMonth()->toDateString()) }}"
                        class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2" />

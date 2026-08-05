@@ -68,25 +68,36 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.checkValidity && !this.checkValidity()) {
                 return;
             }
-            // If explicitly excluded
-            if (this.hasAttribute('data-no-loader')) {
-                return;
-            }
+        // Check if this form triggers a file download (which does not unload the current page)
+        const isDownload = this.hasAttribute('data-is-download') || 
+                           this.getAttribute('action')?.toLowerCase().includes('export') ||
+                           this.getAttribute('action')?.toLowerCase().includes('download');
 
-            // Custom texts from data attributes
-            const customTitle = this.getAttribute('data-loader-title') || 'Memproses Data...';
-            const customDesc = this.getAttribute('data-loader-desc') || 'Mohon tunggu sebentar, sistem sedang memproses permintaan Anda.';
+        // Custom texts from data attributes or defaults
+        const customTitle = this.getAttribute('data-loader-title') || (isDownload ? 'Mengunduh Laporan...' : 'Memproses Data...');
+        const customDesc = this.getAttribute('data-loader-desc') || (isDownload ? 'File Excel sedang disiapkan dan akan terunduh otomatis.' : 'Mohon tunggu sebentar, sistem sedang memproses permintaan Anda.');
 
-            // Disable submit buttons inside this form to prevent duplicate submissions
-            const submitBtns = this.querySelectorAll('button[type="submit"], input[type="submit"]');
-            submitBtns.forEach(btn => {
-                btn.disabled = true;
-                btn.classList.add('opacity-75', 'cursor-not-allowed');
-            });
-
-            window.KPRILoader.show(customTitle, customDesc);
+        // Disable submit buttons inside this form to prevent duplicate submissions
+        const submitBtns = this.querySelectorAll('button[type="submit"], input[type="submit"]');
+        submitBtns.forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
         });
+
+        window.KPRILoader.show(customTitle, customDesc);
+
+        // Auto-hide loader and re-enable buttons for download forms after 2.5 seconds
+        if (isDownload) {
+            setTimeout(() => {
+                window.KPRILoader.hide();
+                submitBtns.forEach(btn => {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                });
+            }, 2500);
+        }
     });
+});
 
     // Also support links with data-loader attribute (for quick actions / logout / export)
     document.querySelectorAll('a[data-loader]').forEach(link => {
