@@ -59,9 +59,9 @@
                 <td style="text-align: right; {{ $handlingFee == 0 ? 'background-color: #FFFF00;' : '' }}">{{ $handlingFee }}</td>
                 <td style="text-align: right; {{ $hargaMaterai == 0 ? 'background-color: #FFFF00;' : '' }}">{{ $hargaMaterai }}</td>
                 <td style="text-align: right; {{ $hargaSuratKuasa == 0 ? 'background-color: #FFFF00;' : '' }}">{{ $hargaSuratKuasa }}</td>
-                <td style="text-align: right;">{{ $pendapatan }}</td>
-                <td style="text-align: right;">{{ $feePetugas }}</td>
-                <td style="text-align: right;">{{ $pendapatanBersih }}</td>
+                <td style="text-align: right;">=G{{ $row }}-(H{{ $row }}+I{{ $row }}+J{{ $row }}+K{{ $row }}+L{{ $row }})</td>
+                <td style="text-align: right;">0</td>
+                <td style="text-align: right;">=M{{ $row }}-N{{ $row }}</td>
                 <td>{{ $tglPengiriman }}</td>
                 <td>{{ $tglDiterima }}</td>
             </tr>
