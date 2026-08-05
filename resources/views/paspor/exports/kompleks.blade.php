@@ -22,25 +22,48 @@
     </thead>
     <tbody>
         @foreach($paspors as $index => $paspor)
-            @php $row = $index + 2; @endphp
+            @php 
+                $row = $index + 2; 
+                $totalPembayaran = (float) ($paspor->total_pembayaran_pemohon ?? 0);
+                $biayaKurir      = (float) ($paspor->biaya_kurir ?? 0);
+                $biayaPackaging  = (float) ($paspor->biaya_modal_packaging ?? 0);
+                $handlingFee     = (float) ($paspor->handling_fee ?? 0);
+                $hargaMaterai    = (float) ($paspor->harga_materai ?? 0);
+                $hargaSuratKuasa = (float) ($paspor->harga_surat_kuasa ?? 0);
+                $pendapatan      = $totalPembayaran - ($biayaKurir + $biayaPackaging + $handlingFee + $hargaMaterai + $hargaSuratKuasa);
+                $feePetugas      = 0;
+                $pendapatanBersih= $pendapatan - $feePetugas;
+
+                $tglTransaksi = $paspor->tanggal_transaksi instanceof \Carbon\CarbonInterface 
+                    ? $paspor->tanggal_transaksi->format('d/m/Y') 
+                    : ($paspor->tanggal_transaksi ? (string)$paspor->tanggal_transaksi : '');
+
+                $tglPengiriman = $paspor->tanggal_pengiriman_paspor instanceof \Carbon\CarbonInterface 
+                    ? $paspor->tanggal_pengiriman_paspor->format('d/m/Y') 
+                    : ($paspor->tanggal_pengiriman_paspor ? (string)$paspor->tanggal_pengiriman_paspor : '');
+
+                $tglDiterima = $paspor->tanggal_paspor_diterima instanceof \Carbon\CarbonInterface 
+                    ? $paspor->tanggal_paspor_diterima->format('d/m/Y') 
+                    : ($paspor->tanggal_paspor_diterima ? (string)$paspor->tanggal_paspor_diterima : '');
+            @endphp
             <tr>
                 <td style="text-align: center;">{{ $index + 1 }}</td>
-                <td>{{ $paspor->tanggal_transaksi ? $paspor->tanggal_transaksi->format('d/m/Y') : '' }}</td>
+                <td>{{ $tglTransaksi }}</td>
                 <td style="text-align: center;">{{ $paspor->no_struk }}</td>
                 <td>{{ $paspor->nama_penerima }}</td>
                 <td>{{ $paspor->no_resi }}</td>
                 <td style="text-align: center;">{{ $paspor->jumlah_paspor }}</td>
-                <td style="text-align: right;">{{ $paspor->total_pembayaran_pemohon }}</td>
-                <td style="text-align: right; {{ empty($paspor->biaya_kurir) || $paspor->biaya_kurir == 0 ? 'background-color: #FFFF00;' : '' }}">{{ $paspor->biaya_kurir ?? 0 }}</td>
-                <td style="text-align: right; {{ empty($paspor->biaya_modal_packaging) || $paspor->biaya_modal_packaging == 0 ? 'background-color: #FFFF00;' : '' }}">{{ $paspor->biaya_modal_packaging ?? 0 }}</td>
-                <td style="text-align: right; {{ empty($paspor->handling_fee) || $paspor->handling_fee == 0 ? 'background-color: #FFFF00;' : '' }}">{{ $paspor->handling_fee ?? 0 }}</td>
-                <td style="text-align: right; {{ empty($paspor->harga_materai) || $paspor->harga_materai == 0 ? 'background-color: #FFFF00;' : '' }}">{{ $paspor->harga_materai ?? 0 }}</td>
-                <td style="text-align: right; {{ empty($paspor->harga_surat_kuasa) || $paspor->harga_surat_kuasa == 0 ? 'background-color: #FFFF00;' : '' }}">{{ $paspor->harga_surat_kuasa ?? 0 }}</td>
-                <td style="text-align: right;">=G{{ $row }}-(H{{ $row }}+I{{ $row }}+J{{ $row }}+K{{ $row }}+L{{ $row }})</td>
-                <td style="text-align: right;">=0</td>
-                <td style="text-align: right;">=M{{ $row }}-N{{ $row }}</td>
-                <td>{{ $paspor->tanggal_pengiriman_paspor ? $paspor->tanggal_pengiriman_paspor->format('d/m/Y') : '' }}</td>
-                <td>{{ $paspor->tanggal_paspor_diterima ? $paspor->tanggal_paspor_diterima->format('d/m/Y') : '' }}</td>
+                <td style="text-align: right;">{{ $totalPembayaran }}</td>
+                <td style="text-align: right; {{ $biayaKurir == 0 ? 'background-color: #FFFF00;' : '' }}">{{ $biayaKurir }}</td>
+                <td style="text-align: right; {{ $biayaPackaging == 0 ? 'background-color: #FFFF00;' : '' }}">{{ $biayaPackaging }}</td>
+                <td style="text-align: right; {{ $handlingFee == 0 ? 'background-color: #FFFF00;' : '' }}">{{ $handlingFee }}</td>
+                <td style="text-align: right; {{ $hargaMaterai == 0 ? 'background-color: #FFFF00;' : '' }}">{{ $hargaMaterai }}</td>
+                <td style="text-align: right; {{ $hargaSuratKuasa == 0 ? 'background-color: #FFFF00;' : '' }}">{{ $hargaSuratKuasa }}</td>
+                <td style="text-align: right;">{{ $pendapatan }}</td>
+                <td style="text-align: right;">{{ $feePetugas }}</td>
+                <td style="text-align: right;">{{ $pendapatanBersih }}</td>
+                <td>{{ $tglPengiriman }}</td>
+                <td>{{ $tglDiterima }}</td>
             </tr>
         @endforeach
     </tbody>

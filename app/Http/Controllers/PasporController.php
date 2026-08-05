@@ -246,6 +246,10 @@ class PasporController extends Controller
         $suffix   = ($dari && $sampai) ? "{$dari}_sd_{$sampai}" : now()->format('Ymd_His');
         $filename = "laporan_paspor_kompleks_{$suffix}.xlsx";
 
+        if (ob_get_level() > 0) {
+            @ob_end_clean();
+        }
+
         return Excel::download(new LaporanPasporKompleksExport($dari, $sampai), $filename);
     }
     
