@@ -240,17 +240,22 @@ class PasporController extends Controller
             abort(403, 'Aksi tidak diizinkan. Hanya Super Admin yang dapat mengunduh Laporan Kompleks.');
         }
         
-        $dari   = $request->input('tanggal_dari');
-        $sampai = $request->input('tanggal_sampai');
+        try {
+            $dari   = $request->input('tanggal_dari');
+            $sampai = $request->input('tanggal_sampai');
 
-        $suffix   = ($dari && $sampai) ? "{$dari}_sd_{$sampai}" : now()->format('Ymd_His');
-        $filename = "laporan_paspor_kompleks_{$suffix}.xlsx";
+            $suffix   = ($dari && $sampai) ? "{$dari}_sd_{$sampai}" : now()->format('Ymd_His');
+            $filename = "laporan_paspor_kompleks_{$suffix}.xlsx";
 
-        if (ob_get_level() > 0) {
-            @ob_end_clean();
+            if (ob_get_level() > 0) {
+                @ob_end_clean();
+            }
+
+            return Excel::download(new LaporanPasporKompleksExport($dari, $sampai), $filename);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Error exportKompleks: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return back()->with('error', 'Gagal mengunduh laporan Excel: ' . $e->getMessage());
         }
-
-        return Excel::download(new LaporanPasporKompleksExport($dari, $sampai), $filename);
     }
     
     // --- Cetak Struk ---
