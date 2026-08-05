@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <!-- TITLE (Y=15 to Y=45) -->
+    <mxCell id="10" value="ENTITY RELATIONSHIP DIAGRAM (ERD) - PORTAL KOPERASI IMIGRASI BOGOR" style="text;html=1;fontSize=15;fontStyle=1;align=center;fontColor=#000000;" vertex="1" parent="1">
+      <mxGeometry x="300" y="15" width="1050" height="30" as="geometry" />
+    </mxCell>
+
+    <!-- ==================== ENTITY 1: USERS (Y=90 to Y=341) ==================== -->
+    <mxCell id="u_hdr" value="USERS (Data Pengguna &amp; Kasir)" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#000000;fontColor=#000000;align=center;" vertex="1" parent="1">
+      <mxGeometry x="60" y="90" width="260" height="35" as="geometry" />
+    </mxCell>
+    <mxCell id="u_r1" value="+ id (PK) : bigint" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fontStyle=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="125" width="260" height="24" as="geometry"/></mxCell>
+    <mxCell id="u_r2" value="+ name : string" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="149" width="260" height="24" as="geometry"/></mxCell>
+    <mxCell id="u_r3" value="+ email (UK) : string" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="173" width="260" height="24" as="geometry"/></mxCell>
+    <mxCell id="u_r4" value="+ password : string (bcrypt)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="197" width="260" height="24" as="geometry"/></mxCell>
+    <mxCell id="u_r5" value="+ role : enum(super_admin, kasir_paspor)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="221" width="260" height="24" as="geometry"/></mxCell>
+    <mxCell id="u_r6" value="+ remember_token : string" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="245" width="260" height="24" as="geometry"/></mxCell>
+    <mxCell id="u_r7" value="+ created_at : timestamp" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="269" width="260" height="24" as="geometry"/></mxCell>
+    <mxCell id="u_r8" value="+ updated_at : timestamp" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="293" width="260" height="24" as="geometry"/></mxCell>
+    <mxCell id="u_r9" value="+ deleted_at : timestamp (Soft Delete)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="317" width="260" height="24" as="geometry"/></mxCell>
+
+    <!-- ==================== ENTITY 2: TRANSAKSI_PASPORS (Y=90 to Y=605) ==================== -->
+    <mxCell id="t_hdr" value="TRANSAKSI_PASPORS (Data Pengiriman Paspor)" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#000000;fontColor=#000000;align=center;" vertex="1" parent="1">
+      <mxGeometry x="440" y="90" width="350" height="35" as="geometry" />
+    </mxCell>
+    <mxCell id="t_r1" value="+ id (PK) : bigint" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fontStyle=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="125" width="350" height="24" as="geometry"/></mxCell>
+    <mxCell id="t_r2" value="+ kasir_id (FK) : bigint → users.id" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fontStyle=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="149" width="350" height="24" as="geometry"/></mxCell>
+    <mxCell id="t_r3" value="+ id_transaksi (UK) : string (KBG-YYMMDD-XXX)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="173" width="350" height="24" as="geometry"/></mxCell>
+    <mxCell id="t_r4" value="+ no_struk : int" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="197" width="350" height="24" as="geometry"/></mxCell>
+    <mxCell id="t_r5" value="+ nama_penerima : string [AES-256 Encrypted]" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="221" width="350" height="24" as="geometry"/></mxCell>
+    <mxCell id="t_r6" value="+ jumlah_paspor : int" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="245" width="350" height="24" as="geometry"/></mxCell>
+    <mxCell id="t_r7" value="+ nama_paspor_list : text [AES-256 Encrypted]" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="269" width="350" height="24" as="geometry"/></mxCell>
+    <mxCell id="t_r8" value="+ alamat_tujuan_pengiriman : text [AES-256 Encrypted]" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="293" width="350" height="24" as="geometry"/></mxCell>
+    <mxCell id="t_r9" value="+ no_hp : text [AES-256 Encrypted]" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="317" width="350" height="24" as="geometry"/></mxCell>
+    <mxCell id="t_r10" value="+ no_resi : string (Nullable)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="341" width="350" height="24" as="geometry"/></mxCell>
+    <mxCell id="t_r11" value="+ jenis_kurir : string (pos, jne, sicepat, dll)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="365" width="350" height="24" as="geometry"/></mxCell>
+    <mxCell id="t_r12" value="+ layanan_kurir : string" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="389" width="350" height="24" as="geometry"/></mxCell>
+    <mxCell id="t_r13" value="+ metode_pembayaran : string" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="413" width="350" height="24" as="geometry"/></mxCell>
+    <mxCell id="t_r14" value="+ total_pembayaran_pemohon : decimal" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="437" width="350" height="24" as="geometry"/></mxCell>
+    <mxCell id="t_r15" value="+ biaya_kurir : decimal" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="461" width="350" height="24" as="geometry"/></mxCell>
+    <mxCell id="t_r16" value="+ handling_fee : decimal" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="485" width="350" height="24" as="geometry"/></mxCell>
+    <mxCell id="t_r17" value="+ tanggal_transaksi : date" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="509" width="350" height="24" as="geometry"/></mxCell>
+    <mxCell id="t_r18" value="+ status_pengiriman : enum(transaksi,diproses,selesai,batal)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="533" width="350" height="24" as="geometry"/></mxCell>
+    <mxCell id="t_r19" value="+ created_at / updated_at : timestamp" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="557" width="350" height="24" as="geometry"/></mxCell>
+    <mxCell id="t_r20" value="+ deleted_at : timestamp (Soft Delete)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="440" y="581" width="350" height="24" as="geometry"/></mxCell>
+
+    <!-- ==================== ENTITY 3: ACTIVITY_LOG (Y=90 to Y=365) ==================== -->
+    <mxCell id="a_hdr" value="ACTIVITY_LOG (Audit Trail Operasional)" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#000000;fontColor=#000000;align=center;" vertex="1" parent="1">
+      <mxGeometry x="910" y="90" width="280" height="35" as="geometry" />
+    </mxCell>
+    <mxCell id="a_r1" value="+ id (PK) : bigint" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fontStyle=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="910" y="125" width="280" height="24" as="geometry"/></mxCell>
+    <mxCell id="a_r2" value="+ log_name : string" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="910" y="149" width="280" height="24" as="geometry"/></mxCell>
+    <mxCell id="a_r3" value="+ description : text" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="910" y="173" width="280" height="24" as="geometry"/></mxCell>
+    <mxCell id="a_r4" value="+ subject_type : string" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="910" y="197" width="280" height="24" as="geometry"/></mxCell>
+    <mxCell id="a_r5" value="+ subject_id : bigint" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="910" y="221" width="280" height="24" as="geometry"/></mxCell>
+    <mxCell id="a_r6" value="+ causer_type : string" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="910" y="245" width="280" height="24" as="geometry"/></mxCell>
+    <mxCell id="a_r7" value="+ causer_id (FK) : bigint → users.id" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fontStyle=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="910" y="269" width="280" height="24" as="geometry"/></mxCell>
+    <mxCell id="a_r8" value="+ properties : json (Old &amp; New Values)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="910" y="293" width="280" height="24" as="geometry"/></mxCell>
+    <mxCell id="a_r9" value="+ event : string (created, updated, deleted)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="910" y="317" width="280" height="24" as="geometry"/></mxCell>
+    <mxCell id="a_r10" value="+ created_at : timestamp" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="910" y="341" width="280" height="24" as="geometry"/></mxCell>
+
+    <!-- ==================== ENTITY 4: NOTIFICATIONS (Y=420 to Y=623) ==================== -->
+    <mxCell id="n_hdr" value="NOTIFICATIONS (Notifikasi Internal System)" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#000000;fontColor=#000000;align=center;" vertex="1" parent="1">
+      <mxGeometry x="910" y="420" width="280" height="35" as="geometry" />
+    </mxCell>
+    <mxCell id="n_r1" value="+ id (PK) : uuid" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fontStyle=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="910" y="455" width="280" height="24" as="geometry"/></mxCell>
+    <mxCell id="n_r2" value="+ type : string" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="910" y="479" width="280" height="24" as="geometry"/></mxCell>
+    <mxCell id="n_r3" value="+ notifiable_type : string" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="910" y="503" width="280" height="24" as="geometry"/></mxCell>
+    <mxCell id="n_r4" value="+ notifiable_id (FK) : bigint → users.id" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fontStyle=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="910" y="527" width="280" height="24" as="geometry"/></mxCell>
+    <mxCell id="n_r5" value="+ data : text (JSON: Zero PII Plaintext)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="910" y="551" width="280" height="24" as="geometry"/></mxCell>
+    <mxCell id="n_r6" value="+ read_at : timestamp" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="910" y="575" width="280" height="24" as="geometry"/></mxCell>
+    <mxCell id="n_r7" value="+ created_at : timestamp" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="910" y="599" width="280" height="24" as="geometry"/></mxCell>
+
+    <!-- ==================== ENTITY 5: SESSIONS (Y=420 to Y=599) ==================== -->
+    <mxCell id="s_hdr" value="SESSIONS (Multi-Device Login Session)" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#000000;fontColor=#000000;align=center;" vertex="1" parent="1">
+      <mxGeometry x="60" y="420" width="260" height="35" as="geometry" />
+    </mxCell>
+    <mxCell id="s_r1" value="+ id (PK) : string" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fontStyle=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="455" width="260" height="24" as="geometry"/></mxCell>
+    <mxCell id="s_r2" value="+ user_id (FK) : bigint → users.id" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fontStyle=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="479" width="260" height="24" as="geometry"/></mxCell>
+    <mxCell id="s_r3" value="+ ip_address : string" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="503" width="260" height="24" as="geometry"/></mxCell>
+    <mxCell id="s_r4" value="+ user_agent : text" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="527" width="260" height="24" as="geometry"/></mxCell>
+    <mxCell id="s_r5" value="+ payload : longtext" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="551" width="260" height="24" as="geometry"/></mxCell>
+    <mxCell id="s_r6" value="+ last_activity : int" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="575" width="260" height="24" as="geometry"/></mxCell>
+
+    <!-- ==================== RELATIONSHIP LINES (PERFECT GEOMETRY) ==================== -->
+
+    <!-- R1: USERS.id -> TRANSAKSI_PASPORS.kasir_id (1 : N mencatat) -->
+    <mxCell id="r1" value="1 : N (mencatat)" style="endArrow=ERmany;startArrow=ERone;endFill=0;startFill=0;fontSize=11;fontStyle=1;strokeColor=#000000;fontColor=#000000;edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=#ffffff;labelBorderColor=#666666;" edge="1" parent="1" source="u_r1" target="t_r2">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="320" y="137" />
+          <mxPoint x="380" y="137" />
+          <mxPoint x="380" y="161" />
+          <mxPoint x="440" y="161" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- R2: USERS -> ACTIVITY_LOG (1 : N melakukan) - TOP BYPASS AT Y=55 (BELOW TITLE, ABOVE HEADERS) -->
+    <mxCell id="r2" value="1 : N (melakukan)" style="endArrow=ERmany;startArrow=ERone;endFill=0;startFill=0;fontSize=11;fontStyle=1;strokeColor=#000000;fontColor=#000000;edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=#ffffff;labelBorderColor=#666666;" edge="1" parent="1" source="u_hdr" target="a_hdr">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="190" y="55" />
+          <mxPoint x="1050" y="55" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- R3: USERS -> NOTIFICATIONS (1 : N menerima) - BOTTOM BYPASS AT Y=660 TO LEFT EDGE -->
+    <mxCell id="r3" value="1 : N (menerima)" style="endArrow=ERmany;startArrow=ERone;endFill=0;startFill=0;fontSize=11;fontStyle=1;strokeColor=#000000;fontColor=#000000;edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=#ffffff;labelBorderColor=#666666;" edge="1" parent="1" source="s_r6" target="n_r4">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="190" y="660" />
+          <mxPoint x="850" y="660" />
+          <mxPoint x="850" y="539" />
+          <mxPoint x="910" y="539" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- R4: USERS -> SESSIONS (1 : N sesi) - DIRECT VERTICAL LINE DOWN -->
+    <mxCell id="r4" value="1 : N (sesi)" style="endArrow=ERmany;startArrow=ERone;endFill=0;startFill=0;fontSize=11;fontStyle=1;strokeColor=#000000;fontColor=#000000;edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=#ffffff;labelBorderColor=#666666;" edge="1" parent="1" source="u_r9" target="s_hdr">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="190" y="341" />
+          <mxPoint x="190" y="420" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+  </root>
+</mxGraphModel>

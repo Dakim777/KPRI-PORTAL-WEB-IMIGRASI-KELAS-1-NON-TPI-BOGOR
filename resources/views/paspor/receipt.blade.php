@@ -144,17 +144,22 @@
 
         <div class="border-dashed"></div>
 
-        <!-- Footer -->
+        <!-- QR Code & Footer -->
         <div class="footer">
+            <div class="text-center" style="margin: 15px 0 10px 0;">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data={{ urlencode(url('/?q=' . $paspor->id_transaksi)) }}" alt="QR Code Lacak Paspor" style="width: 110px; height: 110px; border: 1px solid #ddd; padding: 3px;">
+                <div style="font-size: 9px; font-weight: bold; margin-top: 4px;">SCAN QR UNTUK LACAK PASPOR LANGSUNG</div>
+            </div>
+
             <p>PERHATIAN:<br>
-            1. Lacak status paspor Anda secara real-time kapan saja di website resmi:<br>
+            1. Lacak status paspor Anda secara real-time kapan saja via Scan QR di atas atau buka:<br>
                <strong>https://kpriimigrasibogor.my.id</strong><br>
                Gunakan <strong>ID Transaksi ({{ $paspor->id_transaksi }})</strong> atau Nomor Resi di atas.<br>
             2. Dokumen paspor yang sudah dikirim menjadi tanggung jawab ekspedisi. Silakan cek berkala status kiriman.<br>
             3. Mohon hubungi nomor Hotline Kami di 082121240900 (WA only) untuk bantuan.</p>
             <br>
-            <p>Terima kasih telah menggunakan jasa<br>
-            KPRI Imigrasi Bogor</p>
+            <p class="text-center">Terima kasih telah menggunakan jasa<br>
+            <strong>KPRI Imigrasi Bogor</strong></p>
         </div>
     </div>
 </body>

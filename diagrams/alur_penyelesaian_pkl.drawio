@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <!-- TITLE -->
+    <mxCell id="10" value="DIAGRAM ALUR METODOLOGI PENYELESAIAN PKL / SKRIPSI" style="text;html=1;fontSize=15;fontStyle=1;align=center;fontColor=#000000;" vertex="1" parent="1">
+      <mxGeometry x="110" y="20" width="600" height="30" as="geometry" />
+    </mxCell>
+
+    <!-- START -->
+    <mxCell id="20" value="Mulai" style="ellipse;whiteSpace=wrap;html=1;fillColor=#000000;fontColor=#ffffff;fontSize=12;fontStyle=1;strokeColor=#000000;" vertex="1" parent="1">
+      <mxGeometry x="354" y="70" width="120" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- STEP 1 -->
+    <mxCell id="21" value="Observasi &amp; Pengumpulan Data&#xa;(Wawancara &amp; Studi Dokumen Koperasi)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=12;arcSize=30;" vertex="1" parent="1">
+      <mxGeometry x="274" y="145" width="280" height="55" as="geometry" />
+    </mxCell>
+
+    <!-- STEP 2 -->
+    <mxCell id="22" value="Analisis Permasalahan &amp; Kebutuhan&#xa;(Kebutuhan Fungsional &amp; Non-Fungsional)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=12;arcSize=30;" vertex="1" parent="1">
+      <mxGeometry x="274" y="235" width="280" height="55" as="geometry" />
+    </mxCell>
+
+    <!-- STEP 3 -->
+    <mxCell id="23" value="Perancangan &amp; Functional Prototyping&#xa;(UML, ERD, Schema DB, Direct Code UI)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=12;arcSize=30;" vertex="1" parent="1">
+      <mxGeometry x="274" y="325" width="280" height="55" as="geometry" />
+    </mxCell>
+
+    <!-- STEP 4 -->
+    <mxCell id="24" value="Implementasi &amp; Pemrograman&#xa;(Laravel 11, MySQL 8, Node.js WA Gateway)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=12;arcSize=30;" vertex="1" parent="1">
+      <mxGeometry x="274" y="415" width="280" height="55" as="geometry" />
+    </mxCell>
+
+    <!-- STEP 5 -->
+    <mxCell id="25" value="Pengujian Sistem&#xa;(Black Box Testing &amp; UAT Bersama Kasir)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=12;arcSize=30;" vertex="1" parent="1">
+      <mxGeometry x="274" y="505" width="280" height="55" as="geometry" />
+    </mxCell>
+
+    <!-- STEP 6 -->
+    <mxCell id="26" value="Deployment &amp; Go-Live&#xa;(Server Production Ubuntu Nginx)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=12;arcSize=30;" vertex="1" parent="1">
+      <mxGeometry x="274" y="595" width="280" height="55" as="geometry" />
+    </mxCell>
+
+    <!-- STEP 7 -->
+    <mxCell id="27" value="Penarikan Kesimpulan &amp; Laporan&#xa;(Penyusunan Dokumentasi Laporan)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=12;arcSize=30;" vertex="1" parent="1">
+      <mxGeometry x="274" y="685" width="280" height="55" as="geometry" />
+    </mxCell>
+
+    <!-- END -->
+    <mxCell id="28" value="Selesai" style="ellipse;whiteSpace=wrap;html=1;fillColor=#000000;fontColor=#ffffff;fontSize=12;fontStyle=1;strokeColor=#000000;" vertex="1" parent="1">
+      <mxGeometry x="354" y="775" width="120" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- CONNECTORS (VERTICAL STRAIGHT ARROWS) -->
+    <mxCell id="c1" style="endArrow=classic;html=1;strokeWidth=1.5;strokeColor=#000000;" edge="1" source="20" target="21" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="c2" style="endArrow=classic;html=1;strokeWidth=1.5;strokeColor=#000000;" edge="1" source="21" target="22" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="c3" style="endArrow=classic;html=1;strokeWidth=1.5;strokeColor=#000000;" edge="1" source="22" target="23" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="c4" style="endArrow=classic;html=1;strokeWidth=1.5;strokeColor=#000000;" edge="1" source="23" target="24" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="c5" style="endArrow=classic;html=1;strokeWidth=1.5;strokeColor=#000000;" edge="1" source="24" target="25" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="c6" style="endArrow=classic;html=1;strokeWidth=1.5;strokeColor=#000000;" edge="1" source="25" target="26" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="c7" style="endArrow=classic;html=1;strokeWidth=1.5;strokeColor=#000000;" edge="1" source="26" target="27" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="c8" style="endArrow=classic;html=1;strokeWidth=1.5;strokeColor=#000000;" edge="1" source="27" target="28" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+  </root>
+</mxGraphModel>

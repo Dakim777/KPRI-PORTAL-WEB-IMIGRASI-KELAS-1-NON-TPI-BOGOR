@@ -105,6 +105,12 @@ class PasporController extends Controller
         $data['status_pengiriman'] = 'transaksi';
         $data['jenis_kurir'] = $data['jenis_kurir'] ?? 'POS';
         $data['layanan_kurir'] = $data['layanan_kurir'] ?? 'Reguler';
+        // Pastikan field numerik tidak pernah NULL saat disimpan ke database
+        $data['biaya_kurir']           = isset($data['biaya_kurir']) && $data['biaya_kurir'] !== '' ? (float) $data['biaya_kurir'] : 0;
+        $data['handling_fee']          = isset($data['handling_fee']) && $data['handling_fee'] !== '' ? (float) $data['handling_fee'] : 0;
+        $data['biaya_modal_packaging'] = isset($data['biaya_modal_packaging']) && $data['biaya_modal_packaging'] !== '' ? (float) $data['biaya_modal_packaging'] : 0;
+        $data['harga_materai']         = isset($data['harga_materai']) && $data['harga_materai'] !== '' ? (float) $data['harga_materai'] : 0;
+        $data['harga_surat_kuasa']     = isset($data['harga_surat_kuasa']) && $data['harga_surat_kuasa'] !== '' ? (float) $data['harga_surat_kuasa'] : 0;
 
         $transaksi = TransaksiPaspor::create($data);
 
