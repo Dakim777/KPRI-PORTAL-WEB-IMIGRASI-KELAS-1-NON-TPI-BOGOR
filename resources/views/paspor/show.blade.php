@@ -263,6 +263,11 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                 Edit Data
             </a>
+            <button type="button" onclick="lacakResiDetail({{ $paspor->id }}, '{{ $paspor->no_resi }}')"
+               class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                Lacak Resi
+            </button>
             <a href="{{ route('paspor.print', $paspor->id) }}" target="_blank"
                class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
@@ -282,4 +287,23 @@
     </div>
 
 </div>
+
+<script>
+    function lacakResiDetail(id, resi) {
+        if (!resi || resi.trim() === '') {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Nomor Resi Belum Diinput',
+                    text: 'Nomor resi belum diinput pada transaksi ini.',
+                    confirmButtonColor: '#1d4ed8'
+                });
+            } else {
+                alert('Nomor resi belum diinput pada transaksi ini.');
+            }
+            return;
+        }
+        window.location.href = `/paspor?search=${encodeURIComponent(resi)}`;
+    }
+</script>
 @endsection

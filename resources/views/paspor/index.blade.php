@@ -178,13 +178,13 @@
                                    class="text-green-600 hover:text-green-800 font-medium text-xs whitespace-nowrap">
                                     Struk
                                 </a>
-                                @if($t->no_resi)
                                 <span class="text-gray-300">|</span>
-                                <button type="button" onclick="openTrackingModal({{ $t->id }}, '{{ $t->no_resi }}', '{{ $t->nama_penerima }}')"
+                                <button type="button" onclick="openTrackingModal({{ $t->id }}, '{{ $t->no_resi ?? '' }}', '{{ $t->nama_penerima }}')"
                                         class="text-indigo-600 hover:text-indigo-800 font-medium text-xs whitespace-nowrap inline-flex items-center gap-1">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                                     <span>Lacak</span>
                                 </button>
+                                @if($t->no_resi)
                                 <span class="text-gray-300">|</span>
                                 <button type="button" onclick="sendWaResi({{ $t->id }}, '{{ $t->nama_penerima }}')"
                                         class="text-emerald-600 hover:text-emerald-800 font-medium text-xs whitespace-nowrap inline-flex items-center gap-1"
