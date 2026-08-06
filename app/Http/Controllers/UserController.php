@@ -55,7 +55,7 @@ class UserController extends Controller
     {
         $data = $request->validate([
             'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'email', 'max:255', 'unique:users,email'],
+            'email'    => ['required', 'email', 'max:255', \Illuminate\Validation\Rule::unique('users', 'email')->whereNull('deleted_at')],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role'     => ['required', 'in:super_admin,kasir_paspor'],
         ], [
@@ -138,7 +138,7 @@ class UserController extends Controller
         }
 
         $nama = $user->name;
-        $user->delete();
+        $user->forceDelete();
 
         return redirect()
             ->route('admin.users.index')

@@ -41,7 +41,6 @@
                    class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
                     Edit
                 </a>
-                @if($user->id !== auth()->id())
                 <form method="POST" action="{{ route('admin.users.destroy', $user->id) }}"
                       onsubmit="return confirm('Hapus akun {{ $user->name }}? Tindakan ini tidak dapat dibatalkan.')">
                     @csrf
@@ -50,7 +49,6 @@
                         Hapus
                     </button>
                 </form>
-                @endif
             </div>
         </div>
 

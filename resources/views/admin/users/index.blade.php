@@ -114,7 +114,6 @@
                                 <span class="text-gray-300">|</span>
                                 <a href="{{ route('admin.users.edit', $user->id) }}"
                                    class="text-amber-600 hover:text-amber-800 font-medium text-xs">Edit</a>
-                                @if($user->id !== auth()->id())
                                 <span class="text-gray-300">|</span>
                                 <form method="POST" action="{{ route('admin.users.destroy', $user->id) }}"
                                       onsubmit="return confirm('Hapus akun {{ $user->name }}? Tindakan ini tidak bisa dibatalkan.')">
@@ -122,7 +121,6 @@
                                     @method('DELETE')
                                     <button type="submit" class="text-red-500 hover:text-red-700 font-medium text-xs">Hapus</button>
                                 </form>
-                                @endif
                             </div>
                         </td>
                     </tr>
