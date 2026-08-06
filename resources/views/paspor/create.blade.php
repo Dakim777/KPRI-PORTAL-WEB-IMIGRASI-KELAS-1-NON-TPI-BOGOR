@@ -113,14 +113,15 @@
                             <option value="ide">ID Express</option>
                         </select>
                         <select id="rajaongkir_destination" class="border border-blue-300 rounded-lg px-2.5 py-1.5 text-xs max-w-[240px] bg-white font-semibold focus:ring-2 focus:ring-blue-500 truncate">
+                            <option value="">-- Pilih Kota Tujuan --</option>
                             @if(isset($daftarKota) && is_array($daftarKota))
                                 @foreach($daftarKota as $kota)
-                                    <option value="{{ $kota['city_id'] }}" {{ $kota['city_id'] == '149' ? 'selected' : '' }}>
+                                    <option value="{{ $kota['city_id'] }}">
                                         {{ $kota['city_name'] }}
                                     </option>
                                 @endforeach
                             @else
-                                <option value="149" selected>Kota Bogor (Jawa Barat)</option>
+                                <option value="149">Kota Bogor (Jawa Barat)</option>
                                 <option value="80">Kabupaten Bogor (Jawa Barat)</option>
                                 <option value="114">Kota Depok (Jawa Barat)</option>
                                 <option value="152">Kota Jakarta Pusat (DKI Jakarta)</option>
@@ -302,7 +303,20 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function autoCekOngkir(e) {
-    const dest = document.getElementById('rajaongkir_destination').value || '149';
+    const dest = document.getElementById('rajaongkir_destination').value;
+    if (!dest) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Tujuan Kosong',
+                text: 'Silakan pilih kota tujuan pengiriman terlebih dahulu!',
+                confirmButtonColor: '#1d4ed8'
+            });
+        } else {
+            alert('Silakan pilih kota tujuan pengiriman terlebih dahulu!');
+        }
+        return;
+    }
     const courier = document.getElementById('rajaongkir_courier').value || 'pos';
     const btn = e.currentTarget || e.target;
     const oldText = btn.innerHTML;
