@@ -94,14 +94,29 @@
             <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
                 <h4 class="text-sm font-semibold text-blue-800 mb-4 border-b border-blue-200 pb-2">Rincian Harga (Opsional di awal transaksi)</h4>
                 
-                {{-- ─ Widget Cek Tarif Ongkir Otomatis ────────────────── --}}
-                <div class="mb-4 p-3 bg-blue-100/70 rounded-xl border border-blue-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                {{-- ─ Widget Cek Tarif Ongkir Otomatis (Tom Select Searchable) ────────────────── --}}
+                {{-- Tom Select CSS --}}
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.min.css">
+                <style>
+                    #rajaongkir_courier-ts-wrapper .ts-input,
+                    #rajaongkir_destination-ts-wrapper .ts-input {
+                        border-color: #93c5fd; border-radius: 0.5rem; padding: 5px 10px;
+                        font-size: 0.75rem; font-weight: 600; background: white; min-height: 32px;
+                    }
+                    #rajaongkir_courier-ts-wrapper, #rajaongkir_destination-ts-wrapper { min-width: 170px; }
+                    #rajaongkir_destination-ts-wrapper { min-width: 220px; max-width: 260px; }
+                    .ts-dropdown .ts-dropdown-content .option { font-size: 0.72rem; padding: 5px 10px; }
+                    .ts-dropdown { font-size: 0.75rem; z-index: 9999 !important; }
+                    .ts-wrapper.single .ts-control::after { border-color: #1d4ed8 transparent transparent; }
+                </style>
+                <div class="mb-4 p-3 bg-blue-100/70 rounded-xl border border-blue-200 flex flex-col gap-3 text-xs">
                     <div class="flex items-center gap-1.5 font-bold text-blue-900">
                         <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        <span>Cek Tarif Ongkir Otomatis:</span>
+                        <span>🚚 Cek Tarif Ongkir Otomatis <span class="font-normal text-blue-600">(ketik nama kota untuk mencari)</span></span>
                     </div>
-                    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
-                        <select id="rajaongkir_courier" class="border border-blue-300 rounded-lg px-2.5 py-1.5 text-xs bg-white font-semibold focus:ring-2 focus:ring-blue-500">
+                    <div class="flex flex-wrap items-center gap-2 w-full">
+                        {{-- Searchable Courier Select --}}
+                        <select id="rajaongkir_courier">
                             <option value="pos">POS Indonesia (Mitra Utama)</option>
                             <option value="jne">JNE Express</option>
                             <option value="tiki">TIKI (Titipan Kilat)</option>
@@ -112,26 +127,26 @@
                             <option value="ninja">Ninja Xpress</option>
                             <option value="ide">ID Express</option>
                         </select>
-                        <select id="rajaongkir_destination" class="border border-blue-300 rounded-lg px-2.5 py-1.5 text-xs max-w-[240px] bg-white font-semibold focus:ring-2 focus:ring-blue-500 truncate">
-                            <option value="">-- Pilih Kota Tujuan --</option>
+                        {{-- Searchable City Select --}}
+                        <select id="rajaongkir_destination">
+                            <option value="">-- Ketik nama kota untuk mencari... --</option>
                             @if(isset($daftarKota) && is_array($daftarKota))
                                 @foreach($daftarKota as $kota)
-                                    <option value="{{ $kota['city_id'] }}">
-                                        {{ $kota['city_name'] }}
-                                    </option>
+                                    <option value="{{ $kota['city_id'] }}">{{ $kota['city_name'] }}</option>
                                 @endforeach
                             @else
-                                <option value="149">Kota Bogor (Jawa Barat)</option>
-                                <option value="80">Kabupaten Bogor (Jawa Barat)</option>
-                                <option value="114">Kota Depok (Jawa Barat)</option>
-                                <option value="152">Kota Jakarta Pusat (DKI Jakarta)</option>
-                                <option value="153">Kota Jakarta Selatan (DKI Jakarta)</option>
-                                <option value="40">Kota Bekasi (Jawa Barat)</option>
-                                <option value="455">Kota Tangerang (Banten)</option>
-                                <option value="23">Kota Bandung (Jawa Barat)</option>
+                                <option value="dist_32.71.01">Kota Bogor (Bogor Tengah)</option>
+                                <option value="dist_32.01.01">Kab. Bogor (Cibinong)</option>
+                                <option value="dist_32.76.01">Kota Depok (Pancoran Mas)</option>
+                                <option value="dist_31.73.01">Jakarta Pusat (Gambir)</option>
+                                <option value="dist_31.71.01">Jakarta Selatan (Kebayoran Baru)</option>
+                                <option value="dist_32.75.01">Kota Bekasi (Bekasi Barat)</option>
+                                <option value="dist_36.71.01">Kota Tangerang (Tangerang)</option>
+                                <option value="dist_32.73.01">Kota Bandung (Bandung Wetan)</option>
                             @endif
                         </select>
-                        <button type="button" onclick="autoCekOngkir(event)" class="bg-blue-700 hover:bg-blue-800 text-white font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-sm">
+                        <button type="button" onclick="autoCekOngkir(event)" class="bg-blue-700 hover:bg-blue-800 text-white font-bold px-4 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             Cek Tarif
                         </button>
                     </div>
@@ -397,5 +412,36 @@ function autoCekOngkir(e) {
             });
         });
 }
+</script>
+
+{{-- Tom Select JS untuk Cek Ongkir (Searchable 524+ Kota) --}}
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Tom Select untuk pilihan ekspedisi/kurir (9 pilihan)
+    if (document.getElementById("rajaongkir_courier") && !window._tomCourierInit) {
+        window._tomCourierInit = true;
+        new TomSelect("#rajaongkir_courier", {
+            maxItems: 1, create: false, sortField: false,
+            allowEmptyOption: false, controlInput: null,
+        });
+    }
+    // Tom Select untuk pilihan kota tujuan (524+ kota, full searchable)
+    if (document.getElementById("rajaongkir_destination") && !window._tomDestInit) {
+        window._tomDestInit = true;
+        new TomSelect("#rajaongkir_destination", {
+            maxItems: 1, create: false, sortField: false,
+            searchField: ["text"],
+            placeholder: "Ketik nama kota/kabupaten...",
+            allowEmptyOption: true,
+            maxOptions: 60,
+            render: {
+                no_results: function(data, escape) {
+                    return "<div class="no-results" style="padding:8px 12px;color:#6b7280;font-size:0.75rem;">Kota tidak ditemukan - coba kata kunci lain</div>";
+                },
+            },
+        });
+    }
+});
 </script>
 @endpush
