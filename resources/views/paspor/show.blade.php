@@ -158,35 +158,35 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs text-gray-500 mb-1">Biaya Kurir (Rp)</label>
-                        <input type="number" name="biaya_kurir" min="0" step="500"
+                        <input type="number" name="biaya_kurir" min="0" step="any"
                             value="{{ old('biaya_kurir', $paspor->biaya_kurir) }}"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="0" />
                     </div>
                     <div>
                         <label class="block text-xs text-gray-500 mb-1">Biaya Modal Packaging (Rp)</label>
-                        <input type="number" name="biaya_modal_packaging" min="0" step="500"
+                        <input type="number" name="biaya_modal_packaging" min="0" step="any"
                             value="{{ old('biaya_modal_packaging', $paspor->biaya_modal_packaging) }}"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="0" />
                     </div>
                     <div>
                         <label class="block text-xs text-gray-500 mb-1">Harga Materai (Rp)</label>
-                        <input type="number" name="harga_materai" min="0" step="1000"
+                        <input type="number" name="harga_materai" min="0" step="any"
                             value="{{ old('harga_materai', $paspor->harga_materai) }}"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="0" />
                     </div>
                     <div>
                         <label class="block text-xs text-gray-500 mb-1">Harga Surat Kuasa (Rp)</label>
-                        <input type="number" name="harga_surat_kuasa" min="0" step="500"
+                        <input type="number" name="harga_surat_kuasa" min="0" step="any"
                             value="{{ old('harga_surat_kuasa', $paspor->harga_surat_kuasa) }}"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="0" />
                     </div>
                     <div>
                         <label class="block text-xs text-gray-500 mb-1">Handling Fee (Rp)</label>
-                        <input type="number" name="handling_fee" min="0" step="500"
+                        <input type="number" name="handling_fee" min="0" step="any"
                             value="{{ old('handling_fee', $paspor->handling_fee) }}"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="0" />
@@ -226,7 +226,7 @@
                 {{-- Total Pembayaran - editable & prominent --}}
                 <div class="bg-green-50 border-2 border-green-300 rounded-xl p-4 mt-3">
                     <label class="block text-sm font-bold text-green-800 mb-2">Total Pembayaran Pemohon (Rp) — <span class="font-normal text-green-700">bisa diedit bebas</span></label>
-                    <input type="number" name="total_pembayaran_pemohon" min="0" step="500"
+                    <input type="number" name="total_pembayaran_pemohon" min="0" step="any"
                         value="{{ old('total_pembayaran_pemohon', $paspor->total_pembayaran_pemohon) }}"
                         class="w-full px-4 py-3 border-2 border-green-400 rounded-lg text-lg font-bold text-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
                         placeholder="0" />

@@ -146,7 +146,7 @@ class PasporController extends Controller
         // Save biaya fields if provided
         $biayaFields = ['total_pembayaran_pemohon', 'biaya_kurir', 'jenis_kurir', 'layanan_kurir', 'biaya_modal_packaging', 'harga_materai', 'harga_surat_kuasa', 'handling_fee', 'no_resi'];
         foreach ($biayaFields as $field) {
-            if ($request->filled($field)) {
+            if ($request->has($field) && $request->input($field) !== null && $request->input($field) !== '') {
                 $updates[$field] = $request->input($field);
             }
         }
