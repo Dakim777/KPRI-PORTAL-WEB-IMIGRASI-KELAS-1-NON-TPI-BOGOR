@@ -94,44 +94,54 @@
             <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
                 <h4 class="text-sm font-semibold text-blue-800 mb-4 border-b border-blue-200 pb-2">Rincian Harga (Opsional di awal transaksi)</h4>
                 
-                {{-- ─ Widget Cek Tarif Ongkir Otomatis (Tom Select Searchable) ────────────────── --}}
-                <div class="mb-4 p-3 bg-blue-100/70 rounded-xl border border-blue-200 flex flex-col gap-3 text-xs">
-                    <div class="flex items-center gap-1.5 font-bold text-blue-900">
+                {{-- ─ Widget Cek Tarif Ongkir Otomatis ────────────────── --}}
+                <div class="mb-4 p-3 bg-blue-50 rounded-xl border border-blue-200 text-xs">
+                    <div class="flex items-center gap-1.5 font-bold text-blue-900 mb-3">
                         <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        <span>Cek Tarif Ongkir Otomatis <span class="font-normal text-blue-600">(ketik nama kota untuk mencari)</span></span>
+                        <span>Cek Tarif Ongkir Otomatis <span class="font-normal text-blue-500">&mdash; ketik nama kota untuk mencari</span></span>
                     </div>
-                    <div class="flex flex-wrap items-center gap-2 w-full">
-                        {{-- Searchable Courier Select --}}
-                        <select id="rajaongkir_courier">
-                            <option value="pos">POS Indonesia (Mitra Utama)</option>
-                            <option value="jne">JNE Express</option>
-                            <option value="tiki">TIKI (Titipan Kilat)</option>
-                            <option value="sicepat">SiCepat Ekspres</option>
-                            <option value="jnt">J&T Express</option>
-                            <option value="anteraja">AnterAja</option>
-                            <option value="lion">Lion Parcel</option>
-                            <option value="ninja">Ninja Xpress</option>
-                            <option value="ide">ID Express</option>
-                        </select>
-                        {{-- Searchable City Select --}}
-                        <select id="rajaongkir_destination">
-                            <option value="">-- Ketik nama kota untuk mencari... --</option>
-                            @if(isset($daftarKota) && is_array($daftarKota))
-                                @foreach($daftarKota as $kota)
-                                    <option value="{{ $kota['city_id'] }}">{{ $kota['city_name'] }}</option>
-                                @endforeach
-                            @else
-                                <option value="dist_32.71.01">Kota Bogor (Bogor Tengah)</option>
-                                <option value="dist_32.01.01">Kab. Bogor (Cibinong)</option>
-                                <option value="dist_32.76.01">Kota Depok (Pancoran Mas)</option>
-                                <option value="dist_31.73.01">Jakarta Pusat (Gambir)</option>
-                                <option value="dist_31.71.01">Jakarta Selatan (Kebayoran Baru)</option>
-                                <option value="dist_32.75.01">Kota Bekasi (Bekasi Barat)</option>
-                                <option value="dist_36.71.01">Kota Tangerang (Tangerang)</option>
-                                <option value="dist_32.73.01">Kota Bandung (Bandung Wetan)</option>
-                            @endif
-                        </select>
-                        <button type="button" onclick="autoCekOngkir(event)" class="bg-blue-700 hover:bg-blue-800 text-white font-bold px-4 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm">
+                    <div class="flex flex-wrap items-end gap-2 w-full">
+                        {{-- Kurir: native select, cukup 9 pilihan --}}
+                        <div class="flex flex-col gap-1">
+                            <label class="text-blue-700 font-semibold uppercase tracking-wide" style="font-size:0.65rem;">Ekspedisi</label>
+                            <select id="rajaongkir_courier"
+                                class="border border-blue-300 rounded-lg px-2.5 py-1.5 text-xs bg-white font-semibold text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                style="min-width:170px; height:34px;">
+                                <option value="pos">POS Indonesia (Mitra Utama)</option>
+                                <option value="jne">JNE Express</option>
+                                <option value="tiki">TIKI (Titipan Kilat)</option>
+                                <option value="sicepat">SiCepat Ekspres</option>
+                                <option value="jnt">J&T Express</option>
+                                <option value="anteraja">AnterAja</option>
+                                <option value="lion">Lion Parcel</option>
+                                <option value="ninja">Ninja Xpress</option>
+                                <option value="ide">ID Express</option>
+                            </select>
+                        </div>
+                        {{-- Kota Tujuan: Tom Select searchable --}}
+                        <div class="flex flex-col gap-1" style="min-width:220px; max-width:280px; flex:1;">
+                            <label class="text-blue-700 font-semibold uppercase tracking-wide" style="font-size:0.65rem;">Kota Tujuan</label>
+                            <select id="rajaongkir_destination">
+                                <option value="">-- Pilih kota tujuan --</option>
+                                @if(isset($daftarKota) && is_array($daftarKota))
+                                    @foreach($daftarKota as $kota)
+                                        <option value="{{ $kota['city_id'] }}">{{ $kota['city_name'] }}</option>
+                                    @endforeach
+                                @else
+                                    <option value="dist_32.71.01">Kota Bogor (Bogor Tengah)</option>
+                                    <option value="dist_32.01.01">Kab. Bogor (Cibinong)</option>
+                                    <option value="dist_32.76.01">Kota Depok (Pancoran Mas)</option>
+                                    <option value="dist_31.73.01">Jakarta Pusat (Gambir)</option>
+                                    <option value="dist_31.71.01">Jakarta Selatan (Kebayoran Baru)</option>
+                                    <option value="dist_32.75.01">Kota Bekasi (Bekasi Barat)</option>
+                                    <option value="dist_36.71.01">Kota Tangerang (Tangerang)</option>
+                                    <option value="dist_32.73.01">Kota Bandung (Bandung Wetan)</option>
+                                @endif
+                            </select>
+                        </div>
+                        <button type="button" onclick="autoCekOngkir(event)"
+                            class="bg-blue-700 hover:bg-blue-800 text-white font-bold px-4 rounded-lg transition flex items-center gap-1.5 shadow-sm shrink-0"
+                            style="height:34px; font-size:0.75rem;">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             Cek Tarif
                         </button>
@@ -401,50 +411,86 @@ function autoCekOngkir(e) {
 </script>
 
 
-{{-- Tom Select: Searchable Dropdown untuk 524+ Kota (CDN) --}}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css">
+{{-- Tom Select: hanya untuk field kota tujuan (524+ kota, searchable) --}}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.min.css">
 <style>
-    #rajaongkir_courier-ts-wrapper .ts-control,
+    /* ─── Styling Tom Select agar matching dengan desain form ─── */
     #rajaongkir_destination-ts-wrapper .ts-control {
-        border: 1.5px solid #93c5fd !important;
-        border-radius: 0.5rem !important;
-        padding: 4px 10px !important;
+        border: 1px solid #93c5fd;
+        border-radius: 0.5rem;
+        padding: 0 10px;
+        height: 34px;
+        min-height: 34px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #1e3a5f;
+        background: #fff;
+        box-shadow: none;
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        gap: 4px;
+    }
+    #rajaongkir_destination-ts-wrapper .ts-control:focus,
+    #rajaongkir_destination-ts-wrapper.focus .ts-control {
+        border-color: #1d4ed8;
+        box-shadow: 0 0 0 2px rgba(29,78,216,0.12);
+        outline: none;
+    }
+    /* Input teks pencarian di dalam control */
+    #rajaongkir_destination-ts-wrapper .ts-control input {
         font-size: 0.75rem !important;
-        font-weight: 600 !important;
-        background: white !important;
-        min-height: 34px !important;
-        cursor: pointer;
+        font-weight: 500 !important;
+        color: #374151 !important;
+        min-width: 80px;
     }
-    #rajaongkir_courier-ts-wrapper .ts-control:focus-within,
-    #rajaongkir_destination-ts-wrapper .ts-control:focus-within {
-        border-color: #1d4ed8 !important;
-        box-shadow: 0 0 0 2px rgba(29,78,216,0.15) !important;
+    /* Panah dropdown */
+    #rajaongkir_destination-ts-wrapper.single .ts-control::after {
+        content: '';
+        border: 4px solid transparent;
+        border-top-color: #1d4ed8;
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        margin-top: 0px;
     }
-    #rajaongkir_courier-ts-wrapper { min-width: 175px; }
-    #rajaongkir_destination-ts-wrapper { min-width: 230px; max-width: 280px; }
-    .ts-dropdown { font-size: 0.75rem !important; z-index: 99999 !important; border-radius: 0.5rem !important; }
-    .ts-dropdown .option { font-size: 0.72rem; padding: 5px 12px; }
-    .ts-dropdown .option:hover, .ts-dropdown .option.active { background: #eff6ff; color: #1d4ed8; }
-    .ts-dropdown-content { max-height: 220px; }
+    /* Dropdown list */
+    #rajaongkir_destination-ts-wrapper .ts-dropdown {
+        font-size: 0.75rem;
+        border: 1px solid #bfdbfe;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 16px rgba(30,58,138,0.10);
+        z-index: 99999;
+        margin-top: 2px;
+    }
+    #rajaongkir_destination-ts-wrapper .ts-dropdown .ts-dropdown-content {
+        max-height: 200px;
+        padding: 4px 0;
+    }
+    #rajaongkir_destination-ts-wrapper .ts-dropdown .option {
+        font-size: 0.72rem;
+        padding: 5px 12px;
+        color: #374151;
+    }
+    #rajaongkir_destination-ts-wrapper .ts-dropdown .option:hover,
+    #rajaongkir_destination-ts-wrapper .ts-dropdown .option.active {
+        background: #eff6ff;
+        color: #1d4ed8;
+    }
+    /* Hilangkan x (clear) button - tidak diperlukan */
+    #rajaongkir_destination-ts-wrapper .ts-control .clear-button {
+        display: none !important;
+    }
+    /* Placeholder text */
+    #rajaongkir_destination-ts-wrapper .ts-control .placeholder {
+        color: #9ca3af;
+        font-weight: 400;
+    }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
 (function () {
     function doInit() {
-        // Ekspedisi/Kurir: 9 pilihan saja, tidak perlu search box
-        var courierEl = document.getElementById('rajaongkir_courier');
-        if (courierEl && !courierEl.tomselect) {
-            var ts = new TomSelect(courierEl, {
-                maxItems: 1,
-                create: false,
-                sortField: false,
-                allowEmptyOption: false
-            });
-            // Sembunyikan kolom input teks (karena hanya 9 pilihan, tidak perlu dicari)
-            if (ts.control_input) ts.control_input.setAttribute('readonly', 'readonly');
-        }
-
-        // Kota tujuan: 524+ kota, SEARCHABLE - klik panah buka dropdown + kolom ketik
         var destEl = document.getElementById('rajaongkir_destination');
         if (destEl && !destEl.tomselect) {
             new TomSelect(destEl, {
@@ -455,7 +501,6 @@ function autoCekOngkir(e) {
                 placeholder: 'Ketik nama kota/kabupaten...',
                 allowEmptyOption: true,
                 maxOptions: 80,
-                openOnFocus: true,
                 render: {
                     no_results: function(data, escape) {
                         return '<div style="padding:8px 12px;color:#9ca3af;font-size:0.72rem;font-style:italic;">Kota tidak ditemukan. Coba kata kunci lain.</div>';
@@ -464,7 +509,6 @@ function autoCekOngkir(e) {
             });
         }
     }
-
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', doInit);
     } else {
