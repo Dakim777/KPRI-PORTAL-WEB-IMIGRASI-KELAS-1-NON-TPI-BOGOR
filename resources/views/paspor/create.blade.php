@@ -95,24 +95,10 @@
                 <h4 class="text-sm font-semibold text-blue-800 mb-4 border-b border-blue-200 pb-2">Rincian Harga (Opsional di awal transaksi)</h4>
                 
                 {{-- ─ Widget Cek Tarif Ongkir Otomatis (Tom Select Searchable) ────────────────── --}}
-                {{-- Tom Select CSS --}}
-                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.min.css">
-                <style>
-                    #rajaongkir_courier-ts-wrapper .ts-input,
-                    #rajaongkir_destination-ts-wrapper .ts-input {
-                        border-color: #93c5fd; border-radius: 0.5rem; padding: 5px 10px;
-                        font-size: 0.75rem; font-weight: 600; background: white; min-height: 32px;
-                    }
-                    #rajaongkir_courier-ts-wrapper, #rajaongkir_destination-ts-wrapper { min-width: 170px; }
-                    #rajaongkir_destination-ts-wrapper { min-width: 220px; max-width: 260px; }
-                    .ts-dropdown .ts-dropdown-content .option { font-size: 0.72rem; padding: 5px 10px; }
-                    .ts-dropdown { font-size: 0.75rem; z-index: 9999 !important; }
-                    .ts-wrapper.single .ts-control::after { border-color: #1d4ed8 transparent transparent; }
-                </style>
                 <div class="mb-4 p-3 bg-blue-100/70 rounded-xl border border-blue-200 flex flex-col gap-3 text-xs">
                     <div class="flex items-center gap-1.5 font-bold text-blue-900">
                         <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        <span>🚚 Cek Tarif Ongkir Otomatis <span class="font-normal text-blue-600">(ketik nama kota untuk mencari)</span></span>
+                        <span>Cek Tarif Ongkir Otomatis <span class="font-normal text-blue-600">(ketik nama kota untuk mencari)</span></span>
                     </div>
                     <div class="flex flex-wrap items-center gap-2 w-full">
                         {{-- Searchable Courier Select --}}
@@ -414,34 +400,76 @@ function autoCekOngkir(e) {
 }
 </script>
 
-{{-- Tom Select JS untuk Cek Ongkir (Searchable 524+ Kota) --}}
+
+{{-- Tom Select: Searchable Dropdown untuk 524+ Kota (CDN) --}}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css">
+<style>
+    #rajaongkir_courier-ts-wrapper .ts-control,
+    #rajaongkir_destination-ts-wrapper .ts-control {
+        border: 1.5px solid #93c5fd !important;
+        border-radius: 0.5rem !important;
+        padding: 4px 10px !important;
+        font-size: 0.75rem !important;
+        font-weight: 600 !important;
+        background: white !important;
+        min-height: 34px !important;
+        cursor: pointer;
+    }
+    #rajaongkir_courier-ts-wrapper .ts-control:focus-within,
+    #rajaongkir_destination-ts-wrapper .ts-control:focus-within {
+        border-color: #1d4ed8 !important;
+        box-shadow: 0 0 0 2px rgba(29,78,216,0.15) !important;
+    }
+    #rajaongkir_courier-ts-wrapper { min-width: 175px; }
+    #rajaongkir_destination-ts-wrapper { min-width: 230px; max-width: 280px; }
+    .ts-dropdown { font-size: 0.75rem !important; z-index: 99999 !important; border-radius: 0.5rem !important; }
+    .ts-dropdown .option { font-size: 0.72rem; padding: 5px 12px; }
+    .ts-dropdown .option:hover, .ts-dropdown .option.active { background: #eff6ff; color: #1d4ed8; }
+    .ts-dropdown-content { max-height: 220px; }
+</style>
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    // Tom Select untuk pilihan ekspedisi/kurir (9 pilihan)
-    if (document.getElementById("rajaongkir_courier") && !window._tomCourierInit) {
-        window._tomCourierInit = true;
-        new TomSelect("#rajaongkir_courier", {
-            maxItems: 1, create: false, sortField: false,
-            allowEmptyOption: false, controlInput: null,
-        });
+(function () {
+    function doInit() {
+        // Ekspedisi/Kurir: 9 pilihan saja, tidak perlu search box
+        var courierEl = document.getElementById('rajaongkir_courier');
+        if (courierEl && !courierEl.tomselect) {
+            var ts = new TomSelect(courierEl, {
+                maxItems: 1,
+                create: false,
+                sortField: false,
+                allowEmptyOption: false
+            });
+            // Sembunyikan kolom input teks (karena hanya 9 pilihan, tidak perlu dicari)
+            if (ts.control_input) ts.control_input.setAttribute('readonly', 'readonly');
+        }
+
+        // Kota tujuan: 524+ kota, SEARCHABLE - klik panah buka dropdown + kolom ketik
+        var destEl = document.getElementById('rajaongkir_destination');
+        if (destEl && !destEl.tomselect) {
+            new TomSelect(destEl, {
+                maxItems: 1,
+                create: false,
+                sortField: false,
+                searchField: ['text'],
+                placeholder: 'Ketik nama kota/kabupaten...',
+                allowEmptyOption: true,
+                maxOptions: 80,
+                openOnFocus: true,
+                render: {
+                    no_results: function(data, escape) {
+                        return '<div style="padding:8px 12px;color:#9ca3af;font-size:0.72rem;font-style:italic;">Kota tidak ditemukan. Coba kata kunci lain.</div>';
+                    }
+                }
+            });
+        }
     }
-    // Tom Select untuk pilihan kota tujuan (524+ kota, full searchable)
-    if (document.getElementById("rajaongkir_destination") && !window._tomDestInit) {
-        window._tomDestInit = true;
-        new TomSelect("#rajaongkir_destination", {
-            maxItems: 1, create: false, sortField: false,
-            searchField: ["text"],
-            placeholder: "Ketik nama kota/kabupaten...",
-            allowEmptyOption: true,
-            maxOptions: 60,
-            render: {
-                no_results: function(data, escape) {
-                    return "<div class="no-results" style="padding:8px 12px;color:#6b7280;font-size:0.75rem;">Kota tidak ditemukan - coba kata kunci lain</div>";
-                },
-            },
-        });
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', doInit);
+    } else {
+        doInit();
     }
-});
+})();
 </script>
 @endpush
