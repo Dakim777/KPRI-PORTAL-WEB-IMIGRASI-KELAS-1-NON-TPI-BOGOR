@@ -227,14 +227,14 @@ The gateway runs locally on port `3001` and is accessed only by the Laravel appl
 
 ## Key Features
 
-- 🔍 **Public Passport Tracker** — Search by Receipt Number or Transaction ID without login
-- 🚚 **Multi-Courier Real-Time Tracking** — Integrated with BinderByte API (9 couriers: POS, JNE, TIKI, SiCepat, J&T, AnterAja, Lion Parcel, Ninja Xpress, ID Express)
-- 🧾 **Kasir Dashboard** — Full shipment lifecycle management, barcode/QR webcam scanner, receipt printing
-- 📲 **Automated WhatsApp Notifications** — Status update alerts sent to applicants via local Node.js gateway
-- 🔐 **AES-256 Data Encryption** — Phone numbers and delivery addresses encrypted at rest
-- 📋 **Audit Trail** — Full activity log via `spatie/laravel-activitylog`
-- 🗑️ **Soft Delete / Trash** — Recoverable deletion for all transaction records
-- 📊 **Excel Export** — Detailed financial and shipment reports via `maatwebsite/excel`
+- **Public Passport Tracker** — Search by Receipt Number or Transaction ID without login
+- **Multi-Courier Real-Time Tracking** — Integrated with BinderByte API (9 couriers: POS, JNE, TIKI, SiCepat, J&T, AnterAja, Lion Parcel, Ninja Xpress, ID Express)
+- **Kasir Dashboard** — Full shipment lifecycle management, barcode/QR webcam scanner, receipt printing
+- **Automated WhatsApp Notifications** — Status update alerts sent to applicants via local Node.js gateway
+- **AES-256 Data Encryption** — Phone numbers and delivery addresses encrypted at rest
+- **Audit Trail** — Full activity log via `spatie/laravel-activitylog`
+- **Soft Delete / Trash** — Recoverable deletion for all transaction records
+- **Excel Export** — Detailed financial and shipment reports via `maatwebsite/excel`
 
 ---
 
