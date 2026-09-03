@@ -26,14 +26,18 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 
-# File tidak perlu di-commit
+# Archives & generated exports
 *.zip
 *.xlsx
 *.xls
+
+# Scratch / local-only scripts
 read_excel.php
-# WA Service session & build files
-wa-service/auth_info_baileys
-wa-service/node_modules
+
+# WA Service — session cache & build artifacts
+wa-service/auth_info_baileys/
+wa-service/node_modules/
 wa-service/*.log
 
-!README.md
+# SQLite (project uses MySQL)
+database/database.sqlite
