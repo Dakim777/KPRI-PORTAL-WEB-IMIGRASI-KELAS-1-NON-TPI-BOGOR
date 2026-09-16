@@ -240,6 +240,6 @@ The gateway runs locally on port `3001` and is accessed only by the Laravel appl
 
 ## License
 
-Developed as a Final Project (Skripsi) at **Institut Teknologi Sumatera (ITERA)**, Informatics Engineering Department, in collaboration with the Cooperative of Kantor Imigrasi Kelas I Non-TPI Bogor.
+Developed as an Internship Project (Kerja Praktik / KP) at **Institut Teknologi Sumatera (ITERA)**, Informatics Engineering Department, in collaboration with the Cooperative of Kantor Imigrasi Kelas I Non-TPI Bogor.
 
 © 2026 — All rights reserved.
