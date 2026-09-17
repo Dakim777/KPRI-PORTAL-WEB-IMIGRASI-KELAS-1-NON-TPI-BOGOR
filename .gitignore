@@ -41,3 +41,6 @@ wa-service/*.log
 
 # SQLite (project uses MySQL)
 database/database.sqlite
+
+# System design diagrams (local documentation only)
+diagrams/
