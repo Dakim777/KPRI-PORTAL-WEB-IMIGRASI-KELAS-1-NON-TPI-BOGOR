@@ -44,3 +44,4 @@ database/database.sqlite
 
 # System design diagrams (local documentation only)
 diagrams/
+*.drawio
